@@ -107,8 +107,8 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*cap prog drop R
-program define R , rclass
+*cap prog drop Rcall
+program define Rcall , rclass
 	
 	version 12
 
@@ -372,3 +372,56 @@ program define R , rclass
 	}
 	
 end
+
+
+
+
+// -------------------------------------------------------------------------
+// CREATE THE R.ado, abbreviated command
+// =========================================================================
+tempfile edited
+tempname hitch knot
+qui file open `hitch' using "Rcall.ado", read
+qui file open `knot' using "`edited'", write text replace
+file read `hitch' line
+while r(eof) == 0 {
+	local line : subinstr local line " Rcall" " R"
+	file write `knot' `"`macval(line)'"' _n
+	file read `hitch' line
+	if substr(`"`macval(line)'"',1,3) == "end" {
+		file write `knot' `"`macval(line)'"' _n
+		exit
+	}	
+}
+qui file close `knot'
+copy "`edited'" R.ado, replace
+
+
+/*
+
+//THIS IS HOW YOU CAN REMOVE THE STUFF, not q()
+R: object <- NULL
+R: char <- "this is some string"
+R: listobject <- list(x = cars[,1], y = cars[,2], s="this is some lovely string")
+
+R: q()
+R: rm(list=ls())
+R: yek <- print("this")
+R: yek
+R vanilla : do <- print("this")
+return list
+R: do
+
+*R: source('~/Dropbox/STATA/MY PROGRAMS/rdo/get.R')
+
+*return list
+
+
+
+Rcall rm(list=ls())
+R: z <- 9
+Rcall print(z)
+R print(ls())
+return list
+
+markdoc Rcall.ado, export(sthlp) replace 
