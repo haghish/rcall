@@ -21,7 +21,7 @@ seemless interactive execution of R in Stata. the {bf:vanilla} subcommand execut
 permanently specifies the path to executable R on the machine, if different with the default paths (see below)
 
 {p 8 16 2}
-{opt Rcallsetup} {it:"string"}
+{opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
 

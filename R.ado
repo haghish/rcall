@@ -22,7 +22,7 @@ __R__ non-interactively
 permanently specifies the path to executable R on the machine, if different with the default paths (see below)
 
 {p 8 16 2}
-{opt Rcallsetup} {it:"string"}
+{opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
 Description
