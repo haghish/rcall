@@ -3,21 +3,22 @@
 {title:Title}
 
 {phang}
-{cmd:{opt R:call}} {hline 2} Seemless interactive {bf:R} in  Stata. The command also return rclass {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). For more  information visit  {browse "http://www.haghish.com/rcall":Rcall} homepage.
+{cmd:{opt R:call}} {hline 2} Seemless interactive {bf:R} in  Stata. The command also return rclass {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). For more  information visit  {browse "http://www.haghish.com/rcall":Rcall homepage}.
 
 
 {title:Syntax}
 
 {p 4 4 2}
-seemless interactive execution of R in Stata
+seemless interactive execution of R in Stata. the {bf:vanilla} subcommand executes
+{bf:R} non-interactively
 
 {p 8 16 2}
-{opt R:call} [{cmd::}] [{it:R code}]
+{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R code}]
 {p_end}
 
 
 {p 4 4 2}
-specifies the path to executable R on the machine, if different with the default paths (see below)
+permanently specifies the path to executable R on the machine, if different with the default paths (see below)
 
 {p 8 16 2}
 {opt Rcallsetup} {it:"string"}
@@ -35,17 +36,15 @@ not only returns {it:numeric} and {it:charactor} objects, but also {it:lists} an
 {it:matrices}. 
 
 
-
-{title:R path}
-
-{p 4 4 2}
-{bf:whatever} does yak yak
-
-{p 8 8 2}
-Use {bf:>} for additional paragraphs within and option description to indent the paragraph.
+{title:R path setup}
 
 {p 4 4 2}
-{bf:2nd option} etc.
+The package detects {bf:R} in the default paths based on the operating system. 
+If {bf:R} is not accessible, you will be notified. You can also permanently 
+setup the path to {bf:R} using the {bf:Rcallsetup} command. For example, the 
+path to {bf:R} on Mac 10.10 could be:
+
+    . {cmd:Rcallsetup} "{it:/usr/bin/r}"
 
 
 {title:Remarks}
@@ -74,26 +73,23 @@ notations.
         . example command
 
 
-{title:Acknowledgements}
-
-{p 4 4 2}
-If you have thanks specific to this command, put them here.
-
-
 {title:Author}
 
 {p 4 4 2}
-Author information here; nothing for official Stata commands
-leave 2 white spaces in the end of each line for line break. For example:
+{bf:E. F. Haghish}       {break}
+Center for Medical Biometry and Medical Informatics       {break}
+University of Freiburg, Germany       {break}
+{it:and}          {break}
+Department of Mathematics and Computer Science         {break}
+University of Southern Denmark       {break}
+haghish@imbi.uni-freiburg.de       {break}
 
 {p 4 4 2}
-Your Name     {break}
-Your affiliation      {break}
-Your email address, etc.      {break}
+{browse "http://www.haghish.com/statistics/stata-blog/reproducible-research/markdoc.php":http://www.haghish.com/markdoc}           {break}
+Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}       {break}
 
-
-{title:References}
+    {hline}
 
 {p 4 4 2}
-E. F. Haghish (2014), {help markdoc:MarkDoc: Literate Programming in Stata}
+This help file was dynamically produced by {help markdoc:MarkDoc Literate Programming package}
 

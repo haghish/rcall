@@ -1,0 +1,2 @@
+v 1
+d 'Rcall': Seemless interactive R in Stata 

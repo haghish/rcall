@@ -3,7 +3,7 @@ Version: 1.0.0
 Title: {opt R:call}
 Description: Seemless interactive __R__ in  Stata. The command also return 
 rclass __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). For more 
-information visit [Rcall](http://www.haghish.com/rcall) homepage.
+information visit [Rcall homepage](http://www.haghish.com/rcall).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 
@@ -19,7 +19,7 @@ __R__ non-interactively
 {p_end}
 
 
-specifies the path to executable R on the machine, if different with the default paths (see below)
+permanently specifies the path to executable R on the machine, if different with the default paths (see below)
 
 {p 8 16 2}
 {opt Rcallsetup} {it:"string"}
@@ -35,15 +35,15 @@ the R objects are available for further manipulation in Stata. {opt R:call}
 not only returns _numeric_ and _charactor_ objects, but also _lists_ and 
 _matrices_. 
 
+R path setup
+============
 
-R path
-=======
+The package detects __R__ in the default paths based on the operating system. 
+If __R__ is not accessible, you will be notified. You can also permanently 
+setup the path to __R__ using the __Rcallsetup__ command. For example, the 
+path to __R__ on Mac 10.10 could be:
 
-__whatever__ does yak yak
-
->Use __>__ for additional paragraphs within and option description to indent the paragraph.
-
-__2nd option__ etc.
+    . {cmd:Rcallsetup} "{it:/usr/bin/r}"
 
 Remarks
 =======
@@ -70,25 +70,23 @@ Example(s)
     second explanation
         . example command
 
-Acknowledgements
-================
-
-If you have thanks specific to this command, put them here.
-
 Author
 ======
 
-Author information here; nothing for official Stata commands
-leave 2 white spaces in the end of each line for line break. For example:
+__E. F. Haghish__     
+Center for Medical Biometry and Medical Informatics     
+University of Freiburg, Germany     
+_and_        
+Department of Mathematics and Computer Science       
+University of Southern Denmark     
+haghish@imbi.uni-freiburg.de     
+      
+[http://www.haghish.com/markdoc](http://www.haghish.com/statistics/stata-blog/reproducible-research/markdoc.php)         
+Package Updates on [Twitter](http://www.twitter.com/Haghish)     
 
-Your Name   
-Your affiliation    
-Your email address, etc.    
+- - -
 
-References
-==========
-
-E. F. Haghish (2014), {help markdoc:MarkDoc: Literate Programming in Stata}
+This help file was dynamically produced by {help markdoc:MarkDoc Literate Programming package}
 ***/
 
 
@@ -120,12 +118,18 @@ program define R , rclass
 	// -------------------------------------------------------------------------
 	// Create temporary Rscript file
 	// =========================================================================
+	capture findfile stata.output.R, path("`c(sysdir_plus)'s")
+	if _rc != 0 {
+		di as err "stata.output.R script file not found. reinstall the package"
+		err 198
+	}
+	
 	tempfile Rscript
 	tempfile Rout
 	tempname knot
 	qui file open `knot' using `"`Rscript'"', write text replace
 	file write `knot' `"`macval(0)'"' _n
-	file write `knot' "source('~/Dropbox/STATA/MY PROGRAMS/rdo/stata.output.R')" _n
+	file write `knot' "source('`r(fn)'')" _n
 	file write `knot' "stata.output()" 
 	*file write `knot' "save.image()" _n
 	qui file close `knot'
@@ -138,14 +142,14 @@ program define R , rclass
 	
 	quietly shell `Rcommand'
 	
-	capture confirm file stata.output.txt
+	capture confirm file stata.output
 	if _rc != 0 {
 		shell `Rcommand'
 		exit
 	}
 	
-	copy "`Rscript'" 0PROCESS0.txt, replace
-	copy "`Rout'" 0PROCESS1.txt, replace
+	*copy "`Rscript'" 0PROCESS0.txt, replace
+	*copy "`Rout'" 0PROCESS1.txt, replace
 	
 	// -------------------------------------------------------------------------
 	// Edit the output file & print it in Stata
@@ -193,14 +197,14 @@ program define R , rclass
 	qui file close `hitch'
 	
 	type "`tmp'"
-	copy "`tmp'" 0PROCESS2.txt, replace	
+	*copy "`tmp'" 0PROCESS2.txt, replace	
 	
 	
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
 	if substr(trim(`"`macval(0)'"'),1,3) != "q()" {
-		qui file open `hitch' using "stata.output.txt", read
+		qui file open `hitch' using "stata.output", read
 		file read `hitch' line
 		
 		while r(eof) == 0 {
@@ -312,9 +316,9 @@ program define R , rclass
 			
 			if missing("`jump'") file read `hitch' line
 		}
-		capture erase list.txt
-		qui copy stata.output.txt list.txt, replace
-		capture erase stata.output.txt
+		*capture erase list.txt
+		*qui copy stata.output list.txt, replace
+		capture erase stata.output
 	}
 	
 	
@@ -352,4 +356,4 @@ R: do
 
 *return list
 
-*markdoc R.ado, export(sthlp) replace 
+markdoc R.ado, export(sthlp) replace 

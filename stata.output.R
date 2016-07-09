@@ -44,7 +44,7 @@ stata.output <- function() {
     # PREPARE OUTPUT EXPORTATION
     # ==========================================================================
     
-    stata.output <- file.path(getwd(), "stata.output.txt")
+    stata.output <- file.path(getwd(), "stata.output")
     file.create(stata.output)
     
     # NUMERIC (numeric AND integer)

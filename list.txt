@@ -1,0 +1,6 @@
+//SCALAR a
+10
+//STRING a3
+10
+//STRING yek
+this
