@@ -38,7 +38,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*capture program drop matconvert
+capture program drop matconvert
 program matconvert, rclass
 	
 	*mat list `0'

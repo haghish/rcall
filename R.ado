@@ -82,8 +82,8 @@ And of course, you can access the matrix from __R__ in Stata as well:
         . mat list r(C) 
         r(C)[2,2]
              c1   c2
-        r1   97   99
-        r2   98  100
+        r1   97   98
+        r2   99  100
 		
 Finally, {opt R:call} also allows to pass Stata data to __R__ within 
 __st.data(_{help filename}_)__ function. This function relies on the __foreign__ 
