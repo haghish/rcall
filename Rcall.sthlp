@@ -84,8 +84,8 @@ And of course, you can access the matrix from {bf:R} in Stata as well:
         . mat list r(C) 
         r(C)[2,2]
              c1   c2
-        r1   97   99
-        r2   98  100
+        r1   97   98
+        r2   99  100
 		
 {p 4 4 2}
 Finally, {opt R:call} also allows to pass Stata data to {bf:R} within 
