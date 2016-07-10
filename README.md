@@ -13,7 +13,7 @@ Author
   Center for Medical Biometry and Medical Informatics    
   University of Freiburg, Germany        
   _haghish@imbi.uni-freiburg.de_       
-  _http://www.haghish.com/dot_      
+  _http://www.haghish.com/packages/Rcall.php_      
   _[@Haghish](https://twitter.com/Haghish)_      
   
 Installation
