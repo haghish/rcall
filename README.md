@@ -30,7 +30,7 @@ You can also directly download __diagram__ from GitHub which includes the latest
 To install from GitHub, the `force` 
 option ensures that you _reinstall_ the package, even if the release date is not yet changed. The release date only is changed for new releases and not for the current development.  
   
-    net install diagram, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
+    net install Rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
     
 
 
