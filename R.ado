@@ -1,9 +1,12 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
 Version: 1.0.0
 Title: {opt R:call}
-Description: Seemless interactive __R__ in  Stata. The command also return 
-rclass __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). For more 
-information visit [Rcall homepage](http://www.haghish.com/rcall).
+Description: Seemless interactive 
+__[R](https://cran.r-project.org/)__ in  Stata. The package return 
+{help return:rclass} __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). It also 
+allows passing Stata {help macro}, {help scalar}, and {help matrix} to __R__, 
+which provides a reciprocal interaction between Stata and __R__. 
+For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 
@@ -11,7 +14,7 @@ information visit [Rcall homepage](http://www.haghish.com/rcall).
 Syntax
 ======
 
-seemless interactive execution of R in Stata. the __vanilla__ subcommand executes
+seemless interactive execution of __R__ in Stata. the __vanilla__ subcommand executes
 __R__ non-interactively
 
 {p 8 16 2}
@@ -39,6 +42,70 @@ the R objects are available for further manipulation in Stata. {opt R:call}
 not only returns _numeric_ and _charactor_ objects, but also _lists_ and 
 _matrices_. 
 
+Data communication between Stata and R
+======================================
+
+Stata automatically receives __R__ objects as {help return:rclass} anytime 
+the {opt R:call} is executed. If __R__ is running interactively 
+(i.e. without __vanilla__ subcommand), the previous objects still remain accessable 
+to Stata, unless they are changed or erased from __R__. 
+
+For an ideal reciprocation between Stata and __R__, Stata should also easily 
+communicate variables to __R__. Local and global {help macro:macros} can be passed 
+within __R__ code, since Stata automatically interprets them while it passes the 
+code to {opt R:call} command, as shown in the example below:
+
+        . global a 99 
+        . R: (a <- $a)  	
+        [1] 99 		
+
+In order to pass a {help scalar} from Stata to __R__, you can 
+use the __st.scalar() function as shown below:
+
+        . scalar a = 50 
+        . R: (a <- st.scalar(a))  	
+        [1] 50 		
+
+Similarly, Stata {help matrix:matrices} can be seemlessly passed to __R__ using 
+the __st.matrix()__ function as shown below:
+
+        . matrix A = (1,2\3,4) 
+        . matrix B = (96,96\96,96) 		
+        . R: C <- st.matrix(A) + st.matrix(B)
+        . R: C 
+             [,1] [,2]
+        [1,]   97   98
+        [2,]   99  100
+ 
+And of course, you can access the matrix from __R__ in Stata as well: 
+
+        . mat list r(C) 
+        r(C)[2,2]
+             c1   c2
+        r1   97   99
+        r2   98  100
+		
+Finally, {opt R:call} also allows to pass Stata data to __R__ within 
+__st.data(_{help filename}_)__ function. This function relies on the __foreign__ 
+package in __R__ to load Stata data sets, without converting them to CSV or alike. 
+The __foreign__ package can be installed within Stata as follows:
+
+        . R: install.packages("foreign", repos="http://cran.uk.r-project.org")
+
+Specify the relative or absolute path to the data set to transporting data 
+from Stata to __R__. For example: 
+
+        . R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
+        . R: dim(data)
+
+If the _filename_ is not specified, the function passes the currently loaded 
+data to __R__. 
+
+        . sysuse auto, clear 
+        . R: data <- st.data() 
+        . R: dim(data) 
+        [1] 74 12
+		
 R path setup
 ============
 
@@ -78,11 +145,8 @@ you would get a macro as follos:
 Example(s)
 =================
 
-    permanently setup the path to R 
-        . R setpath "/usr/bin/r" 
-
-    execute an R code interactively
-        . example command
+Visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
+documentation. 
 
 Author
 ======
@@ -142,10 +206,103 @@ program define R , rclass
 	}
 	
 	// Check if the command includes Colon
-	if substr(trim(`"`macval(0)'"'),1,2) == ": " {
-		local 0 : subinstr local 0 ": " ""
+	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
+		local 0 : subinstr local 0 ":" ""
 	}
+	
+	
+	// Searching for Matrix
+	// -------------------------------------------------------------------------
+	while strpos(`"`macval(0)'"',"st.matrix(") != 0 {
+		local br = strpos(`"`macval(0)'"',"st.matrix")
+		local l1 = substr(`"`macval(0)'"',1, `br'-1)
+		local l2 = substr(`"`macval(0)'"',`br',.)
+		local l2 : subinstr local l2 "st.matrix(" ""
+		local mt = strpos(`"`macval(l2)'"',")") 
+		local mat = substr(`"`macval(l2)'"',1, `mt'-1)
+		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+ 		
+		qui matconvert `mat'
+		local l2 = "`r(`mat')'" + "`l2'"
+		
+		*local l2 = `r(`mat')' + "`l2'"
+		
+		*di as err "l1:`l1'"
+		*di as err "l2:`l2'"
+		
+		
+		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+	}
+	
+	// Searching for Scalar
+	// -------------------------------------------------------------------------
+	while strpos(`"`macval(0)'"',"st.scalar(") != 0 {
+		local br = strpos(`"`macval(0)'"',"st.scalar")
+		local l1 = substr(`"`macval(0)'"',1, `br'-1)
+		local l2 = substr(`"`macval(0)'"',`br',.)
+		local l2 : subinstr local l2 "st.scalar(" ""
+		local mt = strpos(`"`macval(l2)'"',")") 
+		local sca = substr(`"`macval(l2)'"',1, `mt'-1)
+		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+ 		
+		local sca : display `sca'
+		
+		//If scalar is string, add double quote
+		capture local test : display int(`sca')		
+		if missing("`test'") & "`sca'" != "" {							
+			local sca : display `"`sca'"'
+			local l2 = `"""' + `"`macval(sca)'"' + `"""' + "`l2'"
+		}
+		else {
+			local l2 = "`sca'" + "`l2'"
+		}
 
+		*di as err "l1:`l1'"
+		*di as err `"l2:`macval(l2)'"'
+		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+	}
+	
+	
+	// Searching for Data
+	// -------------------------------------------------------------------------
+	while strpos(`"`macval(0)'"',"st.data(") != 0 {
+		local br = strpos(`"`macval(0)'"',"st.data")
+		local l1 = substr(`"`macval(0)'"',1, `br'-1)
+		local l2 = substr(`"`macval(0)'"',`br',.)
+		local l2 : subinstr local l2 "st.data(" ""
+		local mt = strpos(`"`macval(l2)'"',")") 
+		local filename = substr(`"`macval(l2)'"',1, `mt'-1)
+		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+		
+		local foreign 1 						//load foreign package
+		
+		//IF FILENAME IS MISSING
+		if missing("`filename'") {
+			qui saveold _st.data.dta, version(11) replace 
+			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+		}
+		else {
+			confirm file "`filename'"
+			preserve
+			qui use "`filename'", clear
+			qui saveold _st.data.dta, version(11) replace 
+			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+			restore
+		}
+		
+		local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
+		
+		*di as err "l1:`l1'"
+		*di as err `"l2:`macval(l2)'"'
+		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+	}
+	
+	*di as err `"`macval(0)'"' 
+	
+	
 	*local line : subinstr local line "$" "_", all //avoid "$" in name
 	// -------------------------------------------------------------------------
 	// Create temporary Rscript file
@@ -160,12 +317,18 @@ program define R , rclass
 	tempfile Rout
 	tempname knot
 	qui file open `knot' using `"`Rscript'"', write text replace
+	if !missing("`foreign'") file write `knot' "library(foreign)" _n
 	file write `knot' `"`macval(0)'"' _n
 	file write `knot' "source('`r(fn)'')" _n
 	file write `knot' "stata.output()" _n
 	file write `knot' "rm(stata.output)" _n		//remove 
 	*file write `knot' "save.image()" _n
 	qui file close `knot'
+	
+	*cap erase 0PROCESS0.txt
+	*copy "`Rscript'" 0PROCESS0.txt, replace
+	
+	
 	// -------------------------------------------------------------------------
 	// Execute the command in R
 	// =========================================================================
@@ -192,7 +355,10 @@ program define R , rclass
 		exit
 	}
 	
-	*copy "`Rscript'" 0PROCESS0.txt, replace
+	// If data was loaded automatically, remove the temporary data file
+	if !missing("`foreign'") capture qui erase _st.data.dta
+	
+	*cap erase 0PROCESS1.txt
 	*copy "`Rout'" 0PROCESS1.txt, replace
 	
 	// -------------------------------------------------------------------------
@@ -247,8 +413,10 @@ program define R , rclass
 	type "`tmp'"
 	copy "`tmp'" 0PROCESS2.txt, replace	
 	*/
-	type "`Rout'"
 	
+	type "`Rout'"
+	*copy "`Rout'" 0PROCESS2.txt, replace
+			
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
@@ -359,7 +527,9 @@ program define R , rclass
 					local jump 1
 				}
 				matrix define `name' = (`content')
+				*mat list `name'
 				mata: `name' = st_matrix("`name'") 
+				*mata: `name'
 				mata: st_matrix("`name'", rowshape(`name', `rownumber'))  
 				return matrix `name' = `name'
 			}
@@ -367,7 +537,7 @@ program define R , rclass
 			if missing("`jump'") file read `hitch' line
 		}
 		*capture erase list.txt
-		*qui copy stata.output list.txt, replace
+		*copy stata.output list.txt, replace
 		capture erase stata.output
 	}
 	

@@ -3,13 +3,13 @@
 {title:Title}
 
 {phang}
-{cmd:{opt R:call}} {hline 2} Seemless interactive {bf:R} in  Stata. The command also return rclass {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). For more  information visit  {browse "http://www.haghish.com/rcall":Rcall homepage}.
+{cmd:{opt R:call}} {hline 2} Seemless interactive {bf: {browse "https://cran.r-project.org/":R}} in  Stata. The package return  {help return:rclass} {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). It also  allows passing Stata {help macro}, {help scalar}, and {help matrix} to {bf:R},  which provides a reciprocal interaction between Stata and {bf:R}.  For more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
 
 
 {title:Syntax}
 
 {p 4 4 2}
-seemless interactive execution of R in Stata. the {bf:vanilla} subcommand executes
+seemless interactive execution of {bf:R} in Stata. the {bf:vanilla} subcommand executes
 {bf:R} non-interactively
 
 {p 8 16 2}
@@ -39,6 +39,78 @@ the R objects are available for further manipulation in Stata. {opt R:call}
 not only returns {it:numeric} and {it:charactor} objects, but also {it:lists} and 
 {it:matrices}. 
 
+
+{title:Data communication between Stata and R}
+
+{p 4 4 2}
+Stata automatically receives {bf:R} objects as {help return:rclass} anytime 
+the {opt R:call} is executed. If {bf:R} is running interactively 
+(i.e. without {bf:vanilla} subcommand), the previous objects still remain accessable 
+to Stata, unless they are changed or erased from {bf:R}. 
+
+{p 4 4 2}
+For an ideal reciprocation between Stata and {bf:R}, Stata should also easily 
+communicate variables to {bf:R}. Local and global {help macro:macros} can be passed 
+within {bf:R} code, since Stata automatically interprets them while it passes the 
+code to {opt R:call} command, as shown in the example below:
+
+        . global a 99 
+        . R: (a <- $a)  	
+        [1] 99 		
+
+{p 4 4 2}
+In order to pass a {help scalar} from Stata to {bf:R}, you can 
+use the {bf:st.scalar() function as shown below:
+
+        . scalar a = 50 
+        . R: (a <- st.scalar(a))  	
+        [1] 50 		
+
+{p 4 4 2}
+Similarly, Stata {help matrix:matrices} can be seemlessly passed to {bf:R} using 
+the {bf:st.matrix()} function as shown below:
+
+        . matrix A = (1,2\3,4) 
+        . matrix B = (96,96\96,96) 		
+        . R: C <- st.matrix(A) + st.matrix(B)
+        . R: C 
+             [,1] [,2]
+        [1,]   97   98
+        [2,]   99  100
+
+{p 4 4 2}
+And of course, you can access the matrix from {bf:R} in Stata as well: 
+
+        . mat list r(C) 
+        r(C)[2,2]
+             c1   c2
+        r1   97   99
+        r2   98  100
+		
+{p 4 4 2}
+Finally, {opt R:call} also allows to pass Stata data to {bf:R} within 
+{bf:st.data({it:{help filename}})} function. This function relies on the {bf:foreign} 
+package in {bf:R} to load Stata data sets, without converting them to CSV or alike. 
+The {bf:foreign} package can be installed within Stata as follows:
+
+        . R: install.packages("foreign", repos="http://cran.uk.r-project.org")
+
+{p 4 4 2}
+Specify the relative or absolute path to the data set to transporting data 
+from Stata to {bf:R}. For example: 
+
+        . R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
+        . R: dim(data)
+
+{p 4 4 2}
+If the {it:filename} is not specified, the function passes the currently loaded 
+data to {bf:R}. 
+
+        . sysuse auto, clear 
+        . R: data <- st.data() 
+        . R: dim(data) 
+        [1] 74 12
+		
 
 {title:R path setup}
 
@@ -83,11 +155,9 @@ you would get a macro as follos:
 
 {title:Example(s)}
 
-    permanently setup the path to R 
-        . R setpath "/usr/bin/r" 
-
-    execute an R code interactively
-        . example command
+{p 4 4 2}
+Visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage} for more examples and 
+documentation. 
 
 
 {title:Author}
