@@ -116,9 +116,10 @@ stata.output <- function() {
         write(paste("rownumber:", rows[1]), file=stata.output, append=TRUE)
         
         #Add comma
-        write(paste(as.vector(iget), collapse=", "), file=stata.output, append=TRUE
+        
+        write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE
               , ncolumns = if(is.character(iget)) 1 else 21)
     }
 }
 
-#stata.output()
+stata.output()
