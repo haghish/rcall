@@ -122,4 +122,4 @@ stata.output <- function() {
     }
 }
 
-stata.output()
+#stata.output()
