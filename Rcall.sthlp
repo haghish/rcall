@@ -26,8 +26,9 @@ default paths (see below)
 {p_end}
 
 
-
 {title:Debug mode}
+
+{p 4 4 2}
 You can run the package in {it:debug mode} by adding {bf:debug} subcommand before 
 any other subcommand or R code. For example:
 
