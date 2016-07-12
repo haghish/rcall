@@ -185,9 +185,17 @@ program define Rcall , rclass
 	
 	//remove vanilla 
 	// Check if the command includes Colon
-	if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
+	if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
+		local 0 : subinstr local 0 "debug" ""
+		local debug 1
+	}
+	else if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		local 0 : subinstr local 0 "vanilla" ""
 		local vanilla --vanilla
+		if !missing("`debug'") {
+			di "{title:Vanilla}" _n												///
+			"Running R in non-interactive batch mode"
+		}	
 	}
 	else if substr(trim(`"`macval(0)'"'),1,7) == "setpath" {
 		local 0 : subinstr local 0 "setpath" ""
@@ -196,12 +204,18 @@ program define Rcall , rclass
 		//Save an ado file
 		tempfile Rpath
 		tempname knot
-		qui file open `knot' using `"`Rpath'"', write text replace
+		qui file open `knot' using "`Rpath'", write text replace
 		file write `knot' "program define Rpath" _n
-		file write `knot' `"global RpathGlobal `macval(0)'"' _n
+		file write `knot' `"	global Rpath `macval(0)'"' _n
 		file write `knot' "end" _n
 		qui file close `knot'
 		qui copy "`Rpath'" "`c(sysdir_plus)'r/Rpath.ado", replace
+		
+		if !missing("`debug'") {
+			di "{title:Memorizing R path}" _n									///
+			"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'" 
+		}
+		
 		exit
 	}
 	
@@ -210,6 +224,11 @@ program define Rcall , rclass
 		local 0 : subinstr local 0 ":" ""
 	}
 	
+	if !missing("`debug'") {
+		di _n "{title:R command}" _n												///
+		"The command that you wish to execute in {bf:R} is:" _n(2) `"{err:`macval(0)'}"' 
+	}
+		
 	
 	// Searching for Matrix
 	// -------------------------------------------------------------------------
@@ -222,6 +241,13 @@ program define Rcall , rclass
 		local mat = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
  		
+		if !missing("`debug'") {
+			di _n "{title:st.matrix() function}" _n								///
+			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  ///
+			"the {bf:matconvert.ado} function, which returns:"
+			matconvert `mat'
+		}
+		
 		qui matconvert `mat'
 		local l2 = "`r(`mat')'" + "`l2'"
 		
@@ -232,7 +258,6 @@ program define Rcall , rclass
 		
 		
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		
 	}
 	
 	// Searching for Scalar
@@ -246,6 +271,12 @@ program define Rcall , rclass
 		local sca = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
  		
+		if !missing("`debug'") {
+			di _n "{title:st.scalar() function}" _n								///
+			"You wish to pass Scalar {bf:`sca'} to {bf:R}. This value is: "   
+			display `sca'
+		}
+		
 		local sca : display `sca'
 		
 		//If scalar is string, add double quote
@@ -278,6 +309,11 @@ program define Rcall , rclass
 		
 		local foreign 1 						//load foreign package
 		
+		if !missing("`debug'") {
+			di _n "{title:st.data() function}" _n								///
+			"You wish to pass Stata data {bf:`filename'} to {bf:R}..."   
+		}
+		
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {
 			qui saveold _st.data.dta, version(11) replace 
@@ -299,8 +335,6 @@ program define Rcall , rclass
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 		
 	}
-	
-	*di as err `"`macval(0)'"' 
 	
 	
 	*local line : subinstr local line "$" "_", all //avoid "$" in name
@@ -325,6 +359,13 @@ program define Rcall , rclass
 	*file write `knot' "save.image()" _n
 	qui file close `knot'
 	
+	if !missing("`debug'") {
+		di _n "{title:Temporary R script}" _n								///
+		"{p}A temporary Rscript file was created to execute your command in "		///
+		"{bf:R}. The path to the temporary file is: "  _n				
+		display `"`Rscript'"'
+	}
+		
 	*cap erase 0PROCESS0.txt
 	*copy "`Rscript'" 0PROCESS0.txt, replace
 	
@@ -340,12 +381,32 @@ program define Rcall , rclass
 	
 	if missing("$Rpath") {
 		local path = cond(c(os) == "Windows", "Rterm.exe", "/usr/bin/r")
+		
+		if !missing("`debug'") {
+			di _n "{title:Path to R}" _n								///
+			"The path to R was {err:guessed} to be:"  _n
+			display `"{err:`path'}"'
+		}
 	}
-	else local path = "$Rpath"
+	else {
+		local path = "$Rpath"
+		
+		if !missing("`debug'") {
+			di _n "{title:Path to R}" _n								///
+			"The path to R was obtained from {err:Rpath.ado} to be:"  _n
+			display `"{err:`path'}"'
+		}
+	}	
 	
 	local Rcommand `""`path'" `vanilla' --slave --save < "`Rscript'" > "`Rout'" "'
 	
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
+	
+	if !missing("`debug'") {
+		di _n "{title:Running R in batch mode}" _n								///
+		"The following command is executed in Stata:"  _n
+		display `"{p}{err:shell `Rcommand'}"'
+	}
 	
 	quietly shell `Rcommand'
 	
@@ -353,6 +414,11 @@ program define Rcall , rclass
 	if _rc != 0 {
 		shell `Rcommand'
 		exit
+	}
+	
+	if !missing("`debug'") {
+		di _n "{title:R Output}" _n								///
+		"R output was generated" _n
 	}
 	
 	// If data was loaded automatically, remove the temporary data file
@@ -415,8 +481,15 @@ program define Rcall , rclass
 	*/
 	
 	type "`Rout'"
+	
+	*capture erase 0PROCESS2.txt
 	*copy "`Rout'" 0PROCESS2.txt, replace
-			
+	
+	if !missing("`debug'") {
+		di _n "{title:rclass return}" _n								///
+		"The final step is returning objects from R to Stata" _n
+	}
+	
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
@@ -549,8 +622,8 @@ end
 // CREATE THE R.ado, abbreviated command
 // =========================================================================
 
-/*
 
+/*
 tempfile edited
 tempname hitch knot
 qui file open `hitch' using "Rcall.ado", read
@@ -572,3 +645,4 @@ cap prog drop R
 
 // Create the dynamic help file
 markdoc Rcall.ado, export(sthlp) replace
+copy Rcall.sthlp R.sthlp, replace
