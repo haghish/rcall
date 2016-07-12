@@ -26,6 +26,15 @@ default paths (see below)
 {p_end}
 
 
+
+{title:Debug mode}
+You can run the package in {it:debug mode} by adding {bf:debug} subcommand before 
+any other subcommand or R code. For example:
+
+        . R: debug vanilla print("Hello World") 
+        . R: debug setpath "{it:/usr/bin/r}" 
+
+
 {title:Description}
 
 {p 4 4 2}

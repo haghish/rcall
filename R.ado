@@ -29,6 +29,15 @@ default paths (see below)
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
+
+Debug mode
+===========
+You can run the package in _debug mode_ by adding __debug__ subcommand before 
+any other subcommand or R code. For example:
+
+        . R: debug vanilla print("Hello World") 
+        . R: debug setpath "{it:/usr/bin/r}" 
+
 Description
 ===========
 
@@ -189,7 +198,7 @@ program define R , rclass
 		local 0 : subinstr local 0 "debug" ""
 		local debug 1
 	}
-	else if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
+	if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		local 0 : subinstr local 0 "vanilla" ""
 		local vanilla --vanilla
 		if !missing("`debug'") {
