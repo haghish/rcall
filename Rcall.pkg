@@ -18,6 +18,10 @@ d
 d Author: E.F. Haghish, University of Freiburg
 d Support: email haghish@imbi.uni-freiburg.de
 d
+f matconvert.ado
+f matconvert.sthlp
 f R.ado
 f R.sthlp
+f Rcall.ado
+f Rcall.sthlp
 F stata.output.R
