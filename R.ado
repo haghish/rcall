@@ -180,7 +180,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*cap prog drop R
+cap prog drop R
 program define R , rclass
 	
 	version 12
@@ -192,17 +192,26 @@ program define R , rclass
 	//Get R path, if defined
 	capture Rpath
 	
-	//remove vanilla 
-	// Check if the command includes Colon
+	
+	// Check if the command includes Colon in the beginning
+	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
+		local 0 : subinstr local 0 ":" ""
+	}
+	
 	if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
 		local 0 : subinstr local 0 "debug" ""
 		local debug 1
+		
+		if !missing("`debug'") {
+			di _n "{title:Debug mode}" _n										///
+			"Running R in debug mode"
+		}	
 	}
 	if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		local 0 : subinstr local 0 "vanilla" ""
 		local vanilla --vanilla
 		if !missing("`debug'") {
-			di "{title:Vanilla}" _n												///
+			di _n "{title:Vanilla}" _n												///
 			"Running R in non-interactive batch mode"
 		}	
 	}
@@ -228,7 +237,7 @@ program define R , rclass
 		exit
 	}
 	
-	// Check if the command includes Colon
+	// Check if the command includes Colon in the end
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
 		local 0 : subinstr local 0 ":" ""
 	}
@@ -321,6 +330,47 @@ program define R , rclass
 		if !missing("`debug'") {
 			di _n "{title:st.data() function}" _n								///
 			"You wish to pass Stata data {bf:`filename'} to {bf:R}..."   
+		}
+		
+		//IF FILENAME IS MISSING
+		if missing("`filename'") {
+			qui saveold _st.data.dta, version(11) replace 
+			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+		}
+		else {
+			confirm file "`filename'"
+			preserve
+			qui use "`filename'", clear
+			qui saveold _st.data.dta, version(11) replace 
+			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+			restore
+		}
+		
+		local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
+		
+		*di as err "l1:`l1'"
+		*di as err `"l2:`macval(l2)'"'
+		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+	}
+	
+	// Searching for Load Data
+	// -------------------------------------------------------------------------
+	while strpos(`"`macval(0)'"',"load.data(") != 0 {
+		local br = strpos(`"`macval(0)'"',"load.data")
+		local l1 = substr(`"`macval(0)'"',1, `br'-1)
+		local l2 = substr(`"`macval(0)'"',`br',.)
+		local l2 : subinstr local l2 "load.data(" ""
+		local mt = strpos(`"`macval(l2)'"',")") 
+		local filename = substr(`"`macval(l2)'"',1, `mt'-1)
+		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+		
+		local foreign 1 						//load foreign package
+		local forceload 1 						//load data to stata
+		
+		if !missing("`debug'") {
+			di _n "{title:load.data() function}" _n								///
+			"You wish to force loading R data {bf:`filename'} to {bf:Stata}..."   
 		}
 		
 		//IF FILENAME IS MISSING
