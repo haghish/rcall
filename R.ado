@@ -439,9 +439,10 @@ program define R , rclass
 		err 198
 	}
 	
+	local source `r(fn)'
+	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local source `r(fn)'
 		local source : subinstr local source "/" "\", all				 
 	}
 	
@@ -450,7 +451,7 @@ program define R , rclass
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
-	if !missing(`"`macval(0)'"') file write `knot' `"`macval(0)'"' _n
+	file write `knot' `"`macval(0)'"' _n
 	file write `knot' "source('`source'')" _n
 	file write `knot' "stata.output()" _n
 	file write `knot' "rm(stata.output)" _n		//remove 
