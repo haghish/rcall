@@ -530,9 +530,9 @@ program define Rcall , rclass
 		di _n "{title:[4/5] R Output}" _n								///
 		"R output was generated. A copy is made in the debug mode..." _n
 		
-		capture erase _temporary_R_output.R
-		copy "`Rout'" _temporary_R_output.R, replace 
-		di "{browse _temporary_R_output.R}"
+		capture erase _temporary_R_output.txt
+		copy "`Rout'" _temporary_R_output.txt, replace 
+		di "{browse _temporary_R_output.txt}"
 	}
 	
 	// If data was loaded automatically, remove the temporary data file
