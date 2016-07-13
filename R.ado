@@ -527,7 +527,11 @@ program define R , rclass
 	
 	if !missing("`debug'") {
 		di _n "{title:R Output}" _n								///
-		"R output was generated" _n
+		"R output was generated. A copy is made in the debug mode..." _n
+		
+		capture erase _temporary_R_output.R
+		copy "`Rout'" _temporary_R_output.R, replace 
+		di "{browse _temporary_R_output.R}"
 	}
 	
 	// If data was loaded automatically, remove the temporary data file
