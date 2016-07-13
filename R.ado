@@ -452,11 +452,17 @@ program define R , rclass
 	if _rc == 0 {
 		local library `r(fn)'
 	}
+	
+	// get the path to PLUS/r
+	local plusR "`c(sysdir_plus)'r"
+	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local library : subinstr local library "\" "/", all				 
+		local library : subinstr local library "\" "/", all	
+		local plusR : subinstr local plusR "\" "/", all
 	}
 
+	
 	
 	
 	tempfile Rscript
@@ -469,7 +475,7 @@ program define R , rclass
 	file write `knot' `"`macval(0)'"' _n
 	//file write `knot' "save.image()" _n 				//kills the vanilla
 	file write `knot' "source('`source'')" _n
-	file write `knot' `"RProfile <- file.path("`c(sysdir_plus)'r", "RProfile.R")"' _n
+	file write `knot' `"RProfile <- file.path("`plusR'", "RProfile.R")"' _n
 	file write `knot' "stata.output()" _n
 	//file write `knot' "rm(stata.output)" _n	
 	file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
