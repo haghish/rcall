@@ -245,7 +245,7 @@ program define R , rclass
 		local debug 1
 		
 		if !missing("`debug'") {
-			di _n "{title:Debug mode}" _n										///
+			di _n "{title:[1/5] Debug mode}" _n										///
 			"Running R in debug mode"
 		}	
 	}
@@ -462,7 +462,7 @@ program define R , rclass
 	qui file close `knot'
 	
 	if !missing("`debug'") {
-		di _n "{title:Temporary R script}" _n								///
+		di _n "{title:[2/5] Temporary R script}" _n								///
 		"{p}A temporary Rscript file was created to execute your command in "		///
 		"{bf:R}. The path to the temporary file is: "  _n				
 		display `"`Rscript'"'
@@ -511,7 +511,7 @@ program define R , rclass
 	
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 	
-	if !missing("`debug'") {
+	if !missing("[3/5] `debug'") {
 		di _n "{title:Running R in batch mode}" _n								///
 		"The following command is executed in Stata:"  _n
 		display `"{p}{err:shell `Rcommand'}"'
@@ -525,7 +525,7 @@ program define R , rclass
 		exit
 	}
 	
-	if !missing("`debug'") {
+	if !missing("[4/5] `debug'") {
 		di _n "{title:R Output}" _n								///
 		"R output was generated. A copy is made in the debug mode..." _n
 		
@@ -598,7 +598,7 @@ program define R , rclass
 	*capture erase 0PROCESS2.txt
 	*copy "`Rout'" 0PROCESS2.txt, replace
 	
-	if !missing("`debug'") {
+	if !missing("[5/5] `debug'") {
 		di _n "{title:rclass return}" _n								///
 		"The final step is returning objects from R to Stata" _n
 	}
