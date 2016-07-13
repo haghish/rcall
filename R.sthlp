@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.0.1}
+{right:version 1.0.2}
 {title:Title}
 
 {phang}
@@ -9,8 +9,9 @@
 {title:Syntax}
 
 {p 4 4 2}
-seemless interactive execution of {bf:R} in Stata. the {bf:vanilla} subcommand executes
-{bf:R} non-interactively
+the {bf:vanilla} subcommand executes
+{bf:R} non-interactively, but still communicates data from R to Stata after 
+execution. WIthout this subcommand, {it:R} is called interactively. 
 
 {p 8 16 2}
 {opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R code}]
@@ -142,7 +143,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: data <- data.frame(cars) 
+        . R: mydata <- data.frame(cars) 
         . R: load.data(mydata) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}

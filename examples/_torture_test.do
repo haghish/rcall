@@ -13,11 +13,12 @@ R setpath "/usr/bin/r"
 // Vanilla (Non-Interactive)
 // =============================================================================
 R: rm(list=ls()) 
-R vanilla : object <- print("this")
+Rcall: unlink(".RData")
+Rcall vanilla : object <- print("this")
 return list
 
 // if you want to access the "object" you get an error that is not found
-R: object
+Rcall: object
 
 
 // -----------------------------------------------------------------------------
@@ -33,8 +34,8 @@ R: print(ls())
 
 //numeric and string objects
 Rcall: a <- 10
-R: b <- " and it can be string"
-display "The object value is " r(a) r(b)
+R: b <- " or it can be string"
+display "The object value is can be numetic such as " r(a) r(b)
 
 //define a matrix
 R: A = matrix(1:6, nrow=2, byrow = TRUE) 
@@ -68,7 +69,7 @@ Rcall: b <- "$a"
 display r(b)
 
 
-// Passing a NUMERIC matrix from Stata to R
+// st.matrix() : Passing a NUMERIC matrix from Stata to R
 // ----------------------------------------
 matrix A = (1,2\3,4) 
 Rcall: A <- st.matrix(A) + st.matrix(A) + st.matrix(A) + st.matrix(A)
@@ -80,7 +81,7 @@ matrix B = (96,96\96,96)
 R: C <- st.matrix(A) + st.matrix(B)
 R: C
 
-// Passing a NUMERIC & STRING SCALAR to R
+// st.scalar() : Passing a NUMERIC & STRING SCALAR to R
 // ----------------------------------------
 scalar a = 999
 Rcall: a <- st.scalar(a)
@@ -90,7 +91,8 @@ scalar a = "or string scalar"
 Rcall: a <- st.scalar(a)
 display r(a)
 
-// Passing Data to R
+
+// st.data() : Passing Data to R
 // ----------------------------------------
 
 sysuse auto, clear
@@ -101,6 +103,13 @@ clear
 R: rm(list=ls())
 R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta)
 
+
+// load.data() : Passing Data from R to Stata 
+// ----------------------------------------
+clear 
+Rcall: mydata <- data.frame(cars) 
+Rcall: load.data(mydata) 
+list in 1/2
 
 
 // -----------------------------------------------------------------------------
@@ -113,15 +122,34 @@ display r(mystr)
 
 
 Rcall: unlink(".RData") //This deletes the workspace file
-Rcall: z <- 1
-Rcall: ls()
+
+
+// -----------------------------------------------------------------------------
+// Trying Rcpp package
+// =============================================================================
+
+/*
+To compile the C++ code, use sourceCpp("path/to/file.cpp"). This will create 
+the matching R functions and add them to your current session. Note that these 
+functions can not be saved in a .Rdata file and reloaded in a later session; 
+they must be recreated each time you restart R. 
+
+But you can add several R commands separated by ";", or more better, create a 
+script file and source it all at once. 
+*/
+
+cd "/Users/haghish/Documents/Packages/Rcall"
+Rcall: library(Rcpp)
+Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); timesTwo(2);timesTwo(999);
+
+Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
+
+//save the results of Rcpp in an R object, and get it back in Stata!
+display r(a)
 
 
 
 
-Rcall: unlink(".RData")
-Rcall: debug z <- 2
-Rcall: ls()
-Rcall: z
-Rcall: rm(list=ls())
-Rcall: ls()
+
+
+

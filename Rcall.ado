@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.0.1
+Version: 1.0.2
 Title: {opt R:call}
 Description: Seemless interactive 
 __[R](https://cran.r-project.org/)__ in  Stata. The package return 
@@ -14,8 +14,9 @@ For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcal
 Syntax
 ======
 
-seemless interactive execution of __R__ in Stata. the __vanilla__ subcommand executes
-__R__ non-interactively
+the __vanilla__ subcommand executes
+__R__ non-interactively, but still communicates data from R to Stata after 
+execution. WIthout this subcommand, _R__ is called interactively. 
 
 {p 8 16 2}
 {opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R code}]
@@ -135,7 +136,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: data <- data.frame(cars) 
+        . R: mydata <- data.frame(cars) 
         . R: load.data(mydata) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
@@ -439,7 +440,6 @@ program define Rcall , rclass
 		di as err "stata.output.R script file not found. reinstall the package"
 		err 198
 	}
-	
 	local source `r(fn)'
 	
 	//Change the stata.output.R path in Windows
@@ -447,21 +447,42 @@ program define Rcall , rclass
 		local source : subinstr local source "\" "/", all				 
 	}
 	
+	
+	capture findfile RProfile.R, path("`c(sysdir_plus)'r")
+	if _rc == 0 {
+		local library `r(fn)'
+	}
+	//Change the stata.output.R path in Windows
+	if "`c(os)'" == "Windows" {
+		local library : subinstr local library "\" "/", all				 
+	}
+
+	
+	
 	tempfile Rscript
 	tempfile Rout
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
+	if !missing("`library'") file write `knot' "source('`library'')" _n		//load the libraries
+	
 	file write `knot' `"`macval(0)'"' _n
+	//file write `knot' "save.image()" _n 				//kills the vanilla
 	file write `knot' "source('`source'')" _n
+	file write `knot' `"RProfile <- file.path("`c(sysdir_plus)'r", "RProfile.R")"' _n
 	file write `knot' "stata.output()" _n
-	file write `knot' "rm(stata.output)" _n		//remove 
+	//file write `knot' "rm(stata.output)" _n	
+	file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
+
+	
 	if !missing("`forceload'") {
 		file write `knot' `"write.dta(`loaddata', "'							///
 		`"file = "_load.data.dta", version = 11) "' _n
 	} 	
-	*file write `knot' "save.image()" _n
+	
 	qui file close `knot'
+	
+	
 	
 	if !missing("`debug'") {
 		di _n "{title:[2/5] Temporary R script}" _n								///
@@ -509,7 +530,10 @@ program define Rcall , rclass
 		}
 	}	
 	
-	local Rcommand `""`path'" `vanilla' --slave --save < "`Rscript'" > "`Rout'" "'
+	if missing("`vanilla'") local save "--save"
+	else local save "--no-save"
+	
+	local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'" "'
 	
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 	
@@ -776,4 +800,6 @@ cap prog drop R
 // Create the dynamic help file
 markdoc Rcall.ado, export(sthlp) replace
 copy Rcall.sthlp R.sthlp, replace
+
+
 
