@@ -511,8 +511,8 @@ program define Rcall , rclass
 	
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 	
-	if !missing("[3/5] `debug'") {
-		di _n "{title:Running R in batch mode}" _n								///
+	if !missing("`debug'") {
+		di _n "{title:[3/5] Running R in batch mode}" _n								///
 		"The following command is executed in Stata:"  _n
 		display `"{p}{err:shell `Rcommand'}"'
 	}
@@ -525,8 +525,8 @@ program define Rcall , rclass
 		exit
 	}
 	
-	if !missing("[4/5] `debug'") {
-		di _n "{title:R Output}" _n								///
+	if !missing("`debug'") {
+		di _n "{title:[4/5] R Output}" _n								///
 		"R output was generated. A copy is made in the debug mode..." _n
 		
 		capture erase _temporary_R_output.R
@@ -598,8 +598,8 @@ program define Rcall , rclass
 	*capture erase 0PROCESS2.txt
 	*copy "`Rout'" 0PROCESS2.txt, replace
 	
-	if !missing("[5/5] `debug'") {
-		di _n "{title:rclass return}" _n								///
+	if !missing("`debug'") {
+		di _n "{title:[5/5] rclass return}" _n								///
 		"The final step is returning objects from R to Stata" _n
 	}
 	
