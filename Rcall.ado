@@ -231,6 +231,7 @@ program define Rcall , rclass
 	// =========================================================================
 	
 	//Get R path, if defined
+	capture prog drop Rpath
 	capture Rpath
 	
 	
