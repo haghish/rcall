@@ -443,7 +443,7 @@ program define R , rclass
 	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local source : subinstr local source "/" "\", all				 
+		local source : subinstr local source "\" "/", all				 
 	}
 	
 	tempfile Rscript
