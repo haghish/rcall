@@ -112,5 +112,16 @@ mat list r(matrixObject)
 display r(mystr)
 
 
+Rcall: unlink(".RData") //This deletes the workspace file
+Rcall: z <- 1
+Rcall: ls()
 
 
+
+
+Rcall: unlink(".RData")
+Rcall: debug z <- 2
+Rcall: ls()
+Rcall: z
+Rcall: rm(list=ls())
+Rcall: ls()

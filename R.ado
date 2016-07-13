@@ -57,7 +57,19 @@ Data communication between Stata and R
 Stata automatically receives __R__ objects as {help return:rclass} anytime 
 the {opt R:call} is executed. If __R__ is running interactively 
 (i.e. without __vanilla__ subcommand), the previous objects still remain accessable 
-to Stata, unless they are changed or erased from __R__. 
+to Stata, unless they are changed or erased from __R__. The table below shows the 
+of the functions needed for data communication. 
+
+{* the new Stata help format of putting detail before generality}{...}
+{synoptset 22 tabbed}{...}
+{synopthdr:Function}
+{synoptline}
+{synopt:{opt st.scalar()}}passes a scalar to R{p_end}
+{synopt:{opt st.matrix()}}passes a matrix to R{p_end}
+{synopt:{opt st.data(filename)}}passes data from Stata to R{p_end}
+{synopt:{opt load.data(dataframe)}}loads data from R dataframe to Stata{p_end}
+{synoptline}
+{p2colreset}{...}
 
 For an ideal reciprocation between Stata and __R__, Stata should also easily 
 communicate variables to __R__. Local and global {help macro:macros} can be passed 
@@ -94,7 +106,7 @@ And of course, you can access the matrix from __R__ in Stata as well:
         r1   97   98
         r2   99  100
 		
-Finally, {opt R:call} also allows to pass Stata data to __R__ within 
+The {opt R:call} package also allows to pass Stata data to __R__ within 
 __st.data(_{help filename}_)__ function. This function relies on the __foreign__ 
 package in __R__ to load Stata data sets, without converting them to CSV or alike. 
 The __foreign__ package can be installed within Stata as follows:
@@ -115,6 +127,24 @@ data to __R__.
         . R: dim(data) 
         [1] 74 12
 		
+Finally, the data can be imported from R to Stata automatically, using the 		
+__load.data(_dataframe_)__ function. This function will automatically save a 
+Stata data set from __R__ and load it in Stata by clearing the current data set, 
+if there is any. Naturally, you can have more control over converting variable 
+types if you write a proper code in R for exporting Stata data sets. Nevertheless, 
+the function should work just fine in most occasions: 
+
+        . clear 
+        . R: data <- data.frame(cars) 
+        . R: load.data(mydata) 
+        . list in 1/2
+        {c TLC}{hline 14}{c TRC}
+        {c |} speed   dist {c |}
+        {c LT}{hline 14}{c RT}
+     1. {c |}     4      2 {c |}
+     2. {c |}     4     10 {c |}
+        {c BLC}{hline 14}{c BRC}
+
 R path setup
 ============
 
@@ -150,7 +180,18 @@ dots to underscore in the name. In the example above, if you type {cmd:return li
 you would get a macro as follos:
 
         r(a_name) : "anything"
-		
+
+Erasing R memory
+================
+
+When you work with __Rcall__ interactively (without __vanilla__ subcommand), 
+anything you do in __R__ is memorized and 
+saved in a __.RData__ file automatically, even if you quit __R__ using __q()__ 
+function. If you wish to clear the memory and erase everything defined in R, 
+you should __unlink__ the __.RData__ file:
+
+        . R: unlink(".RData") 		
+
 Example(s)
 =================
 
@@ -231,7 +272,7 @@ program define R , rclass
 		
 		if !missing("`debug'") {
 			di "{title:Memorizing R path}" _n									///
-			"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'" 
+			`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
 		}
 		
 		exit
@@ -362,7 +403,7 @@ program define R , rclass
 		local l2 = substr(`"`macval(0)'"',`br',.)
 		local l2 : subinstr local l2 "load.data(" ""
 		local mt = strpos(`"`macval(l2)'"',")") 
-		local filename = substr(`"`macval(l2)'"',1, `mt'-1)
+		local loaddata = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
 		
 		local foreign 1 						//load foreign package
@@ -370,28 +411,19 @@ program define R , rclass
 		
 		if !missing("`debug'") {
 			di _n "{title:load.data() function}" _n								///
-			"You wish to force loading R data {bf:`filename'} to {bf:Stata}..."   
+			"You wish to force loading R data {bf:`loaddata'} to {bf:Stata}..." _n  
 		}
 		
 		//IF FILENAME IS MISSING
-		if missing("`filename'") {
-			qui saveold _st.data.dta, version(11) replace 
-			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+		if missing("`loaddata'") {
+			display as err "data frame is not specified"
+			err 198
 		}
-		else {
-			confirm file "`filename'"
-			preserve
-			qui use "`filename'", clear
-			qui saveold _st.data.dta, version(11) replace 
-			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
-			restore
-		}
+
 		
-		local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
-		
-		*di as err "l1:`l1'"
-		*di as err `"l2:`macval(l2)'"'
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+		if !missing("`debug'") di _n `"`macval(0)'"'
 		
 	}
 	
@@ -409,12 +441,16 @@ program define R , rclass
 	tempfile Rscript
 	tempfile Rout
 	tempname knot
-	qui file open `knot' using `"`Rscript'"', write text replace
+	qui file open `knot' using "`Rscript'", write text replace
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
 	file write `knot' `"`macval(0)'"' _n
 	file write `knot' "source('`r(fn)'')" _n
 	file write `knot' "stata.output()" _n
 	file write `knot' "rm(stata.output)" _n		//remove 
+	if !missing("`forceload'") {
+		file write `knot' `"write.dta(`loaddata', "'							///
+		`"file = "_load.data.dta", version = 11) "' _n
+	} 	
 	*file write `knot' "save.image()" _n
 	qui file close `knot'
 	
@@ -423,6 +459,13 @@ program define R , rclass
 		"{p}A temporary Rscript file was created to execute your command in "		///
 		"{bf:R}. The path to the temporary file is: "  _n				
 		display `"`Rscript'"'
+		
+		di _n "{title:Investigate R script}" _n									///
+		"You can investigate the temporary R script file in debug mode." _n
+		
+		capture erase _temporary_R_script.R
+		copy "`Rscript'" _temporary_R_script.R, replace 
+		di "{browse _temporary_R_script.R}"
 	}
 		
 	*cap erase 0PROCESS0.txt
@@ -671,6 +714,22 @@ program define R , rclass
 		*capture erase list.txt
 		*copy stata.output list.txt, replace
 		capture erase stata.output
+	}
+	
+	
+	
+	// If data was loaded automatically, remove the temporary data file
+	
+	if !missing("`forceload'") {
+		capture confirm file _load.data.dta
+		if _rc != 0 {
+			di as err "{bf:R} failed to export Stata data set"
+			exit
+		}
+		else {
+			quietly use _load.data.dta, clear
+			capture qui erase _load.data.dta
+		}
 	}
 	
 end

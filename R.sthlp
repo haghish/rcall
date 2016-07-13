@@ -56,7 +56,19 @@ not only returns {it:numeric} and {it:charactor} objects, but also {it:lists} an
 Stata automatically receives {bf:R} objects as {help return:rclass} anytime 
 the {opt R:call} is executed. If {bf:R} is running interactively 
 (i.e. without {bf:vanilla} subcommand), the previous objects still remain accessable 
-to Stata, unless they are changed or erased from {bf:R}. 
+to Stata, unless they are changed or erased from {bf:R}. The table below shows the 
+of the functions needed for data communication. 
+
+{* the new Stata help format of putting detail before generality}{...}
+{synoptset 22 tabbed}{...}
+{synopthdr:Function}
+{synoptline}
+{synopt:{opt st.scalar()}}passes a scalar to R{p_end}
+{synopt:{opt st.matrix()}}passes a matrix to R{p_end}
+{synopt:{opt st.data(filename)}}passes data from Stata to R{p_end}
+{synopt:{opt load.data(dataframe)}}loads data from R dataframe to Stata{p_end}
+{synoptline}
+{p2colreset}{...}
 
 {p 4 4 2}
 For an ideal reciprocation between Stata and {bf:R}, Stata should also easily 
@@ -98,7 +110,7 @@ And of course, you can access the matrix from {bf:R} in Stata as well:
         r2   99  100
 		
 {p 4 4 2}
-Finally, {opt R:call} also allows to pass Stata data to {bf:R} within 
+The {opt R:call} package also allows to pass Stata data to {bf:R} within 
 {bf:st.data({it:{help filename}})} function. This function relies on the {bf:foreign} 
 package in {bf:R} to load Stata data sets, without converting them to CSV or alike. 
 The {bf:foreign} package can be installed within Stata as follows:
@@ -121,6 +133,25 @@ data to {bf:R}.
         . R: dim(data) 
         [1] 74 12
 		
+{p 4 4 2}
+Finally, the data can be imported from R to Stata automatically, using the 		
+{bf:load.data({it:dataframe})} function. This function will automatically save a 
+Stata data set from {bf:R} and load it in Stata by clearing the current data set, 
+if there is any. Naturally, you can have more control over converting variable 
+types if you write a proper code in R for exporting Stata data sets. Nevertheless, 
+the function should work just fine in most occasions: 
+
+        . clear 
+        . R: data <- data.frame(cars) 
+        . R: load.data(mydata) 
+        . list in 1/2
+        {c TLC}{hline 14}{c TRC}
+        {c |} speed   dist {c |}
+        {c LT}{hline 14}{c RT}
+     1. {c |}     4      2 {c |}
+     2. {c |}     4     10 {c |}
+        {c BLC}{hline 14}{c BRC}
+
 
 {title:R path setup}
 
@@ -161,7 +192,19 @@ dots to underscore in the name. In the example above, if you type {cmd:return li
 you would get a macro as follos:
 
         r(a_name) : "anything"
-		
+
+
+{title:Erasing R memory}
+
+{p 4 4 2}
+When you work with {bf:Rcall} interactively (without {bf:vanilla} subcommand), 
+anything you do in {bf:R} is memorized and 
+saved in a {bf:.RData} file automatically, even if you quit {bf:R} using {bf:q()} 
+function. If you wish to clear the memory and erase everything defined in R, 
+you should {bf:unlink} the {bf:.RData} file:
+
+        . R: unlink(".RData") 		
+
 
 {title:Example(s)}
 
