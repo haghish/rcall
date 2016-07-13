@@ -148,16 +148,22 @@ Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 display r(a)
 
 // -----------------------------------------------------------------------------
-// Detach packages, data, variables, etc..
+// RProfile : Detach packages, data, variables, etc..
 // =============================================================================
 /*
-Anything that you leave in .RData, means extra loading time for every Rcall. So 
+Anytime you close R in batch mode, it detaches all of the packages you have loaded. 
+To make R really run interactively in Stata, the packages should remain loaded 
+for each command. Rcall makes a global RProfile that remains active regardless 
+of your working directory. 
+
+However, anything that you leave in .RData, means extra loading time for every Rcall. So 
 if you don't need a data set, package, etc, remove them from the R Workspace and 
 detach the packages. 
 */
 
-Rcall: detach("package:Rcpp", unload=TRUE)
-Rcall: search()
+R: search()
+R: detach("package:Rcpp", unload=TRUE)
+R: search()
 
 
 

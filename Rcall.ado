@@ -223,7 +223,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-cap prog drop Rcall
+*cap prog drop Rcall
 program define Rcall , rclass
 	
 	version 12
@@ -777,7 +777,7 @@ end
 // CREATE THE R.ado, abbreviated command
 // =========================================================================
 
-
+/*
 tempfile edited
 tempname hitch knot
 qui file open `hitch' using "Rcall.ado", read
@@ -801,6 +801,5 @@ cap prog drop R
 markdoc Rcall.ado, export(sthlp) replace
 copy Rcall.sthlp R.sthlp, replace
 
-Rcall: debug detach("package:Rcpp", unload=TRUE);search();
-Rcall: search()
+
 
