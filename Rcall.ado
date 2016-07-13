@@ -440,7 +440,8 @@ program define Rcall , rclass
 	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local 0 : subinstr local 0 "/" "\", all				 
+		local source `r(fn)'
+		local source : subinstr local source "/" "\", all				 
 	}
 	
 	tempfile Rscript
@@ -449,7 +450,7 @@ program define Rcall , rclass
 	qui file open `knot' using "`Rscript'", write text replace
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
 	file write `knot' `"`macval(0)'"' _n
-	file write `knot' "source('`r(fn)'')" _n
+	file write `knot' "source('`source'')" _n
 	file write `knot' "stata.output()" _n
 	file write `knot' "rm(stata.output)" _n		//remove 
 	if !missing("`forceload'") {
