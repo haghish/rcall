@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.0.0}
+{right:version 1.0.1}
 {title:Title}
 
 {phang}
@@ -43,7 +43,7 @@ The {opt R:call} package provides solution for Stata users who wish to run
 {browse "https://cran.r-project.org/":R statistical software} within Stata. 
 {browse "https://cran.r-project.org/":R} is a free software environment for statistical 
 computing and graphics. 
-The package provides an interactive {bf:R} session within Stata, and    {break}
+The package provides an interactive {bf:R} session within Stata, and 
 returns {bf:R} objects into Stata simultaniously, i.e. anytime an R code is executed, 
 the R objects are available for further manipulation in Stata. {opt R:call} 
 not only returns {it:numeric} and {it:charactor} objects, but also {it:lists} and 
@@ -188,9 +188,10 @@ Also, the object name in {bf:R} can include a dot, for example:
 {p 4 4 2}
 The {opt R:call} package returns scalars and locals which can only include 
 underscore in the names (e.g. a_name). {opt R:call} automatically converts 
-dots to underscore in the name. In the example above, if you type {cmd:return list}, 
-you would get a macro as follos:
+dots to underscore in the name. In the example above, if you type {cmd:return list} 
+in Stata, you would get a macro as follos:
 
+        . return list 
         r(a_name) : "anything"
 
 

@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.0.0
+Version: 1.0.1
 Title: {opt R:call}
 Description: Seemless interactive 
 __[R](https://cran.r-project.org/)__ in  Stata. The package return 
@@ -45,7 +45,7 @@ The {opt R:call} package provides solution for Stata users who wish to run
 [R statistical software](https://cran.r-project.org/) within Stata. 
 [R](https://cran.r-project.org/) is a free software environment for statistical 
 computing and graphics. 
-The package provides an interactive __R__ session within Stata, and  
+The package provides an interactive __R__ session within Stata, and 
 returns __R__ objects into Stata simultaniously, i.e. anytime an R code is executed, 
 the R objects are available for further manipulation in Stata. {opt R:call} 
 not only returns _numeric_ and _charactor_ objects, but also _lists_ and 
@@ -176,9 +176,10 @@ Also, the object name in __R__ can include a dot, for example:
 		
 The {opt R:call} package returns scalars and locals which can only include 
 underscore in the names (e.g. a_name). {opt R:call} automatically converts 
-dots to underscore in the name. In the example above, if you type {cmd:return list}, 
-you would get a macro as follos:
+dots to underscore in the name. In the example above, if you type {cmd:return list} 
+in Stata, you would get a macro as follos:
 
+        . return list 
         r(a_name) : "anything"
 
 Erasing R memory
