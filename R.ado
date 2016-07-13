@@ -223,7 +223,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*cap prog drop R
+cap prog drop R
 program define R , rclass
 	
 	version 12

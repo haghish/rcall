@@ -147,7 +147,17 @@ Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 //save the results of Rcpp in an R object, and get it back in Stata!
 display r(a)
 
+// -----------------------------------------------------------------------------
+// Detach packages, data, variables, etc..
+// =============================================================================
+/*
+Anything that you leave in .RData, means extra loading time for every Rcall. So 
+if you don't need a data set, package, etc, remove them from the R Workspace and 
+detach the packages. 
+*/
 
+Rcall: detach("package:Rcpp", unload=TRUE)
+Rcall: search()
 
 
 

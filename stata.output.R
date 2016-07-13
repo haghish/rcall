@@ -143,7 +143,8 @@ stata.output <- function() {
                                    packageList != "Autoloads" & 
                                    packageList != "package:base" ]
     
-    RProfile <- file.path(getwd(), "RProfile.R")
+    #RProfile <- file.path(getwd(), "RProfile.R")
+    #Get RProfile from global
     file.create(RProfile)
     
     #Make sure the elemment begins with "package:". Moreover, substring the 
