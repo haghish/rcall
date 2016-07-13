@@ -438,6 +438,11 @@ program define R , rclass
 		err 198
 	}
 	
+	//Change the stata.output.R path in Windows
+	if "`c(os)'" == "Windows" {
+		local 0 : subinstr local 0 "/" "\", all				 
+	}
+	
 	tempfile Rscript
 	tempfile Rout
 	tempname knot
