@@ -1,9 +1,8 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
 Version: 1.0.2
 Title: {opt R:call}
-Description: Seemless interactive 
-__[R](https://cran.r-project.org/)__ in  Stata. The package return 
-{help return:rclass} __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). It also 
+Description: Seemless interactive __[R](https://cran.r-project.org/)__ in Stata.
+The package return {help return:rclass} __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). It also 
 allows passing Stata {help macro}, {help scalar}, and {help matrix} to __R__, 
 which provides a reciprocal interaction between Stata and __R__. 
 For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
@@ -368,13 +367,25 @@ program define R , rclass
 		local mt = strpos(`"`macval(l2)'"',")") 
 		local filename = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
-		
 		local foreign 1 						//load foreign package
+		
+		//IF THE NAME HAS A PRANTHESIS...
+		if strpos(`"`macval(filename)'"',"(") != 0 {
+			local filename : di `"`macval(filename)')"'
+			local mt = strpos(`"`macval(l2)'"',")") 
+			local filename2 = substr(`"`macval(l2)'"',1, `mt'-1)
+			local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+			local filename : di `"`macval(filename)'`macval(filename2)'"'
+		}
 		
 		if !missing("`debug'") {
 			di _n "{title:st.data() function}" _n								///
 			"You wish to pass Stata data {bf:`filename'} to {bf:R}..."   
 		}
+		
+		// Get rid of double quotes or add them! 
+		cap local filename : display "`macval(filename)'"
+		if _rc != 0 local filename : display `macval(filename)'
 		
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {

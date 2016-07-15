@@ -1,10 +1,13 @@
 {smcl}
-{right:version 1.0.2}
+{right:version 1.0.3}
 {title:Title}
 
 {phang}
-{cmd:{opt R:call}} {hline 2} Seemless interactive {bf: {browse "https://cran.r-project.org/":R}} in  Stata. The package return  {help return:rclass} {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). It also  allows passing Stata {help macro}, {help scalar}, and {help matrix} to {bf:R},  which provides a reciprocal interaction between Stata and {bf:R}.  For more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
-
+{cmd:{opt R:call}} {hline 2} Seemless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The package return {help return:rclass} {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). It also 
+ allows passing Stata {help macro}, {help scalar}, and {help matrix} to {bf:R}, 
+ which provides a reciprocal interaction between Stata and {bf:R}. 
+ For more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
+ 
 
 {title:Syntax}
 

@@ -166,6 +166,36 @@ R: detach("package:Rcpp", unload=TRUE)
 R: search()
 
 
+// -----------------------------------------------------------------------------
+// Execution time
+// =============================================================================
+timer clear
+timer on 1
+	R:
+timer off 1
+timer list
 
+/* 
+calling R from Stata without executing anything takes 0.41 seconds on average
+on my Machine. Repeating the call for 10 times reveals simply the multiplication 
+of this number. 
+
+I SHOULD SPEED UP THIS PROCESS
+*/
+
+timer clear
+timer on 1
+	R:
+	R:
+	R:
+	R:
+	R:
+	R:
+	R:
+	R:
+	R:
+	R:
+timer off 1
+timer list
 
 
