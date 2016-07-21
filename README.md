@@ -1,4 +1,4 @@
-# Rcall : seemless R in Stata
+# Rcall : seamless R in Stata
 
 __`Rcall`__ runs [__R__](https://cran.r-project.org/) commands in Stata and allow the two software automatically communicate _variables_, 
 _matrices_, and _data_. more information read the help file or 

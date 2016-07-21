@@ -26,6 +26,13 @@ stata.output <- function() {
     RAW <- lst[sapply(lst,function(var) any(class(get(var))=='raw'))]
     #string <- c(string, logical, complex, RAW)
     
+    
+    # LOGICAL
+    # ------------------------------------
+    string <- c(string, logical)
+    
+    #string <- c(string, logical, complex, RAW)
+    
     # NULL
     # ------------------------------------
     null <- lst[sapply(lst,function(var) any(class(get(var))=='NULL'))]
@@ -78,7 +85,15 @@ stata.output <- function() {
         iget <- get(i)
         content <- paste("//STRING", i)
         write(content, file=stata.output, append=TRUE)
-        write(iget, file=stata.output, append=TRUE)
+        
+        #Watch out for Vector strings
+        if (length(iget) == 1) {
+            write(iget, file=stata.output, append=TRUE)
+        }
+        else {
+            content <- paste('"',iget,'"', sep = "")
+            write(paste(content, " "), file=stata.output, append=TRUE)
+        }
     }
     
     # LIST
@@ -96,13 +111,26 @@ stata.output <- function() {
             
             if (class(iget[[j]]) == "character") {
                 content <- paste("//CLIST", name)
+                write(content, file=stata.output, append=TRUE)
+                if (length(iget) == 1) {
+                    write(iget[[j]], file=stata.output, append=TRUE
+                          , ncolumns = if(is.character(iget[[j]])) 1 else 21)
+                }
+                else {
+                    content <- paste('"',iget[[j]],'"', sep = "")
+                    write(paste(content, " "), file=stata.output, append=TRUE)
+                }
+                
+                
             }
-            else content <- paste("//LIST", name)
-            write(content, file=stata.output, append=TRUE)
+            else {
+                content <- paste("//LIST", name)
+                write(content, file=stata.output, append=TRUE)
             
-            #print(class(iget[[j]]))
-            write(iget[[j]], file=stata.output, append=TRUE
-                  , ncolumns = if(is.character(iget[[j]])) 1 else 21)
+                #print(class(iget[[j]]))
+                write(iget[[j]], file=stata.output, append=TRUE
+                      , ncolumns = if(is.character(iget[[j]])) 1 else 21)
+            }
         }
     }    
     

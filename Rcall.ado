@@ -1,21 +1,22 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.0.3
+Version: 1.0.4
 Title: {opt R:call}
-Description: Seemless interactive __[R](https://cran.r-project.org/)__ in Stata.
-The package return {help return:rclass} __R__ objects (_numeric_, _character_, _list_, _matrix_, etc). It also 
-allows passing Stata {help macro}, {help scalar}, and {help matrix} to __R__, 
+Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
+The package automatically returns {help return:rclass} __R__ objects with 
+_numeric_, _integer_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
+classes in Stata. It also allows passing Stata __data set__, {help macro}, 
+{help scalar}, and {help matrix} to __R__, 
 which provides a reciprocal interaction between Stata and __R__. 
 For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
-
 
 /***
 Syntax
 ======
 
-the __vanilla__ subcommand executes
-__R__ non-interactively, but still communicates data from R to Stata after 
-execution. WIthout this subcommand, _R__ is called interactively. 
+the __vanilla__ subcommand executes __R__ non-interactively, but still 
+communicates data from R to Stata after 
+execution. Without this subcommand, __R__ is called interactively. 
 
 {p 8 16 2}
 {opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R code}]
@@ -29,36 +30,101 @@ default paths (see below)
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
-Debug mode
-===========
-
-You can run the package in _debug mode_ by adding __debug__ subcommand before 
-any other subcommand or R code. For example:
-
-        . R: debug vanilla print("Hello World") 
-        . R: debug setpath "{it:/usr/bin/r}" 
-
 Description
 ===========
 
-The {opt R:call} package provides solution for Stata users who wish to run 
-[R statistical software](https://cran.r-project.org/) within Stata. 
-[R](https://cran.r-project.org/) is a free software environment for statistical 
-computing and graphics. 
-The package provides an interactive __R__ session within Stata, and 
-returns __R__ objects into Stata simultaniously, i.e. anytime an R code is executed, 
-the R objects are available for further manipulation in Stata. {opt R:call} 
-not only returns _numeric_ and _charactor_ objects, but also _lists_ and 
-_matrices_. 
+__[R statistical language](https://cran.r-project.org/)__ is a free software 
+and programming langage for statistical computing and graphics. 
+The {opt R:call} package combines the power of __R__ with Stata, allowing the 
+Stata users to call __R__ interactively within Stata and communicate 
+data and analysis results between __R__ and Stata simultaniously. 
 
-Data communication between Stata and R
+In other words, anytime an R code is executed, the __R__ objects are available 
+for further manipulation in Stata. 
+__R__ objects with 
+_numeric_, _integer_, _character_, _logical_, _matrix_, _list_, and _NULL_ 
+classes are automatically returned to Stata as {help return:rclass}. 
+
+__R__ objects with _data.frame_ class can be automatically loaded from __R__ to 
+Stata using the __load.data()__ function (see below).
+
+Communication from R to Stata
 ======================================
 
 Stata automatically receives __R__ objects as {help return:rclass} anytime 
 the {opt R:call} is executed. If __R__ is running interactively 
 (i.e. without __vanilla__ subcommand), the previous objects still remain accessable 
-to Stata, unless they are changed or erased from __R__. The table below shows the 
-of the functions needed for data communication. 
+to Stata, unless they are changed or erased from __R__. Moreover, the packages 
+that you load from Stata in __R__ remain loaded until you detach them. 
+
+Accessing __R__ objects in Stata is simultanious which makes working with 
+{opt R:call} convenient. For example a _numeric_, or _string_ vector which is 
+defined in __R__, can be accessed in Stata as simple as calling the name of that 
+object withing {help rclass} i.e. __r(_objectname_)__.  
+
+A _numeric_ object example:
+
+        . R: a <- 100 
+        . display r(a)  	
+        100 	
+		
+Without the __vanilla__ subcommand, the defined object remains in the memory of 
+__R__ and consequently, returned to Stata anytime __R__ is called.
+
+        . R: a 
+        [1] 100 
+		
+A _string_ object example:
+		
+        . R: str <- "Hello World" 
+        . display r(str)  	
+        Hello World
+		
+        . R: str <- c("Hello", "World") 
+        . display r(str)  	
+        "Hello"  "World"
+		
+A _vector_ example:
+
+        . R: v <- c(1,2,3,4,5)
+        . display r(v)  	
+        1 2 3 4 5
+
+A _matrix_ example:
+
+        . R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+        . mat list r(A) 
+        r(A)[2,3]
+            c1  c2  c3  	
+        r1   1   2   3
+        r2   4   5   6
+		
+A _list_ example:
+
+        . R: mylist <- list(a=c(1:10))
+        . display r(mylist_a) 
+        1 2 3 4 5 6 7 8 9 10
+
+A _logical_ example:
+
+        . R: l <- T 
+        . display r(l)
+        TRUE
+		
+A _NULL_ example:
+
+        . R: n <- NULL
+        . display r(n)
+        NULL	
+		
+Regarding communicating R data set to Stata automatically, see the 
+__load.data(_dataframe_)__ function below. 
+		
+Communication from Stata to R
+======================================
+
+The table below shows the of the functions needed for data communication from 
+Stata to __R__. 
 
 {* the new Stata help format of putting detail before generality}{...}
 {synoptset 22 tabbed}{...}
@@ -81,13 +147,13 @@ code to {opt R:call} command, as shown in the example below:
         [1] 99 		
 
 In order to pass a {help scalar} from Stata to __R__, you can 
-use the __st.scalar() function as shown below:
+use the __st.scalar()__ function as shown below:
 
         . scalar a = 50 
         . R: (a <- st.scalar(a))  	
         [1] 50 		
 
-Similarly, Stata {help matrix:matrices} can be seemlessly passed to __R__ using 
+Similarly, Stata {help matrix:matrices} can be seamlessly passed to __R__ using 
 the __st.matrix()__ function as shown below:
 
         . matrix A = (1,2\3,4) 
@@ -150,7 +216,7 @@ R path setup
 
 The package requires [R](https://cran.r-project.org/) to be installed on the machine. 
 The package detects __R__ in the default paths based on the operating system. 
-The easiest way to see if __R__ is accessible is to execute a command in __R__
+The easiest way to see if __R__ is accessible is to execute a command in __R__ 
 
         . R: print("Hello World") 
         [1] "Hello World" 
@@ -181,6 +247,12 @@ in Stata, you would get a macro as follos:
 
         . return list 
         r(a_name) : "anything"
+		
+To maximize the speed of calling __R__ from Stata, 
+detach the packages that are no longer needed and also, drop all the objects 
+that are of no use for you. The more objects you keep in __R__ memory, 
+the more time needed to automatically communicate those objects between 
+__R__ and Stata.		
 
 Erasing R memory
 ================
@@ -189,9 +261,10 @@ When you work with __Rcall__ interactively (without __vanilla__ subcommand),
 anything you do in __R__ is memorized and 
 saved in a __.RData__ file automatically, even if you quit __R__ using __q()__ 
 function. If you wish to clear the memory and erase everything defined in R, 
-you should __unlink__ the __.RData__ file:
+you should __unlink__ the __.RData__ file and erase the objects:
 
-        . R: unlink(".RData") 		
+        . R: unlink(".RData") 	
+        . R: rm(list=ls())
 
 Example(s)
 =================
@@ -705,8 +778,8 @@ program define Rcall , rclass
 				file read `hitch' line
 				local content
 				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					if missing("`content'") local content : di "`content'`line'" 
-					else local content : di "`content'`line'{break}" 
+					if missing(`"`content'"') local content : di `"`content'`line'"' 
+					else local content : di `"`content'`line'{break}"' 
 					file read `hitch' line
 					local jump 1
 				}
@@ -725,8 +798,8 @@ program define Rcall , rclass
 				file read `hitch' line
 				local content
 				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					if missing("`content'") local content : di "`content'`line'" 
-					else local content : di "`content'`line'" 
+					if missing(`"`content'"') local content : di `"`content'`line'"' 
+					else local content : di `"`content'`line'"' 
 					file read `hitch' line
 					local jump 1
 				}
@@ -818,3 +891,13 @@ cap prog drop R
 markdoc Rcall.ado, export(sthlp) replace
 copy Rcall.sthlp R.sthlp, replace
 
+markdoc Rcall.ado, export(sthlp) replace
+*/
+
+/*
+Rcall: rm(list=ls()) 
+Rcall: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
+
+Rcall: list <- list(a=c("hello", "world"))
+return list
+*/

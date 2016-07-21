@@ -1,5 +1,16 @@
 
 // -----------------------------------------------------------------------------
+// BUGS: 
+//		* The matrix and character vectors are not returned correctly...
+//		* The string comes with a {break}. limit this to only when it's needed
+//		* Character class is messed up in the list
+//		* PROBLEM WITH CHARACTER VECTORS
+// =============================================================================
+R: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
+
+
+
+// -----------------------------------------------------------------------------
 // General Setup
 // =============================================================================
 
@@ -48,9 +59,9 @@ R: cars\$speed		  //the $ sign must be
 
 //Stata interprets $ sign in the middle of a word as global macro, use backslash
 R: head(cars\$speed)
-R: LIST <- lm(cars\$dist~cars\$speed)
-
-return list
+R: LM <- lm(cars\$dist~cars\$speed)
+R: LM
+return list //lm is not a list
 
 // -----------------------------------------------------------------------------
 // From Stata to R (Interactive)

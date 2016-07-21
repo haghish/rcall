@@ -1,10 +1,12 @@
 {smcl}
-{right:version 1.0.3}
+{right:version 1.0.4}
 {title:Title}
 
 {phang}
-{cmd:{opt R:call}} {hline 2} Seemless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The package return {help return:rclass} {bf:R} objects ({it:numeric}, {it:character}, {it:list}, {it:matrix}, etc). It also 
- allows passing Stata {help macro}, {help scalar}, and {help matrix} to {bf:R}, 
+{cmd:{opt R:call}} {hline 2} seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The package automatically returns {help return:rclass} {bf:R} objects with 
+ {it:numeric}, {it:integer}, {it:character}, {it:logical}, {it:matrix}, {it:data.frame}, {it:list}, and {it:NULL} 
+ classes in Stata. It also allows passing Stata {bf:data set}, {help macro}, 
+ {help scalar}, and {help matrix} to {bf:R}, 
  which provides a reciprocal interaction between Stata and {bf:R}. 
  For more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
  
@@ -12,9 +14,9 @@
 {title:Syntax}
 
 {p 4 4 2}
-the {bf:vanilla} subcommand executes
-{bf:R} non-interactively, but still communicates data from R to Stata after 
-execution. WIthout this subcommand, {it:R} is called interactively. 
+the {bf:vanilla} subcommand executes {bf:R} non-interactively, but still 
+communicates data from R to Stata after 
+execution. Without this subcommand, {bf:R} is called interactively. 
 
 {p 8 16 2}
 {opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R code}]
@@ -30,38 +32,115 @@ default paths (see below)
 {p_end}
 
 
-{title:Debug mode}
-
-{p 4 4 2}
-You can run the package in {it:debug mode} by adding {bf:debug} subcommand before 
-any other subcommand or R code. For example:
-
-        . R: debug vanilla print("Hello World") 
-        . R: debug setpath "{it:/usr/bin/r}" 
-
-
 {title:Description}
 
 {p 4 4 2}
-The {opt R:call} package provides solution for Stata users who wish to run 
-{browse "https://cran.r-project.org/":R statistical software} within Stata. 
-{browse "https://cran.r-project.org/":R} is a free software environment for statistical 
-computing and graphics. 
-The package provides an interactive {bf:R} session within Stata, and 
-returns {bf:R} objects into Stata simultaniously, i.e. anytime an R code is executed, 
-the R objects are available for further manipulation in Stata. {opt R:call} 
-not only returns {it:numeric} and {it:charactor} objects, but also {it:lists} and 
-{it:matrices}. 
+{bf: {browse "https://cran.r-project.org/":R statistical language}} is a free software 
+and programming langage for statistical computing and graphics. 
+The {opt R:call} package combines the power of {bf:R} with Stata, allowing the 
+Stata users to call {bf:R} interactively within Stata and communicate 
+data and analysis results between {bf:R} and Stata simultaniously. 
+
+{p 4 4 2}
+In other words, anytime an R code is executed, the {bf:R} objects are available 
+for further manipulation in Stata. 
+{bf:R} objects with 
+{it:numeric}, {it:integer}, {it:character}, {it:logical}, {it:matrix}, {it:list}, and {it:NULL} 
+classes are automatically returned to Stata as {help return:rclass}. 
+
+{p 4 4 2}
+{bf:R} objects with {it:data.frame} class can be automatically loaded from {bf:R} to 
+Stata using the {bf:load.data()} function (see below).
 
 
-{title:Data communication between Stata and R}
+{title:Communication from R to Stata}
 
 {p 4 4 2}
 Stata automatically receives {bf:R} objects as {help return:rclass} anytime 
 the {opt R:call} is executed. If {bf:R} is running interactively 
 (i.e. without {bf:vanilla} subcommand), the previous objects still remain accessable 
-to Stata, unless they are changed or erased from {bf:R}. The table below shows the 
-of the functions needed for data communication. 
+to Stata, unless they are changed or erased from {bf:R}. Moreover, the packages 
+that you load from Stata in {bf:R} remain loaded until you detach them. 
+
+{p 4 4 2}
+Accessing {bf:R} objects in Stata is simultanious which makes working with 
+{opt R:call} convenient. For example a {it:numeric}, or {it:string} vector which is 
+defined in {bf:R}, can be accessed in Stata as simple as calling the name of that 
+object withing {help rclass} i.e. {bf:r({it:objectname})}.    {break}
+
+{p 4 4 2}
+A {it:numeric} object example:
+
+        . R: a <- 100 
+        . display r(a)  	
+        100 	
+		
+{p 4 4 2}
+Without the {bf:vanilla} subcommand, the defined object remains in the memory of 
+{bf:R} and consequently, returned to Stata anytime {bf:R} is called.
+
+        . R: a 
+        [1] 100 
+		
+{p 4 4 2}
+A {it:string} object example:
+		
+        . R: str <- "Hello World" 
+        . display r(str)  	
+        Hello World
+		
+        . R: str <- c("Hello", "World") 
+        . display r(str)  	
+        "Hello"  "World"
+		
+{p 4 4 2}
+A {it:vector} example:
+
+        . R: v <- c(1,2,3,4,5)
+        . display r(v)  	
+        1 2 3 4 5
+
+{p 4 4 2}
+A {it:matrix} example:
+
+        . R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+        . mat list r(A) 
+        r(A)[2,3]
+            c1  c2  c3  	
+        r1   1   2   3
+        r2   4   5   6
+		
+{p 4 4 2}
+A {it:list} example:
+
+        . R: mylist <- list(a=c(1:10))
+        . display r(mylist_a) 
+        1 2 3 4 5 6 7 8 9 10
+
+{p 4 4 2}
+A {it:logical} example:
+
+        . R: l <- T 
+        . display r(l)
+        TRUE
+		
+{p 4 4 2}
+A {it:NULL} example:
+
+        . R: n <- NULL
+        . display r(n)
+        NULL	
+		
+{p 4 4 2}
+Regarding communicating R data set to Stata automatically, see the 
+{bf:load.data({it:dataframe})} function below. 
+		
+
+{title:Communication from Stata to R}
+
+{p 4 4 2}
+The table below shows the of the functions needed for data communication from 
+Stata to {bf:R}. 
 
 {* the new Stata help format of putting detail before generality}{...}
 {synoptset 22 tabbed}{...}
@@ -86,14 +165,14 @@ code to {opt R:call} command, as shown in the example below:
 
 {p 4 4 2}
 In order to pass a {help scalar} from Stata to {bf:R}, you can 
-use the {bf:st.scalar() function as shown below:
+use the {bf:st.scalar()} function as shown below:
 
         . scalar a = 50 
         . R: (a <- st.scalar(a))  	
         [1] 50 		
 
 {p 4 4 2}
-Similarly, Stata {help matrix:matrices} can be seemlessly passed to {bf:R} using 
+Similarly, Stata {help matrix:matrices} can be seamlessly passed to {bf:R} using 
 the {bf:st.matrix()} function as shown below:
 
         . matrix A = (1,2\3,4) 
@@ -162,7 +241,7 @@ the function should work just fine in most occasions:
 {p 4 4 2}
 The package requires  {browse "https://cran.r-project.org/":R} to be installed on the machine. 
 The package detects {bf:R} in the default paths based on the operating system. 
-The easiest way to see if {bf:R} is accessible is to execute a command in {bf:R__
+The easiest way to see if {bf:R} is accessible is to execute a command in {bf:R} 
 
         . R: print("Hello World") 
         [1] "Hello World" 
@@ -197,6 +276,13 @@ in Stata, you would get a macro as follos:
 
         . return list 
         r(a_name) : "anything"
+		
+{p 4 4 2}
+To maximize the speed of calling {bf:R} from Stata, 
+detach the packages that are no longer needed and also, drop all the objects 
+that are of no use for you. The more objects you keep in {bf:R} memory, 
+the more time needed to automatically communicate those objects between 
+{bf:R} and Stata.		
 
 
 {title:Erasing R memory}
@@ -206,9 +292,10 @@ When you work with {bf:Rcall} interactively (without {bf:vanilla} subcommand),
 anything you do in {bf:R} is memorized and 
 saved in a {bf:.RData} file automatically, even if you quit {bf:R} using {bf:q()} 
 function. If you wish to clear the memory and erase everything defined in R, 
-you should {bf:unlink} the {bf:.RData} file:
+you should {bf:unlink} the {bf:.RData} file and erase the objects:
 
-        . R: unlink(".RData") 		
+        . R: unlink(".RData") 	
+        . R: rm(list=ls())
 
 
 {title:Example(s)}
