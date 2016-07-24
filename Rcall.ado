@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.0.4
+Version: 1.0.5
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} __R__ objects with 
@@ -777,13 +777,22 @@ program define Rcall , rclass
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
 				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					if missing(`"`content'"') local content : di `"`content'`line'"' 
-					else local content : di `"`content'`line'{break}"' 
+				local multiline
+				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" & trim(`"`macval(line)'"') != "" {	
+					
+					if missing(`"`content'"') {
+						local content 1
+						local multiline : di `"`multiline'`line'"' 
+					}	
+					
+					else {
+						local multiline : di `"`multiline'{break}`line'"' 
+					}	
+					
 					file read `hitch' line
 					local jump 1
 				}
-				return local `name' `"`macval(content)'"'
+				return local `name' `"`macval(multiline)'"'
 			}
 			
 			// LIST OBJECT (NUMERIC)
@@ -840,7 +849,7 @@ program define Rcall , rclass
 		}
 		*capture erase list.txt
 		*copy stata.output list.txt, replace
-		capture erase stata.output
+		if missing("`debug'") capture erase stata.output
 	}
 	
 	
@@ -891,7 +900,6 @@ cap prog drop R
 markdoc Rcall.ado, export(sthlp) replace
 copy Rcall.sthlp R.sthlp, replace
 
-markdoc Rcall.ado, export(sthlp) replace
 */
 
 /*

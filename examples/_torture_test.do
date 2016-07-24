@@ -8,6 +8,7 @@
 // =============================================================================
 R: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
 
+********************************************************************************
 
 
 // -----------------------------------------------------------------------------
@@ -30,6 +31,32 @@ return list
 
 // if you want to access the "object" you get an error that is not found
 Rcall: object
+
+// -----------------------------------------------------------------------------
+// Creating and Exporting Graphics!
+// =============================================================================
+
+// Since R is run from batch mode, you cannot view graphics. However, you can create and 
+// export them, allowing you to use your favorite R packages for data visualization
+// from Stata
+
+// Creating a PDF file named Rplots.pdf
+R: plot(1,1)
+
+// Creating a PNG file named mypng.png
+R: png("mypng.png");plot(rnorm(100), main="This is my PNG file");
+
+// Creating a postscript file named whatever.eps
+R: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
+//R: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); dev.off();
+
+
+*******************************************************************
+// THIS WILL NOT WORK
+R: setEPS()
+R: postscript("postscriot.eps")
+R: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
+*******************************************************************
 
 
 // -----------------------------------------------------------------------------
@@ -101,6 +128,12 @@ display r(a)
 scalar a = "or string scalar"
 Rcall: a <- st.scalar(a)
 display r(a)
+
+
+// multiple-line string
+// ----------------------------------------
+Rcall debug: A = list(a="hi there this is pretty long \n there \n and here")
+return list
 
 
 // st.data() : Passing Data to R
@@ -177,6 +210,24 @@ R: detach("package:Rcpp", unload=TRUE)
 R: search()
 
 
+// -----------------------------------------------------------------------------
+// Multiple lines
+//
+// 1- Write multiple lines of code
+// 2- It is easier to write a script file and source it! Stata will still get the 
+//	  values back...
+// =============================================================================
+
+
+
+Rcall:  timesTen <- function(x) { 												///
+			return(x*10)														///
+		}
+
+Rcall: timesTen(10)		
+
+
+	
 // -----------------------------------------------------------------------------
 // Execution time
 // =============================================================================

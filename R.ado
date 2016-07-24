@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.0.4
+Version: 1.0.5
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} __R__ objects with 
@@ -68,16 +68,21 @@ A _numeric_ object example:
         . display r(a)  	
         100 	
 		
-Without the __vanilla__ subcommand, the defined object remains in the memory of __R__
+Without the __vanilla__ subcommand, the defined object remains in the memory of 
+__R__ and consequently, returned to Stata anytime __R__ is called.
 
-        . display r(a)  
-        100  
+        . R: a 
+        [1] 100 
 		
 A _string_ object example:
 		
         . R: str <- "Hello World" 
         . display r(str)  	
         Hello World
+		
+        . R: str <- c("Hello", "World") 
+        . display r(str)  	
+        "Hello"  "World"
 		
 A _vector_ example:
 
@@ -211,7 +216,7 @@ R path setup
 
 The package requires [R](https://cran.r-project.org/) to be installed on the machine. 
 The package detects __R__ in the default paths based on the operating system. 
-The easiest way to see if __R__ is accessible is to execute a command in __R__
+The easiest way to see if __R__ is accessible is to execute a command in __R__ 
 
         . R: print("Hello World") 
         [1] "Hello World" 
@@ -772,13 +777,22 @@ program define R , rclass
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
 				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					if missing(`"`content'"') local content : di `"`content'`line'"' 
-					else local content : di `"`content'`line'{break}"' 
+				local multiline
+				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" & trim(`"`macval(line)'"') != "" {	
+					
+					if missing(`"`content'"') {
+						local content 1
+						local multiline : di `"`multiline'`line'"' 
+					}	
+					
+					else {
+						local multiline : di `"`multiline'{break}`line'"' 
+					}	
+					
 					file read `hitch' line
 					local jump 1
 				}
-				return local `name' `"`macval(content)'"'
+				return local `name' `"`macval(multiline)'"'
 			}
 			
 			// LIST OBJECT (NUMERIC)
@@ -835,7 +849,7 @@ program define R , rclass
 		}
 		*capture erase list.txt
 		*copy stata.output list.txt, replace
-		capture erase stata.output
+		if missing("`debug'") capture erase stata.output
 	}
 	
 	
