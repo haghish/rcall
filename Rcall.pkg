@@ -1,4 +1,4 @@
-d 'Rcall': Seemless interactive R in Stata. The command also return
+d 'Rcall': Seamless interactive R in Stata. The command also return
 d  rclass R objects (numeric, character, list, matrix, etc)
 d
 d 
@@ -13,7 +13,7 @@ d KW: class
 d
 d Requires: Stata version 13 or higher
 d
-d Distribution-Date: 20160715
+d Distribution-Date: 20160724
 d
 d Author: E.F. Haghish, University of Freiburg
 d Support: email haghish@imbi.uni-freiburg.de
@@ -24,4 +24,5 @@ f R.ado
 f R.sthlp
 f Rcall.ado
 f Rcall.sthlp
+f Rcall_interactive.ado
 F stata.output.R
