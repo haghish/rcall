@@ -2,9 +2,8 @@
 #rm(list=ls())
 #source('~/Dropbox/STATA/MY PROGRAMS/rdo/get.R')
 
-stata.output <- function() {
-    
-    
+stata.output <- function(plusR, Vanilla="") {
+
     
     
     # --------------------------------------------------------------------------
@@ -171,19 +170,22 @@ stata.output <- function() {
                                    packageList != "Autoloads" & 
                                    packageList != "package:base" ]
     
-    #RProfile <- file.path(getwd(), "RProfile.R")
-    #Get RProfile from global
-    file.create(RProfile)
-    
-    #Make sure the elemment begins with "package:". Moreover, substring the 
-    #package: from each element and write the file. 
-    for (i in 1:length(packageList)) {
-        if (substr(packageList[i], 1, 8) == "package:") {
-            name <- substr(packageList[i], 9, nchar(packageList[i]))
-            write(paste("library(", name, ")", sep = ""), file=RProfile, append=TRUE)
+    # Avoid saving RProfile for Vanilla Mode
+    # --------------------------------------------------------------------------
+    if (Vanilla == "") {
+        RProfile <- file.path(plusR, "RProfile.R")
+        #Get RProfile from global
+        file.create(RProfile)
+        
+        #Make sure the elemment begins with "package:". Moreover, substring the 
+        #package: from each element and write the file. 
+        for (i in 1:length(packageList)) {
+            if (substr(packageList[i], 1, 8) == "package:") {
+                name <- substr(packageList[i], 9, nchar(packageList[i]))
+                write(paste("library(", name, ")", sep = ""), file=RProfile, append=TRUE)
+            }
         }
     }
-    
 }
 
 #stata.output()

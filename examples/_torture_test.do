@@ -166,7 +166,7 @@ display r(mystr)
 
 
 Rcall: unlink(".RData") //This deletes the workspace file
-
+Rcall: rm(list=ls())
 
 // -----------------------------------------------------------------------------
 // Trying Rcpp package
@@ -206,7 +206,8 @@ detach the packages.
 */
 
 R: search()
-R: detach("package:Rcpp", unload=TRUE)
+Rcall: detach("package:Rcpp", unload=TRUE)
+Rcall: detach("package:foreign", unload=TRUE)
 R: search()
 
 
@@ -261,3 +262,11 @@ timer off 1
 timer list
 
 
+// -----------------------------------------------------------------------------
+// The Vanilla mode should not influence the loaded functions
+// =============================================================================
+Rcall vanilla library(foreign)
+Rcall library(foreign)
+Rcall vanilla: detach("package:foreign", unload=TRUE)
+Rcall: detach("package:foreign", unload=TRUE)
+R: search()

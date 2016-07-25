@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.0
+Version: 1.1.1
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
@@ -576,7 +576,7 @@ program define R , rclass
 	
 	capture findfile RProfile.R, path("`c(sysdir_plus)'r")
 	if _rc == 0 {
-		local library `r(fn)'
+		local RProfile `r(fn)'
 	}
 	
 	// get the path to PLUS/r
@@ -584,7 +584,7 @@ program define R , rclass
 	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local library : subinstr local library "\" "/", all	
+		local RProfile : subinstr local RProfile "\" "/", all	
 		local plusR : subinstr local plusR "\" "/", all
 	}
 
@@ -596,15 +596,15 @@ program define R , rclass
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
-	if !missing("`library'") file write `knot' "source('`library'')" _n		//load the libraries
+	if !missing("`RProfile'") file write `knot' "source('`RProfile'')" _n		//load the libraries
 	
 	file write `knot' `"`macval(0)'"' _n
 	//file write `knot' "save.image()" _n 				//kills the vanilla
 	file write `knot' "source('`source'')" _n
-	file write `knot' `"RProfile <- file.path("`plusR'", "RProfile.R")"' _n
-	file write `knot' "stata.output()" _n
+	*file write `knot' `"plusR <- "`plusR'""' _n		//source stata.output() before exit
+	file write `knot' `"stata.output("`plusR'", "`vanilla'")"' _n
 	//file write `knot' "rm(stata.output)" _n	
-	file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
+	//file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
 
 	
 	if !missing("`forceload'") {
