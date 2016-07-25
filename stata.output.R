@@ -1,11 +1,6 @@
-#cat(rep("\n",64)) 
-#rm(list=ls())
-#source('~/Dropbox/STATA/MY PROGRAMS/rdo/get.R')
 
 stata.output <- function(plusR, Vanilla="") {
 
-    
-    
     # --------------------------------------------------------------------------
     # PREPARATION
     # ==========================================================================
@@ -188,4 +183,3 @@ stata.output <- function(plusR, Vanilla="") {
     }
 }
 
-#stata.output()

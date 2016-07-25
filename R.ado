@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.1
+Version: 1.1.2
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
@@ -354,7 +354,7 @@ program define R , rclass
 		local debug 1
 		
 		if !missing("`debug'") {
-			di _n "{title:[1/5] Debug mode}" _n										///
+			di _n "{title:[1/5] Debug mode}" _n									///
 			"Running R in debug mode"
 		}	
 	}
@@ -362,7 +362,7 @@ program define R , rclass
 		local 0 : subinstr local 0 "vanilla" ""
 		local vanilla --vanilla
 		if !missing("`debug'") {
-			di _n "{title:Vanilla}" _n												///
+			di _n "{title:Vanilla}" _n											///
 			"Running R in non-interactive batch mode"
 		}	
 	}
@@ -401,8 +401,9 @@ program define R , rclass
 	}
 	
 	if !missing("`debug'") {
-		di _n "{title:R command}" _n												///
-		"The command that you wish to execute in {bf:R} is:" _n(2) `"{err:`macval(0)'}"' 
+		di _n "{title:R command}" _n											///
+		"The command that you wish to execute in {bf:R} is:" _n(2) 				///
+		`"{err:`macval(0)'}"' 
 	}
 		
 	
@@ -419,7 +420,7 @@ program define R , rclass
  		
 		if !missing("`debug'") {
 			di _n "{title:st.matrix() function}" _n								///
-			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  ///
+			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  	///
 			"the {bf:matconvert.ado} function, which returns:"
 			matconvert `mat'
 		}
@@ -549,7 +550,6 @@ program define R , rclass
 			err 198
 		}
 
-		
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 		
 		if !missing("`debug'") di _n `"`macval(0)'"'
@@ -644,7 +644,42 @@ program define R , rclass
 	
 	
 	if missing("$Rpath") {
-		local path = cond(c(os) == "Windows", "Rterm.exe", "/usr/bin/r")
+		
+		if "`c(os)'" == "Windows" {
+			
+			// try both "Program Files" and "Program Files (86)" 
+			
+			local wd : pwd
+			capture quietly cd "C:\Program Files\R"
+			if _rc != 0 {
+				capture quietly cd "C:\Program Files (x86)\R"
+				if _rc != 0 {
+					display as err "R was not found on your system. Setup R path manually"
+					exit 198
+				}
+			}
+			
+			// Get the list of directories that begin with R-* and select the 
+			// last directory.
+			
+			local folder : pwd
+			local Rdir : dir "`folder'" dirs "R-*"
+			di `"`Rdir'"'
+			tokenize `"`Rdir'"'
+			while `"`1'"' != "" {
+				local newest_R `"`1'"'
+				macro shift
+			}
+			
+			quietly cd `"`newest_R'\bin"'
+			local path : pwd
+			local path : display "`path'\R.exe"			
+			quietly cd "`wd'"
+		}
+
+		else {
+			local path "/usr/bin/r"
+		}
 		
 		if !missing("`debug'") {
 			di _n "{title:Path to R}" _n								///
