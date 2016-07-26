@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.1.2}
+{right:version 1.1.3}
 {title:Title}
 
 {phang}
@@ -156,6 +156,7 @@ Stata to R.
 {synoptline}
 {synopt:{opt st.scalar()}}passes a scalar to R{p_end}
 {synopt:{opt st.matrix()}}passes a matrix to R{p_end}
+{synopt:{opt st.var(varname)}}passes a numeric or string variable to R{p_end}
 {synopt:{opt st.data(filename)}}passes data from Stata to R{p_end}
 {synopt:{opt load.data(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
@@ -199,7 +200,24 @@ And of course, you can access the matrix from R in Stata as well:
              c1   c2
         r1   97   98
         r2   99  100
-		
+
+{p 4 4 2}
+Passing variables from Stata to R is convenient, using the    {break}
+{bf:st.var({it:varname})} function. Therefore, any analysis can be executed in R 
+simply by passing the variables required for the analysis from Stata to R:
+
+        . sysuse auto, clear 
+        . R: dep <- st.var(price)		
+        . R: pre <- st.var(mpg)	
+        . R: lm(dep~pre)
+
+        Call:
+        lm(formula = dep ~ pre)
+
+        Coefficients:
+        (Intercept)          pre  
+            11267.3       -238.3
+
 {p 4 4 2}
 The {opt R:call} package also allows to pass Stata data to R within 
 {bf:st.data({it:{help filename}})} function. This function relies on the {bf:foreign} 

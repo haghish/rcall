@@ -270,3 +270,12 @@ Rcall library(foreign)
 Rcall vanilla: detach("package:foreign", unload=TRUE)
 Rcall: detach("package:foreign", unload=TRUE)
 R: search()
+
+
+// -----------------------------------------------------------------------------
+// passing variables from Stata to R
+// =============================================================================
+
+sysuse auto, clear
+Rcall: print(st.var(price))
+R: print(st.var(make))

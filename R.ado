@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.2
+Version: 1.1.3
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
@@ -139,6 +139,7 @@ Stata to R.
 {synoptline}
 {synopt:{opt st.scalar()}}passes a scalar to R{p_end}
 {synopt:{opt st.matrix()}}passes a matrix to R{p_end}
+{synopt:{opt st.var(varname)}}passes a numeric or string variable to R{p_end}
 {synopt:{opt st.data(filename)}}passes data from Stata to R{p_end}
 {synopt:{opt load.data(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
@@ -178,7 +179,23 @@ And of course, you can access the matrix from R in Stata as well:
              c1   c2
         r1   97   98
         r2   99  100
-		
+
+Passing variables from Stata to R is convenient, using the  
+__st.var(_varname_)__ function. Therefore, any analysis can be executed in R 
+simply by passing the variables required for the analysis from Stata to R:
+
+        . sysuse auto, clear 
+        . R: dep <- st.var(price)		
+        . R: pre <- st.var(mpg)	
+        . R: lm(dep~pre)
+        
+        Call:
+        lm(formula = dep ~ pre)
+        
+        Coefficients:
+        (Intercept)          pre  
+            11267.3       -238.3
+
 The {opt R:call} package also allows to pass Stata data to R within 
 __st.data(_{help filename}_)__ function. This function relies on the __foreign__ 
 package in R to load Stata data sets, without converting them to CSV or alike. 
@@ -339,7 +356,7 @@ program define R , rclass
 	// Syntax processing
 	// =========================================================================
 	
-	//Get R path, if defined
+	//Get the latest R path, if defined
 	capture prog drop Rpath
 	capture Rpath
 	
@@ -553,6 +570,44 @@ program define R , rclass
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 		
 		if !missing("`debug'") di _n `"`macval(0)'"'
+		
+	}
+	
+	
+	// Searching for variable
+	// -------------------------------------------------------------------------
+	while strpos(`"`macval(0)'"',"st.var(") != 0 {
+		local br = strpos(`"`macval(0)'"',"st.var")
+		local l1 = substr(`"`macval(0)'"',1, `br'-1)
+		local l2 = substr(`"`macval(0)'"',`br',.)
+		local l2 : subinstr local l2 "st.var(" ""
+		local mt = strpos(`"`macval(l2)'"',")") 
+		local mat = substr(`"`macval(l2)'"',1, `mt'-1)
+		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
+ 		
+		if !missing("`debug'") {
+			di _n "{title:st.var() function}" _n								///
+			"You wish to pass variable {bf:`mat'} to {bf:R}. This will call "  	///
+			"the {bf:varconvert.ado} function, which returns:"
+			varconvert `mat'
+		}
+		
+		qui varconvert `mat'
+		
+		if "`r(type)'" == "numeric" {
+			local l2 = "`r(`mat')'" + "`l2'"
+			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		}
+		if "`r(type)'" == "string" {
+			local l2 = `"`r(`mat')'"' + "`l2'"
+			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		}
+		*local l2 = `r(`mat')' + "`l2'"
+		
+		*di as err "l1:`l1'"
+		*di as err "l2:`l2'"
+		
+		
 		
 	}
 	
