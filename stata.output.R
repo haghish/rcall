@@ -1,6 +1,6 @@
 
 stata.output <- function(plusR, Vanilla="") {
-
+    
     # --------------------------------------------------------------------------
     # PREPARATION
     # ==========================================================================
@@ -50,15 +50,16 @@ stata.output <- function(plusR, Vanilla="") {
     
     # NUMERIC (numeric AND integer)
     # ------------------------------------
-    for (i in numeric) {
-        iget <- get(i)
+    for (St.Scalar in numeric) {
+        iget <- get(St.Scalar)
+        
         if (length(iget) == 1) {
-            content <- paste("//SCALAR", i)
+            content <- paste("//SCALAR", St.Scalar)
             write(content, file=stata.output, append=TRUE)
             write(iget, file=stata.output, append=TRUE)
         }
         if (length(iget) > 1) {
-            content <- paste("//NUMERICLIST", i)
+            content <- paste("//NUMERICLIST", St.Scalar)
             write(content, file=stata.output, append=TRUE)
             write(iget, file=stata.output, append=TRUE
                   , ncolumns = if(is.character(iget)) 1 else 21)
@@ -120,7 +121,7 @@ stata.output <- function(plusR, Vanilla="") {
             else {
                 content <- paste("//LIST", name)
                 write(content, file=stata.output, append=TRUE)
-            
+                
                 #print(class(iget[[j]]))
                 write(iget[[j]], file=stata.output, append=TRUE
                       , ncolumns = if(is.character(iget[[j]])) 1 else 21)

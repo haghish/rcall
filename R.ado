@@ -1,12 +1,13 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.3
+Version: 1.1.4
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
 _numeric_, _integer_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
-classes in Stata. It also allows passing Stata __data set__, {help macro}, 
-{help scalar}, and {help matrix} to R, 
-which provides a reciprocal interaction between Stata and R. 
+classes in Stata. It also allows passing Stata __variables__, __data set__, 
+{help macro}, {help scalar}, and {help matrix} to R as well as load data from R 
+to Stata automatically, 
+which provides an automated reciprocal communication between Stata and R. 
 For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
@@ -261,7 +262,29 @@ will continue to work when R environment is running.
 		
         . display r(a)
         1998
+		
+		
+The interactive mode also supports multi-line code:
 
+        . R:
+	{hline 49} R (type {cmd:end} to exit) {hline}
+        . myfunction <- function(x) {
+        +
+        . if (is.numeric(x)) {
+            +
+        . return(x^2)
+            +
+        . }
+        +
+        . }
+        . (a <- myfunction(199))
+        . [1] 39601
+        . end
+	{hline}
+		
+        . display r(a)
+        39601
+		
 {marker Rpath}{...}
 R path setup
 ============
@@ -335,7 +358,7 @@ Department of Mathematics and Computer Science
 University of Southern Denmark     
 haghish@imbi.uni-freiburg.de     
       
-[http://www.haghish.com/markdoc](http://www.haghish.com/statistics/stata-blog/reproducible-research/markdoc.php)         
+[Rcall Homepage](www.haghish.com/packages/Rcall.php)         
 Package Updates on [Twitter](http://www.twitter.com/Haghish)     
 
 - - -

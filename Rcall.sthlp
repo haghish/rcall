@@ -1,13 +1,14 @@
 {smcl}
-{right:version 1.1.3}
+{right:version 1.1.4}
 {title:Title}
 
 {phang}
 {cmd:{opt R:call}} {hline 2} seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The package automatically returns {help return:rclass} R objects with 
  {it:numeric}, {it:integer}, {it:character}, {it:logical}, {it:matrix}, {it:data.frame}, {it:list}, and {it:NULL} 
- classes in Stata. It also allows passing Stata {bf:data set}, {help macro}, 
- {help scalar}, and {help matrix} to R, 
- which provides a reciprocal interaction between Stata and R. 
+ classes in Stata. It also allows passing Stata {bf:variables}, {bf:data set}, 
+ {help macro}, {help scalar}, and {help matrix} to R as well as load data from R 
+ to Stata automatically, 
+ which provides an automated reciprocal communication between Stata and R. 
  For more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
  
 
@@ -288,7 +289,30 @@ will continue to work when R environment is running.
 		
         . display r(a)
         1998
+		
+		
+{p 4 4 2}
+The interactive mode also supports multi-line code:
 
+        . R:
+	{hline 49} R (type {cmd:end} to exit) {hline}
+        . myfunction <- function(x) {
+        +
+        . if (is.numeric(x)) {
+            +
+        . return(x^2)
+            +
+        . }
+        +
+        . }
+        . (a <- myfunction(199))
+        . [1] 39601
+        . end
+	{hline}
+		
+        . display r(a)
+        39601
+		
 {marker Rpath}{...}
 
 {title:R path setup}
@@ -372,7 +396,7 @@ University of Southern Denmark       {break}
 haghish@imbi.uni-freiburg.de       {break}
 
 {p 4 4 2}
-{browse "http://www.haghish.com/statistics/stata-blog/reproducible-research/markdoc.php":http://www.haghish.com/markdoc}           {break}
+{browse "www.haghish.com/packages/Rcall.php":Rcall Homepage}           {break}
 Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}       {break}
 
     {hline}

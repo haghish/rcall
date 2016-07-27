@@ -24,6 +24,7 @@ f R.ado
 f R.sthlp
 f Rcall.ado
 f Rcall.sthlp
+f Rcall_counter.ado
 f Rcall_interactive.ado
 f varconvert.ado
 F stata.output.R
