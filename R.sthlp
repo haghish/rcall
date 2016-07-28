@@ -347,23 +347,66 @@ path to R on Mac 10.10 could be:
 {title:Synchronize mode}
 
 {p 4 4 2}
-By default, {opt R:call} returns objects from R to Stata and allows passing 
+By default, {opt R:call} returns {it:rclass} objects from R to Stata and allows passing 
 Stata objects to R using several functions. However, the package also has a 
 {bf:synchronize} mode where it {bf:automatically synchronizes the global environments 
 of Stata and R, allowing real-time synchronization between the two languages, 
 which consequently {bf:replaces} the objects whenever they change in either of 
-the environments. This mode is by default is {bf:off}. To activate and deactivate 
-the synchronization mode type:
-
-        . R: print("Hello World") 
-        [1] "Hello World" 
+the environments. This mode is by default is {bf:off}. 
 
 {p 4 4 2}
-If R is not accessible, you can also permanently 
-setup the path to R using the {bf:setpath} subcommand. For example, the 
-path to R on Mac 10.10 could be:
+The {bf:synchronize} mode allows maximum interactive experience for {it:numeric} and 
+{it:string} scalars and {it:matrices} in Stata. The mode 
+{ul:does not synchronize data or global macros}. See the examples below to see 
+how a scalar or matrix change when the synchronization mode is {bf:on}. 
 
-    . {cmd:R setpath} "{it:/usr/bin/r}"
+{p 4 4 2}
+In the example below, the value of {bf:a} changes from {bf:1} to {bf:0} after it 
+is altered in R:
+
+        . R synchronize on 
+        . scalar a = 1
+        . R: (a = 0)
+        [1] 0
+        . display a
+        a
+
+{p 4 4 2}
+The same example is repeated when the synchronize mode is off:
+		
+        . R synchronize off 
+        . scalar a = 1
+        . R: (a = 0)
+        [1] 0
+        . display a
+        1
+		
+{p 4 4 2}
+The synchronize mode also replaces matrices in R and Stata, when there is a 
+change in the matric in either of the global environments. Naturally, new 
+matrices also are synchronized:
+
+        . mat drop _all
+        . R synchronize on 
+        . mat define A = (1,2,3 \ 4,5,6)
+        . Rcall: B = A
+        . mat list B
+
+        C[2,3]
+            c1  c2  c3 
+        r1   1   2   3
+        r2   4   5   6 
+
+{p 4 4 2}
+		. mat C = B/2
+        . R: D
+             [,1] [,2] [,3] 
+        [1,]  0.5  1.0  1.5 
+        [2,]  2.0  2.5  3.0 
+		
+{p 4 4 2}
+As shown in the examples, any change made to the matrices, whether it has 
+happened in R or Stata will be instantly available in the other anguage. 
 	
 
 {title:Remarks}

@@ -315,22 +315,60 @@ path to R on Mac 10.10 could be:
 Synchronize mode
 ============
 
-By default, {opt R:call} returns objects from R to Stata and allows passing 
+By default, {opt R:call} returns _rclass_ objects from R to Stata and allows passing 
 Stata objects to R using several functions. However, the package also has a 
 __synchronize__ mode where it __automatically synchronizes the global environments 
 of Stata and R, allowing real-time synchronization between the two languages, 
 which consequently __replaces__ the objects whenever they change in either of 
-the environments. This mode is by default is __off__. To activate and deactivate 
-the synchronization mode type:
+the environments. This mode is by default is __off__. 
 
-        . R: print("Hello World") 
-        [1] "Hello World" 
- 
-If R is not accessible, you can also permanently 
-setup the path to R using the __setpath__ subcommand. For example, the 
-path to R on Mac 10.10 could be:
+The __synchronize__ mode allows maximum interactive experience for _numeric_ and 
+_string_ scalars and _matrices_ in Stata. The mode 
+___does not synchronize data or global macros___. See the examples below to see 
+how a scalar or matrix change when the synchronization mode is __on__. 
 
-    . {cmd:R setpath} "{it:/usr/bin/r}"
+In the example below, the value of __a__ changes from __1__ to __0__ after it 
+is altered in R:
+
+        . R synchronize on 
+        . scalar a = 1
+        . R: (a = 0)
+        [1] 0
+        . display a
+        a
+
+The same example is repeated when the synchronize mode is off:
+		
+        . R synchronize off 
+        . scalar a = 1
+        . R: (a = 0)
+        [1] 0
+        . display a
+        1
+		
+The synchronize mode also replaces matrices in R and Stata, when there is a 
+change in the matric in either of the global environments. Naturally, new 
+matrices also are synchronized:
+
+        . mat drop _all
+        . R synchronize on 
+        . mat define A = (1,2,3 \ 4,5,6)
+        . R: B = A
+        . mat list B
+        
+        C[2,3]
+            c1  c2  c3 
+        r1   1   2   3
+        r2   4   5   6 
+        
+		. mat C = B/2
+        . R: D
+             [,1] [,2] [,3] 
+        [1,]  0.5  1.0  1.5 
+        [2,]  2.0  2.5  3.0 
+		
+As shown in the examples, any change made to the matrices, whether it has 
+happened in R or Stata will be instantly available in the other anguage. 
 	
 Remarks
 =======
@@ -400,7 +438,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-cap prog drop R
+*cap prog drop R
 program define R , rclass
 	
 	version 12

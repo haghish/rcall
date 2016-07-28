@@ -438,7 +438,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-cap prog drop Rcall
+*cap prog drop Rcall
 program define Rcall , rclass
 	
 	version 12

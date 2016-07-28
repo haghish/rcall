@@ -1,4 +1,4 @@
-cap program drop Rcall_interactive
+*cap program drop Rcall_interactive
 program define Rcall_interactive
 
 	display  as txt "{hline 52} R (type {cmd:end} to exit) {hline}"

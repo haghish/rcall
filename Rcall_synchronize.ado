@@ -1,7 +1,7 @@
 
 // synchronizing from Stata to R
 
-capture program drop Rcall_synchronize
+*capture program drop Rcall_synchronize
 program Rcall_synchronize
 	
 	tempfile Rscript
