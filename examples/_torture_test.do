@@ -279,3 +279,90 @@ R: search()
 sysuse auto, clear
 Rcall: print(st.var(price))
 R: print(st.var(make))
+
+
+
+// -----------------------------------------------------------------------------
+// Synchronizing mode
+// =============================================================================
+
+// SCALAR
+// -------------------------------
+// NON-INTERACTIVE MODE
+Rcall synchronize on
+scalar a = 1
+Rcall: a = 0
+return list
+di a
+
+
+Rcall synchronize off
+scalar a = 1
+Rcall: a = 0
+di a
+
+//DEFENSIVE: missing scalar
+// -------------------------------
+Rcall synchronize on
+scalar a = .
+Rcall: a 
+di a
+
+Rcall synchronize on
+scalar a = 10
+Rcall: a 
+Rcall: a <- NA
+di a
+
+
+Rcall synchronize on
+scalar a = .
+Rcall: a = "this is \n multiline \n text"
+di a
+
+
+
+// matrix
+// -------------------------------
+mat drop _all
+Rcall synchronize off
+mat define A = (1,2,3 \ 4,5,6)
+Rcall: A
+Rcall: B = A
+mat list r(B)
+
+
+mat drop _all
+Rcall synchronize on
+mat define A = (1,2,3 \ 4,5,6)
+Rcall: A
+Rcall: A
+Rcall: C = A
+
+mat dir
+
+return list
+
+mat list C
+
+mat D = C/2
+mat list D
+
+Rcall: D
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

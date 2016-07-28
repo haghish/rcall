@@ -1,19 +1,29 @@
-*cap program drop Rcall_interactive
+cap program drop Rcall_interactive
 program define Rcall_interactive
 
 	display  as txt "{hline 52} R (type {cmd:end} to exit) {hline}"
 	
+
+	
 	scalar Rcall_counter = 0
 	tempfile Rscript
 	*tempname knot
+
 	
+	if "$Rcall_synchronize_mode" == "on" {
+		Rcall_synchronize 	
+		Rcall: source("Rcall_synchronize")
+	}
 	
-	while "`nextcommand'" != "end" {
+			
+	while `"`macval(nextcommand)'"' != "end" {
 		
 		qui disp _request(_nextcommand)
 		
-		if "`nextcommand'" != "end" {
+		if `"`macval(nextcommand)'"' != "end" {
 			
+			
+	
 			// Count opened brackets
 			// -----------------------------------------------------------------
 			Rcall_counter `nextcommand'
@@ -55,6 +65,11 @@ program define Rcall_interactive
 	
 	else {
 		display as txt "{hline}"
+		
+		// Erase memory
+		// ============
+		scalar drop Rcall_counter
+		
 	}
 
 end

@@ -8,10 +8,16 @@ program Rcall_counter, rclass
 
 local openbrackets 0
 	
-	// Use `line' for the first loop and reset for the next loop
+	// Remove string quotation to avoid open brackets that appear in quotations
 	// ------------------------------------------------------------------------
+
+	
+	
+	
 	local line `"`macval(0)'"' 
 	
+	// Count open brackets
+	// ------------------------------------------------------------------------
 	while strpos(`"`macval(line)'"',"{") != 0 {
 		local br = strpos(`"`macval(line)'"',"{")
 		local l1 = substr(`"`macval(line)'"',1, `br')
@@ -20,6 +26,8 @@ local openbrackets 0
 		local line `"`macval(l2)'"'
 	}
 	
+	// count closed brackets
+	// ------------------------------------------------------------------------
 	while strpos(`"`macval(0)'"',"}") != 0 {
 		local br = strpos(`"`macval(l2)'"',"}")
 		local l1 = substr(`"`macval(l2)'"',1, `br'+1)

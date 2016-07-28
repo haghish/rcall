@@ -21,8 +21,17 @@ stata.output <- function(plusR, Vanilla="") {
     #string <- c(string, logical, complex, RAW)
     
     
+    
     # LOGICAL
     # ------------------------------------
+    
+    # change NA to .
+    for (St.NA in logical) {
+        iget <- get(St.NA)
+        St.NA[is.na(St.NA)] <- "."
+    }
+    
+    
     string <- c(string, logical)
     
     #string <- c(string, logical, complex, RAW)

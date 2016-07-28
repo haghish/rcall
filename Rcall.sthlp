@@ -40,6 +40,16 @@ default paths ({help Rcall##Rpath:see below}).
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
+{p 4 4 2}
+The package can also {help Rcall##synchronize:synchronize objects in real-time between Stata and R}. 
+The synchronization mode is {bf:off} by default, but it 
+can be controlled as shown below. {help Rcall##synchronize:Read mode...}
+
+
+{p 8 16 2}
+{opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}
+{p_end}
+
 
 {title:Description}
 
@@ -332,6 +342,29 @@ path to R on Mac 10.10 could be:
 
     . {cmd:R setpath} "{it:/usr/bin/r}"
 
+{marker synchronize}{...}
+
+{title:Synchronize mode}
+
+{p 4 4 2}
+By default, {opt R:call} returns objects from R to Stata and allows passing 
+Stata objects to R using several functions. However, the package also has a 
+{bf:synchronize} mode where it {bf:automatically synchronizes the global environments 
+of Stata and R, allowing real-time synchronization between the two languages, 
+which consequently {bf:replaces} the objects whenever they change in either of 
+the environments. This mode is by default is {bf:off}. To activate and deactivate 
+the synchronization mode type:
+
+        . R: print("Hello World") 
+        [1] "Hello World" 
+
+{p 4 4 2}
+If R is not accessible, you can also permanently 
+setup the path to R using the {bf:setpath} subcommand. For example, the 
+path to R on Mac 10.10 could be:
+
+    . {cmd:R setpath} "{it:/usr/bin/r}"
+	
 
 {title:Remarks}
 

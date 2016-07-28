@@ -38,6 +38,15 @@ default paths ({help R##Rpath:see below}).
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
+The package can also {help R##synchronize:synchronize objects in real-time between Stata and R}. 
+The synchronization mode is __off__ by default, but it 
+can be controlled as shown below. {help R##synchronize:Read mode...}
+
+
+{p 8 16 2}
+{opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}
+{p_end}
+
 Description
 ===========
 
@@ -302,6 +311,27 @@ path to R on Mac 10.10 could be:
 
     . {cmd:R setpath} "{it:/usr/bin/r}"
 
+{marker synchronize}{...}
+Synchronize mode
+============
+
+By default, {opt R:call} returns objects from R to Stata and allows passing 
+Stata objects to R using several functions. However, the package also has a 
+__synchronize__ mode where it __automatically synchronizes the global environments 
+of Stata and R, allowing real-time synchronization between the two languages, 
+which consequently __replaces__ the objects whenever they change in either of 
+the environments. This mode is by default is __off__. To activate and deactivate 
+the synchronization mode type:
+
+        . R: print("Hello World") 
+        [1] "Hello World" 
+ 
+If R is not accessible, you can also permanently 
+setup the path to R using the __setpath__ subcommand. For example, the 
+path to R on Mac 10.10 could be:
+
+    . {cmd:R setpath} "{it:/usr/bin/r}"
+	
 Remarks
 =======
 
@@ -370,7 +400,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*cap prog drop R
+cap prog drop R
 program define R , rclass
 	
 	version 12
@@ -379,10 +409,13 @@ program define R , rclass
 	// Syntax processing
 	// =========================================================================
 	
-	//Get the latest R path, if defined
+	
+	
+	//Get the latest R path and mode, if defined
 	capture prog drop Rpath
 	capture Rpath
-	
+	capture quietly prog drop R_synchronize_mode
+	capture quietly R_synchronize_mode
 	
 	// Check if the command includes Colon in the beginning
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
@@ -425,6 +458,28 @@ program define R , rclass
 			`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
 		}
 		
+		exit
+	}
+	else if substr(trim(`"`macval(0)'"'),1,11) == "synchronize" {
+		local 0 : subinstr local 0 "synchronize" ""
+		if trim("`0'") != "on" & trim("`0'") != "off" {
+			di as err "{bf:synchronize} can only be {bf:on} or {bf:off}"
+			err 198
+		}
+		
+		tempfile Rmode
+		tempname knot
+		qui file open `knot' using "`Rmode'", write text replace
+		file write `knot' "program define R_synchronize_mode" _n
+		file write `knot' `"	global R_synchronize_mode `0'"' _n
+		file write `knot' "end" _n
+		qui file close `knot'
+		qui copy "`Rmode'" "`c(sysdir_plus)'r/Rcall_synchronize_mode.ado", replace
+		
+		if !missing("`debug'") {
+			di "{title:Memorizing R mode}" _n									///
+			`"the {bf:Rcall_synchronize.ado} is {bf:`0'}"' 
+		}
 		exit
 	}
 	
@@ -502,8 +557,11 @@ program define R , rclass
 			local sca : display `"`sca'"'
 			local l2 = `"""' + `"`macval(sca)'"' + `"""' + "`l2'"
 		}
-		else {
+		else if "`sca'" != "" {
 			local l2 = "`sca'" + "`l2'"
+		}
+		else {
+			local l2 = `"`sca'"' + "`l2'"
 		}
 
 		*di as err "l1:`l1'"
@@ -673,6 +731,12 @@ program define R , rclass
 	tempfile Rout
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
+	
+	if "$Rcall_synchronize_mode" == "on" {	
+		Rcall_synchronize
+		file write `knot' "source('Rcall_synchronize')" _n
+	}
+	
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
 	if !missing("`RProfile'") file write `knot' "source('`RProfile'')" _n		//load the libraries
 	
@@ -891,7 +955,14 @@ program define R , rclass
 				local line : subinstr local line "//NULL " ""
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
-				return local `name' "NULL"
+				
+				if "$Rcall_synchronize_mode" == "on" {
+					scalar `name' = "NULL"
+				}
+				else {
+					return local `name' "NULL"
+				}
+				
 			}
 			
 			// SCALAR OBJECT 
@@ -901,7 +972,13 @@ program define R , rclass
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
-				return scalar `name' = `line'
+				
+				if "$Rcall_synchronize_mode" == "on" {
+					scalar `name' = `line'
+				}
+				else {
+					return scalar `name' = `line'
+				}
 			}
 			
 			// NUMERIC OBJECT LENGTH > 1 
@@ -918,6 +995,7 @@ program define R , rclass
 					local jump 1
 				}
 				return local `name' = "`content'"
+				//CANNOT BE DEFINED IN STATA
 			}
 			
 			// STRING OBJECT AND CLIST
@@ -946,7 +1024,16 @@ program define R , rclass
 					file read `hitch' line
 					local jump 1
 				}
-				return local `name' `"`macval(multiline)'"'
+				
+				if "$Rcall_synchronize_mode" == "on" {
+					local test
+					capture local test : di `multiline'
+					if !missing("`test'") scalar `name' = `multiline'
+					else scalar `name' = "`multiline'"
+				}
+				else {
+					return local `name' `"`macval(multiline)'"'
+				}
 			}
 			
 			// LIST OBJECT (NUMERIC)
@@ -967,6 +1054,7 @@ program define R , rclass
 					local jump 1
 				}
 				return local `name' "`content'"
+				//CANNOT BE DEFINED IN STATA
 			}
 			
 			// MATRIX OBJECT (NUMERIC)
@@ -996,7 +1084,14 @@ program define R , rclass
 				mata: `name' = st_matrix("`name'") 
 				*mata: `name'
 				mata: st_matrix("`name'", rowshape(`name', `rownumber'))  
-				return matrix `name' = `name'
+*				return matrix `name' = `name'
+				
+				if "$Rcall_synchronize_mode" == "on" {
+					mat `name' = `name'
+				}	
+				else {
+					return matrix `name' = `name'
+				}	
 			}
 			
 			if missing("`jump'") file read `hitch' line
@@ -1004,6 +1099,7 @@ program define R , rclass
 		*capture erase list.txt
 		*copy stata.output list.txt, replace
 		if missing("`debug'") capture erase stata.output
+		if missing("`debug'") capture erase R_synchronize
 	}
 	
 	
@@ -1022,4 +1118,7 @@ program define R , rclass
 		}
 	}
 	
+	// Erase globals
+	macro drop Rpath
+	macro drop R_synchronize_mode
 end
