@@ -84,6 +84,6 @@ program Rcall_synchronize
 
 end
 
-Rcall_synchronize
+*Rcall_synchronize
 
 *copy r(Rscript) sth.txt
