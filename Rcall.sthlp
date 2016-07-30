@@ -15,20 +15,20 @@
 {title:Syntax}
 
 {p 4 4 2}
-the {bf:vanilla} subcommand executes R non-interactively, but still 
-communicates data from R to Stata after 
-execution. Without this subcommand, R is called interactively. 
+Enter R {it:console mode} within Stata. {help Rcall##running_R:Read more...}
 
 {p 8 16 2}
-{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R command}]
+{opt R:call} [{cmd::}]
 {p_end}
 
 
 {p 4 4 2}
-Enter R environment within Stata. {help Rcall##running_R:Read more...}
+Call R interactively without entering the {it:console mode}. The {bf:vanilla} 
+subcommand executes R non-interactively, but still 
+communicates data from R to Stata after execution.    {break}
 
 {p 8 16 2}
-{opt R:call} [{cmd::}]
+{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 
@@ -40,11 +40,11 @@ default paths ({help Rcall##Rpath:see below}).
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
+
 {p 4 4 2}
 The package can also {help Rcall##synchronize:synchronize objects in real-time between Stata and R}. 
 The synchronization mode is {bf:off} by default, but it 
-can be controlled as shown below. {help Rcall##synchronize:Read mode...}
-
+can be altered using: {help Rcall##synchronize:Read mode...}
 
 {p 8 16 2}
 {opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}

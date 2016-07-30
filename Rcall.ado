@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.4
+Version: 1.1.5
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
@@ -15,19 +15,19 @@ For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcal
 Syntax
 ======
 
-the __vanilla__ subcommand executes R non-interactively, but still 
-communicates data from R to Stata after 
-execution. Without this subcommand, R is called interactively. 
-
-{p 8 16 2}
-{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R command}]
-{p_end}
-
-
-Enter R environment within Stata. {help Rcall##running_R:Read more...}
+Enter R _console mode_ within Stata. {help Rcall##running_R:Read more...}
 
 {p 8 16 2}
 {opt R:call} [{cmd::}]
+{p_end}
+
+
+Call R interactively without entering the _console mode_. The __vanilla__ 
+subcommand executes R non-interactively, but still 
+communicates data from R to Stata after execution.  
+
+{p 8 16 2}
+{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 
@@ -38,10 +38,10 @@ default paths ({help Rcall##Rpath:see below}).
 {opt R:call} {cmd:setpath}  {it:"string"}
 {p_end}
 
+
 The package can also {help Rcall##synchronize:synchronize objects in real-time between Stata and R}. 
 The synchronization mode is __off__ by default, but it 
-can be controlled as shown below. {help Rcall##synchronize:Read mode...}
-
+can be altered using: {help Rcall##synchronize:Read mode...}
 
 {p 8 16 2}
 {opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}
@@ -530,7 +530,11 @@ program define Rcall , rclass
 	// Execute interactive mode
 	// -------------------------------------------------------------------------
 	if trim(`"`0'"') == "" {
-		Rcall_interactive
+		if missing("`vanilla'") Rcall_interactive
+		else {
+			di as err "the {bf:vanilla} mode cannot be called interactively"
+			err 198
+		}
 	}
 	
 	if !missing("`debug'") {
@@ -775,8 +779,10 @@ program define Rcall , rclass
 		file write `knot' "source('Rcall_synchronize')" _n
 	}
 	
+	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n //erase memory temporarily
+	
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
-	if !missing("`RProfile'") file write `knot' "source('`RProfile'')" _n		//load the libraries
+	if !missing("`RProfile'") & missing("`vanilla'") file write `knot' "source('`RProfile'')" _n		//load the libraries 
 	
 	file write `knot' `"`macval(0)'"' _n
 	//file write `knot' "save.image()" _n 				//kills the vanilla
@@ -1167,7 +1173,7 @@ end
 // CREATE THE R.ado, abbreviated command
 // =========================================================================
 
-
+/*
 tempfile edited
 tempname hitch knot
 qui file open `hitch' using "Rcall.ado", read
