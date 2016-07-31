@@ -716,7 +716,7 @@ program define R , rclass
 		capture local test : display int(`sca')		
 		if missing("`test'") & "`sca'" != "" {							
 			local sca : display `"`sca'"'
-			local l2 = `"""' + `"`macval(sca)'"' + `"""' + "`l2'"
+			local l2 = `"""' + `"`macval(sca)'"' + `"""' + `"`l2'"'
 		}
 		else if "`sca'" != "" {
 			local l2 = "`sca'" + "`l2'"
