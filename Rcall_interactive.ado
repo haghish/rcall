@@ -35,14 +35,14 @@ program define Rcall_interactive
 			if Rcall_counter == 0 {
 				
 				if missing("`tempfile'") {
-					Rcall: `nextcommand'
+					if trim("`nextcommand'") != "" Rcall: `nextcommand'
 				}
 				else {
 					file write `knot' `"`macval(nextcommand)'"' _n
 					qui file close `knot'
 					local tempfile 				//reset
-					copy "`Rscript'" "mytemp.R", replace
-					Rcall: source("`Rscript'")
+					*quietly copy "`Rscript'" "mytemp.R", replace
+					if trim("`nextcommand'") != "" Rcall: source("`Rscript'")
 				}	
 			}
 			

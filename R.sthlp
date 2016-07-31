@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.1.4}
+{right:version 1.1.5}
 {title:Title}
 
 {phang}
@@ -15,20 +15,60 @@
 {title:Syntax}
 
 {p 4 4 2}
-Enter R {it:console mode} within Stata. {help Rcall##running_R:Read more...}
+In general, the syntax of the {opt R:call} package can be abbreviated as 
+follows:
 
 {p 8 16 2}
-{opt R:call} [{cmd::}]
+{opt R:call} [{it:mode}] [{cmd::}] [{it:command}]
 {p_end}
 
 
 {p 4 4 2}
-Call R interactively without entering the {it:console mode}. The {bf:vanilla} 
-subcommand executes R non-interactively, but still 
-communicates data from R to Stata after execution.    {break}
+The {opt R:call} package was designed to be interactive. However, additional {it:modes} were 
+designed to enhance the functionality of the package for embedding R script 
+in {it:ado} programs or using it for {it:exploratory analysis}. 
+The table below summarizes the {it:mode} subcommand
+
+{* the new Stata help format of putting detail before generality}{...}
+{synoptset 22 tabbed}{...}
+{synopthdr:Mode}
+{synoptline}
+{synopt:{opt vanilla}}Calls R non-interactively. This mode is advised for programmers 
+who wish to embed R in theis Stata packages{p_end}
+
+{synopt:{opt sync}}synchronizes {it:data}, {it:matrices}, and {it:scalars} between 
+R and Stata. Making a change in any of these objects in either Stata or 
+R will change the object in the other environment. Programmers are 
+advised not to use this mode in ado programs. {p_end}
+
+{synopt:{opt setpath}}permanently defines the path to executable 
+R on the machine, which can be given as a string{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+{p 4 4 2}
+The colon sign [{cmd::}] is optional, only meant to separate the Stata command 
+from R command. The [{it:mode}] is subcommand changes the behavior of {opt R:call} 
+and can be {bf:setpath}, {bf:vanilla}, and {bf:sync}. In addition to these modes, 
+{opt R:call} also includes an {it:R console mode} which can be evoked by 
+executing {opt R:call} without any R command. 
+{help Rcall##running_R:Read more about console mode...}
 
 {p 8 16 2}
-{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R-command}]
+{opt R:call} [{cmd:sync}] [{cmd::}]
+{p_end}
+
+
+{p 4 4 2}
+In contrast, executing {opt R:call} with an R command will avoid entering 
+the {it:R console mode}. The {bf:vanilla} subcommand executes R non-interactively, but still 
+communicates data from R to Stata after execution. The {bf:sync} mode synchronizes 
+Stata and R objects which includes {bf:data sets}, {bf:matrices}, and {bf:scalars}. 
+Read more about {help Rcall##synchronize:sync} mode. 
+
+{p 8 16 2}
+{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:command}]
 {p_end}
 
 
@@ -37,17 +77,7 @@ permanently setup the path to executable R on the machine, if different with the
 default paths ({help Rcall##Rpath:see below}).
 
 {p 8 16 2}
-{opt R:call} {cmd:setpath}  {it:"string"}
-{p_end}
-
-
-{p 4 4 2}
-The package can also {help Rcall##synchronize:synchronize objects in real-time between Stata and R}. 
-The synchronization mode is {bf:off} by default, but it 
-can be altered using: {help Rcall##synchronize:Read mode...}
-
-{p 8 16 2}
-{opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}
+{opt R:call} {cmd:setpath}  {it:"path/to/R"}
 {p_end}
 
 
@@ -302,7 +332,8 @@ will continue to work when R environment is running.
 		
 		
 {p 4 4 2}
-The interactive mode also supports multi-line code:
+The interactive mode also supports multi-line code. The {bf:+} sign is added 
+automatically:
 
         . R:
 	{hline 49} R (type {cmd:end} to exit) {hline}
@@ -310,7 +341,7 @@ The interactive mode also supports multi-line code:
         +
         . if (is.numeric(x)) {
             +
-        . return(x^2)
+        .   return(x^2)
             +
         . }
         +
@@ -344,37 +375,35 @@ path to R on Mac 10.10 could be:
 
 {marker synchronize}{...}
 
-{title:Synchronize mode}
+{title:sync mode}
 
 {p 4 4 2}
 By default, {opt R:call} returns {it:rclass} objects from R to Stata and allows passing 
 Stata objects to R using several functions. However, the package also has a 
-{bf:synchronize} mode where it {bf:automatically synchronizes the global environments 
+{bf:sync} mode where it {bf:automatically synchronizes the global environments 
 of Stata and R, allowing real-time synchronization between the two languages, 
 which consequently {bf:replaces} the objects whenever they change in either of 
 the environments. This mode is by default is {bf:off}. 
 
 {p 4 4 2}
-The {bf:synchronize} mode allows maximum interactive experience for {it:numeric} and 
+The {bf:sync} mode allows maximum interactive experience for {it:numeric} and 
 {it:string} scalars and {it:matrices} in Stata. The mode 
-{ul:does not synchronize data or global macros}. See the examples below to see 
+{ul:does not synchronize global macros}. See the examples below to see 
 how a scalar or matrix change when the synchronization mode is {bf:on}. 
 
 {p 4 4 2}
 In the example below, the value of {bf:a} changes from {bf:1} to {bf:0} after it 
 is altered in R:
 
-        . R synchronize on 
         . scalar a = 1
-        . R: (a = 0)
+        . R sync: (a = 0)
         [1] 0
         . display a
-        a
+        0
 
 {p 4 4 2}
-The same example is repeated when the synchronize mode is off:
+The same example is repeated {bf:without} sync mode:
 		
-        . R synchronize off 
         . scalar a = 1
         . R: (a = 0)
         [1] 0
@@ -383,30 +412,34 @@ The same example is repeated when the synchronize mode is off:
 		
 {p 4 4 2}
 The synchronize mode also replaces matrices in R and Stata, when there is a 
-change in the matric in either of the global environments. Naturally, new 
+change in the matric in either of the environments. Naturally, new 
 matrices also are synchronized:
 
         . mat drop _all
-        . R synchronize on 
         . mat define A = (1,2,3 \ 4,5,6)
-        . Rcall: B = A
+        . Rcall sync: B = A
         . mat list B
 
-        C[2,3]
+        B[2,3]
             c1  c2  c3 
         r1   1   2   3
         r2   4   5   6 
 
 {p 4 4 2}
 		. mat C = B/2
-        . R: D
+        . R sync: C
              [,1] [,2] [,3] 
         [1,]  0.5  1.0  1.5 
         [2,]  2.0  2.5  3.0 
 		
 {p 4 4 2}
 As shown in the examples, any change made to the matrices, whether it has 
-happened in R or Stata will be instantly available in the other anguage. 
+happened in R or Stata will be instantly available in the other environment. 
+While such a level of integration between the two languages is {bf:exciting}, 
+it requires a lot of caution and testing. This is rather an exploratory 
+feature which is not a main-stream approach to calling a foreign language 
+in a programming language. 
+{bf:If you have suggestions or concerns in this regard, feel free to reach out to me for a discussion}.    {break}
 	
 
 {title:Remarks}
@@ -440,7 +473,7 @@ the more time needed to automatically communicate those objects between
 R and Stata.		
 
 
-{title:Erasing R memory}
+{title:Erasing R memory and detaching objects}
 
 {p 4 4 2}
 When you work with {bf:Rcall} interactively (without {bf:vanilla} subcommand), 
@@ -451,6 +484,26 @@ you should {bf:unlink} the {bf:.RData} file and erase the objects:
 
         . R: unlink(".RData") 	
         . R: rm(list=ls())
+		
+{p 4 4 2}
+However, the commands above do not erase the {bf:attached} packages and data sets. 
+you can view the attached objects in your R environment using the {bf:search()} 
+function. To detach packages or objects, use the {bf:detach()} function. Note that 
+packages are named as {bf:"package:_name_"}. Here is an example of detaching a 
+data set and a package 
+
+        . R:
+	{hline 49} R (type {cmd:end} to exit) {hline}
+        . attach(cars)
+        . library(Rcpp)               # make sure you have it installed
+        . search()                    # Output is omitted ...
+        .
+        . detach(cars)
+        . detach("package:Rcpp")
+	{hline}
+
+{p 4 4 2}
+detach("package:graphics", unload=TRUE)
 
 
 {title:Example(s)}

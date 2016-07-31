@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.4
+Version: 1.1.5
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The package automatically returns {help return:rclass} R objects with 
@@ -15,19 +15,57 @@ For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcal
 Syntax
 ======
 
-Enter R _console mode_ within Stata. {help R##running_R:Read more...}
+In general, the syntax of the {opt R:call} package can be abbreviated as 
+follows:
 
 {p 8 16 2}
-{opt R:call} [{cmd::}]
+{opt R:call} [{it:mode}] [{cmd::}] [{it:command}]
 {p_end}
 
 
-Call R interactively without entering the _console mode_. The __vanilla__ 
-subcommand executes R non-interactively, but still 
-communicates data from R to Stata after execution.  
+The {opt R:call} package was designed to be interactive. However, additional _modes_ were 
+designed to enhance the functionality of the package for embedding R script 
+in _ado_ programs or using it for _exploratory analysis_. 
+The table below summarizes the _mode_ subcommand
+
+{* the new Stata help format of putting detail before generality}{...}
+{synoptset 22 tabbed}{...}
+{synopthdr:Mode}
+{synoptline}
+{synopt:{opt vanilla}}Calls R non-interactively. This mode is advised for programmers 
+who wish to embed R in theis Stata packages{p_end}
+
+{synopt:{opt sync}}synchronizes _data_, _matrices_, and _scalars_ between 
+R and Stata. Making a change in any of these objects in either Stata or 
+R will change the object in the other environment. Programmers are 
+advised not to use this mode in ado programs. {p_end}
+
+{synopt:{opt setpath}}permanently defines the path to executable 
+R on the machine, which can be given as a string{p_end}
+{synoptline}
+{p2colreset}{...}
+
+
+The colon sign [{cmd::}] is optional, only meant to separate the Stata command 
+from R command. The [{it:mode}] is subcommand changes the behavior of {opt R:call} 
+and can be __setpath__, __vanilla__, and __sync__. In addition to these modes, 
+{opt R:call} also includes an _R console mode_ which can be evoked by 
+executing {opt R:call} without any R command. 
+{help R##running_R:Read more about console mode...}
 
 {p 8 16 2}
-{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:R-command}]
+{opt R:call} [{cmd:sync}] [{cmd::}]
+{p_end}
+
+
+In contrast, executing {opt R:call} with an R command will avoid entering 
+the _R console mode_. The __vanilla__ subcommand executes R non-interactively, but still 
+communicates data from R to Stata after execution. The __sync__ mode synchronizes 
+Stata and R objects which includes __data sets__, __matrices__, and __scalars__. 
+Read more about {help R##synchronize:sync} mode. 
+
+{p 8 16 2}
+{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:command}]
 {p_end}
 
 
@@ -35,16 +73,7 @@ permanently setup the path to executable R on the machine, if different with the
 default paths ({help R##Rpath:see below}).
 
 {p 8 16 2}
-{opt R:call} {cmd:setpath}  {it:"string"}
-{p_end}
-
-
-The package can also {help R##synchronize:synchronize objects in real-time between Stata and R}. 
-The synchronization mode is __off__ by default, but it 
-can be altered using: {help R##synchronize:Read mode...}
-
-{p 8 16 2}
-{opt R:call} {cmd:synchronize}  {c -(}{cmd:on}{c |}{cmd:off}{c )-}
+{opt R:call} {cmd:setpath}  {it:"path/to/R"}
 {p_end}
 
 Description
@@ -273,7 +302,8 @@ will continue to work when R environment is running.
         1998
 		
 		
-The interactive mode also supports multi-line code:
+The interactive mode also supports multi-line code. The __+__ sign is added 
+automatically:
 
         . R:
 	{hline 49} R (type {cmd:end} to exit) {hline}
@@ -281,7 +311,7 @@ The interactive mode also supports multi-line code:
         +
         . if (is.numeric(x)) {
             +
-        . return(x^2)
+        .   return(x^2)
             +
         . }
         +
@@ -312,34 +342,32 @@ path to R on Mac 10.10 could be:
     . {cmd:R setpath} "{it:/usr/bin/r}"
 
 {marker synchronize}{...}
-Synchronize mode
+sync mode
 ============
 
 By default, {opt R:call} returns _rclass_ objects from R to Stata and allows passing 
 Stata objects to R using several functions. However, the package also has a 
-__synchronize__ mode where it __automatically synchronizes the global environments 
+__sync__ mode where it __automatically synchronizes the global environments 
 of Stata and R, allowing real-time synchronization between the two languages, 
 which consequently __replaces__ the objects whenever they change in either of 
 the environments. This mode is by default is __off__. 
 
-The __synchronize__ mode allows maximum interactive experience for _numeric_ and 
+The __sync__ mode allows maximum interactive experience for _numeric_ and 
 _string_ scalars and _matrices_ in Stata. The mode 
-___does not synchronize data or global macros___. See the examples below to see 
+___does not synchronize global macros___. See the examples below to see 
 how a scalar or matrix change when the synchronization mode is __on__. 
 
 In the example below, the value of __a__ changes from __1__ to __0__ after it 
 is altered in R:
 
-        . R synchronize on 
         . scalar a = 1
-        . R: (a = 0)
+        . R sync: (a = 0)
         [1] 0
         . display a
-        a
+        0
 
-The same example is repeated when the synchronize mode is off:
+The same example is repeated __without__ sync mode:
 		
-        . R synchronize off 
         . scalar a = 1
         . R: (a = 0)
         [1] 0
@@ -347,28 +375,32 @@ The same example is repeated when the synchronize mode is off:
         1
 		
 The synchronize mode also replaces matrices in R and Stata, when there is a 
-change in the matric in either of the global environments. Naturally, new 
+change in the matric in either of the environments. Naturally, new 
 matrices also are synchronized:
 
         . mat drop _all
-        . R synchronize on 
         . mat define A = (1,2,3 \ 4,5,6)
-        . R: B = A
+        . R sync: B = A
         . mat list B
         
-        C[2,3]
+        B[2,3]
             c1  c2  c3 
         r1   1   2   3
         r2   4   5   6 
         
 		. mat C = B/2
-        . R: D
+        . R sync: C
              [,1] [,2] [,3] 
         [1,]  0.5  1.0  1.5 
         [2,]  2.0  2.5  3.0 
 		
 As shown in the examples, any change made to the matrices, whether it has 
-happened in R or Stata will be instantly available in the other anguage. 
+happened in R or Stata will be instantly available in the other environment. 
+While such a level of integration between the two languages is __exciting__, 
+it requires a lot of caution and testing. This is rather an exploratory 
+feature which is not a main-stream approach to calling a foreign language 
+in a programming language. 
+__If you have suggestions or concerns in this regard, feel free to reach out to me for a discussion__.  
 	
 Remarks
 =======
@@ -397,8 +429,8 @@ that are of no use for you. The more objects you keep in R memory,
 the more time needed to automatically communicate those objects between 
 R and Stata.		
 
-Erasing R memory
-================
+Erasing R memory and detaching objects
+======================================
 
 When you work with __Rcall__ interactively (without __vanilla__ subcommand), 
 anything you do in R is memorized and 
@@ -408,6 +440,24 @@ you should __unlink__ the __.RData__ file and erase the objects:
 
         . R: unlink(".RData") 	
         . R: rm(list=ls())
+		
+However, the commands above do not erase the __attached__ packages and data sets. 
+you can view the attached objects in your R environment using the __search()__ 
+function. To detach packages or objects, use the __detach()__ function. Note that 
+packages are named as __"package:_name_"__. Here is an example of detaching a 
+data set and a package 
+
+        . R:
+	{hline 49} R (type {cmd:end} to exit) {hline}
+        . attach(cars)
+        . library(Rcpp)               # make sure you have it installed
+        . search()                    # Output is omitted ...
+        .
+        . detach(cars)
+        . detach("package:Rcpp")
+	{hline}
+
+detach("package:graphics", unload=TRUE)
 
 Example(s)
 =================
@@ -443,17 +493,19 @@ program define R , rclass
 	
 	version 12
 
-	// -------------------------------------------------------------------------
+	// =========================================================================
 	// Syntax processing
+	//   - Retreive memory files "R Path", "Synchronize mode"
+	//   - Process the R inputs
+	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
 	
-	
-	
-	//Get the latest R path and mode, if defined
 	capture prog drop Rpath
 	capture Rpath
-	capture quietly prog drop R_synchronize_mode
-	capture quietly R_synchronize_mode
+	
+	// -------------------------------------------------------------------------
+	// Input processing
+	// =========================================================================
 	
 	// Check if the command includes Colon in the beginning
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
@@ -469,6 +521,20 @@ program define R , rclass
 			"Running R in debug mode"
 		}	
 	}
+	
+	// Synchronize mode
+	// ================
+	else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |						///
+		substr(trim(`"`macval(0)'"'),1,5) == "sync:" |							///
+		substr(trim(`"`macval(0)'"'),1,4) == "sync" &							///
+		trim(`"`macval(0)'"') == "sync" {
+		local 0 : subinstr local 0 "sync" ""
+		global R_synchronize_mode on
+	}
+
+	
+	// Vanilla mode
+	// ============
 	if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		local 0 : subinstr local 0 "vanilla" ""
 		local vanilla --vanilla
@@ -477,11 +543,12 @@ program define R , rclass
 			"Running R in non-interactive batch mode"
 		}	
 	}
+	
+	// Setpath
+	// =======
 	else if substr(trim(`"`macval(0)'"'),1,7) == "setpath" {
 		local 0 : subinstr local 0 "setpath" ""
 		confirm file `0'
-		
-		//Save an ado file
 		tempfile Rpath
 		tempname knot
 		qui file open `knot' using "`Rpath'", write text replace
@@ -490,21 +557,22 @@ program define R , rclass
 		file write `knot' "end" _n
 		qui file close `knot'
 		qui copy "`Rpath'" "`c(sysdir_plus)'r/Rpath.ado", replace
-		
 		if !missing("`debug'") {
 			di "{title:Memorizing R path}" _n									///
 			`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
 		}
-		
 		exit
 	}
+	
+	// Synchronize mode
+	// ================
+	/*
 	else if substr(trim(`"`macval(0)'"'),1,11) == "synchronize" {
 		local 0 : subinstr local 0 "synchronize" ""
 		if trim("`0'") != "on" & trim("`0'") != "off" {
 			di as err "{bf:synchronize} can only be {bf:on} or {bf:off}"
 			err 198
 		}
-		
 		tempfile Rmode
 		tempname knot
 		qui file open `knot' using "`Rmode'", write text replace
@@ -513,22 +581,82 @@ program define R , rclass
 		file write `knot' "end" _n
 		qui file close `knot'
 		qui copy "`Rmode'" "`c(sysdir_plus)'r/Rcall_synchronize_mode.ado", replace
-		
 		if !missing("`debug'") {
 			di "{title:Memorizing R mode}" _n									///
 			`"the {bf:Rcall_synchronize.ado} is {bf:`0'}"' 
 		}
 		exit
 	}
+	*/
 	
 	// Check if the command includes Colon in the end
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
 		local 0 : subinstr local 0 ":" ""
 	}
 	
-	
-	// Execute interactive mode
 	// -------------------------------------------------------------------------
+	// Search R path, if not specified
+	// =========================================================================
+	if missing("$Rpath") {
+		
+		if "`c(os)'" == "Windows" {
+			
+			// 1- try both "Program Files" and "Program Files (86)" 
+			// 2- Get the list of directories that begin with R-*
+			// 3- select the last one
+			
+			local wd : pwd
+			capture quietly cd "C:\Program Files\R"
+			if _rc != 0 {
+				capture quietly cd "C:\Program Files (x86)\R"
+				if _rc != 0 {
+					display as err "R was not found on your system. Setup R path manually"
+					exit 198
+				}
+			}
+			local folder : pwd
+			local Rdir : dir "`folder'" dirs "R-*"
+			tokenize `"`Rdir'"'
+			while `"`1'"' != "" {
+				local newest_R `"`1'"'
+				macro shift
+			}
+			quietly cd `"`newest_R'\bin"'
+			local path : pwd
+			local path : display "`path'\R.exe"			
+			quietly cd "`wd'"
+		}
+		else {
+			local path "/usr/bin/r"
+		}
+		if !missing("`debug'") {
+			di _n "{title:Path to R}" _n								///
+			"The path to R was {err:guessed} to be:"  _n
+			display `"{err:`path'}"'
+		}
+	}
+	else {
+		local path = "$Rpath"
+		if !missing("`debug'") {
+			di _n "{title:Path to R}" _n								///
+			"The path to R was obtained from {err:Rpath.ado} to be:"  _n
+			display `"{err:`path'}"'
+		}
+	}	
+	
+	// -------------------------------------------------------------------------
+	// Test R
+	// =========================================================================
+	capture confirm file "`path'"
+	if _rc != 0 {
+		di as txt "{p}R was expected in:    `path'"
+		display as err "{bf:Rcall} could not find R on your system"
+		err 198
+	}
+	
+	// -------------------------------------------------------------------------
+	// Execute interactive mode
+	// =========================================================================
 	if trim(`"`0'"') == "" {
 		if missing("`vanilla'") R_interactive
 		else {
@@ -536,16 +664,15 @@ program define R , rclass
 			err 198
 		}
 	}
-	
 	if !missing("`debug'") {
 		di _n "{title:R command}" _n											///
 		"The command that you wish to execute in {bf:R} is:" _n(2) 				///
 		`"{err:`macval(0)'}"' 
 	}
 		
-	
-	// Searching for Matrix
 	// -------------------------------------------------------------------------
+	// Searching for Matrix
+	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.matrix(") != 0 {
 		local br = strpos(`"`macval(0)'"',"st.matrix")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
@@ -554,28 +681,20 @@ program define R , rclass
 		local mt = strpos(`"`macval(l2)'"',")") 
 		local mat = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
- 		
 		if !missing("`debug'") {
 			di _n "{title:st.matrix() function}" _n								///
 			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  	///
 			"the {bf:matconvert.ado} function, which returns:"
 			matconvert `mat'
 		}
-		
 		qui matconvert `mat'
-		local l2 = "`r(`mat')'" + "`l2'"
-		
-		*local l2 = `r(`mat')' + "`l2'"
-		
-		*di as err "l1:`l1'"
-		*di as err "l2:`l2'"
-		
-		
+		local l2 = "`r(`mat')'" + "`l2'"		
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 	}
 	
-	// Searching for Scalar
 	// -------------------------------------------------------------------------
+	// Searching for Scalar
+	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.scalar(") != 0 {
 		local br = strpos(`"`macval(0)'"',"st.scalar")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
@@ -605,16 +724,12 @@ program define R , rclass
 		else {
 			local l2 = `"`sca'"' + "`l2'"
 		}
-
-		*di as err "l1:`l1'"
-		*di as err `"l2:`macval(l2)'"'
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		
 	}
 	
-	
-	// Searching for Data
 	// -------------------------------------------------------------------------
+	// Searching for Data
+	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.data(") != 0 {
 		local br = strpos(`"`macval(0)'"',"st.data")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
@@ -633,7 +748,6 @@ program define R , rclass
 			local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
 			local filename : di `"`macval(filename)'`macval(filename2)'"'
 		}
-		
 		if !missing("`debug'") {
 			di _n "{title:st.data() function}" _n								///
 			"You wish to pass Stata data {bf:`filename'} to {bf:R}..."   
@@ -658,15 +772,12 @@ program define R , rclass
 		}
 		
 		local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
-		
-		*di as err "l1:`l1'"
-		*di as err `"l2:`macval(l2)'"'
-		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		
+		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'	
 	}
 	
-	// Searching for Load Data
 	// -------------------------------------------------------------------------
+	// Searching for Load Data
+	// =========================================================================
 	while strpos(`"`macval(0)'"',"load.data(") != 0 {
 		local br = strpos(`"`macval(0)'"',"load.data")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
@@ -689,16 +800,13 @@ program define R , rclass
 			display as err "data frame is not specified"
 			err 198
 		}
-
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		
 		if !missing("`debug'") di _n `"`macval(0)'"'
-		
 	}
 	
-	
-	// Searching for variable
 	// -------------------------------------------------------------------------
+	// Searching for variable
+	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.var(") != 0 {
 		local br = strpos(`"`macval(0)'"',"st.var")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
@@ -714,9 +822,7 @@ program define R , rclass
 			"the {bf:varconvert.ado} function, which returns:"
 			varconvert `mat'
 		}
-		
 		qui varconvert `mat'
-		
 		if "`r(type)'" == "numeric" {
 			local l2 = "`r(`mat')'" + "`l2'"
 			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
@@ -725,13 +831,6 @@ program define R , rclass
 			local l2 = `"`r(`mat')'"' + "`l2'"
 			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 		}
-		*local l2 = `r(`mat')' + "`l2'"
-		
-		*di as err "l1:`l1'"
-		*di as err "l2:`l2'"
-		
-		
-		
 	}
 	
 	
@@ -829,58 +928,7 @@ program define R , rclass
 	//infile, or use option --slave. 
 	
 	
-	if missing("$Rpath") {
-		
-		if "`c(os)'" == "Windows" {
-			
-			// try both "Program Files" and "Program Files (86)" 
-			
-			local wd : pwd
-			capture quietly cd "C:\Program Files\R"
-			if _rc != 0 {
-				capture quietly cd "C:\Program Files (x86)\R"
-				if _rc != 0 {
-					display as err "R was not found on your system. Setup R path manually"
-					exit 198
-				}
-			}
-			
-			// Get the list of directories that begin with R-* and select the 
-			// last directory.
-			
-			local folder : pwd
-			local Rdir : dir "`folder'" dirs "R-*"
-			tokenize `"`Rdir'"'
-			while `"`1'"' != "" {
-				local newest_R `"`1'"'
-				macro shift
-			}
-			
-			quietly cd `"`newest_R'\bin"'
-			local path : pwd
-			local path : display "`path'\R.exe"			
-			quietly cd "`wd'"
-		}
-
-		else {
-			local path "/usr/bin/r"
-		}
-		
-		if !missing("`debug'") {
-			di _n "{title:Path to R}" _n								///
-			"The path to R was {err:guessed} to be:"  _n
-			display `"{err:`path'}"'
-		}
-	}
-	else {
-		local path = "$Rpath"
-		
-		if !missing("`debug'") {
-			di _n "{title:Path to R}" _n								///
-			"The path to R was obtained from {err:Rpath.ado} to be:"  _n
-			display `"{err:`path'}"'
-		}
-	}	
+	
 	
 	if missing("`vanilla'") local save "--save"
 	else local save "--no-save"
@@ -915,66 +963,7 @@ program define R , rclass
 	// If data was loaded automatically, remove the temporary data file
 	if !missing("`foreign'") capture qui erase _st.data.dta
 	
-	*cap erase 0PROCESS1.txt
-	*copy "`Rout'" 0PROCESS1.txt, replace
-	
-	// -------------------------------------------------------------------------
-	// Edit the output file & print it in Stata
-	// =========================================================================
-	
-	//NOT IN SLAVE MODE, Because it doesn't include the command
-	
-	/*
-	tempfile tmp
-	tempname hitch
-	qui file open `hitch' using `"`Rout'"', read
-	qui file open `knot' using `"`tmp'"', write text replace
-	file read `hitch' line
-	
-	// JUMP THE INTRO AND SOURCING THE FUNCTION
-	
-	// indicator1 is used for removing the intro
-	// indicator2 is used for avoiding empty lines in the beginning of the file
-	
-	while r(eof) == 0 {
-		
-		// REMOVE R INTRO
-		// ===============
-		
-		
-		
-		if missing("`indicator'") {
-			while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "> " {
-				file read `hitch' line
-			}
-			local indicator 1	
-		}
-		
-		
-		file read `hitch' line
-		
-		
-		// REMOVE R Commands
-		// =================	
-		cap if substr(`"`macval(line)'"',1,2) != "> " { 
-			if "`line'" != "" & !missing("`indicator2'") file write `knot'  _n
-			if "`line'" != "" file write `knot' `"`macval(line)'"' 
-			local indicator2 1
-		}	
-		file read `hitch' line
-	}
-	
-	qui file close `knot'
-	qui file close `hitch'
-	
-	type "`tmp'"
-	copy "`tmp'" 0PROCESS2.txt, replace	
-	*/
-	
 	type "`Rout'"
-	
-	*capture erase 0PROCESS2.txt
-	*copy "`Rout'" 0PROCESS2.txt, replace
 	
 	if !missing("`debug'") {
 		di _n "{title:[5/5] rclass return}" _n								///
@@ -1074,6 +1063,7 @@ program define R , rclass
 					capture local test : di `multiline'
 					if !missing("`test'") scalar `name' = `multiline'
 					else scalar `name' = "`multiline'"
+					return local `name' `"`macval(multiline)'"'
 				}
 				else {
 					return local `name' `"`macval(multiline)'"'
@@ -1128,10 +1118,12 @@ program define R , rclass
 				mata: `name' = st_matrix("`name'") 
 				*mata: `name'
 				mata: st_matrix("`name'", rowshape(`name', `rownumber'))  
-*				return matrix `name' = `name'
 				
 				if "$Rcall_synchronize_mode" == "on" {
-					mat `name' = `name'
+					mat define `name'_copy = `name'
+					return matrix `name' = `name'
+					mat `name' = `name'_copy
+					mat drop `name'_copy
 				}	
 				else {
 					return matrix `name' = `name'
