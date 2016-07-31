@@ -191,6 +191,8 @@ Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 //save the results of Rcpp in an R object, and get it back in Stata!
 display r(a)
 
+Rcall: detach("package:Rcpp")
+
 // -----------------------------------------------------------------------------
 // RProfile : Detach packages, data, variables, etc..
 // =============================================================================
