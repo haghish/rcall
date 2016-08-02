@@ -4,8 +4,13 @@ stata.output <- function(plusR, Vanilla="") {
     # --------------------------------------------------------------------------
     # PREPARATION
     # ==========================================================================
-    lst <- ls(globalenv())              #list global env
-
+    if (exists("st.return") == TRUE)  {
+        lst <- st.return
+    }
+    else {
+        lst <- ls(globalenv())              #list global env
+    }
+    
     # NUMERIC (numeric AND integer)
     # ------------------------------------
     numeric <- lst[sapply(lst,function(var) any(class(get(var))=='numeric'))]

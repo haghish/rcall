@@ -512,6 +512,22 @@ program define Rcall , rclass
 		local 0 : subinstr local 0 ":" ""
 	}
 	
+	// clear R memory
+	// ================
+	if substr(trim(`"`macval(0)'"'),1,5) == "clear" & 							///
+	trim(substr(trim(`"`macval(0)'"'),6,.)) == "" {
+		
+		capture erase .RData
+		
+		capture findfile RProfile.R, path("`c(sysdir_plus)'r")
+		if _rc == 0 {
+			capture erase "`r(fn)'"
+		}
+		exit
+	}
+	
+	// debug mode
+	// ================
 	if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
 		local 0 : subinstr local 0 "debug" ""
 		local debug 1
@@ -851,6 +867,11 @@ program define Rcall , rclass
 	}
 	
 	
+	capture findfile Rprofile.site, path("`c(sysdir_plus)'r")
+	if _rc == 0 {
+		local RSite `r(fn)'
+	}
+	
 	capture findfile RProfile.R, path("`c(sysdir_plus)'r")
 	if _rc == 0 {
 		local RProfile `r(fn)'
@@ -861,7 +882,8 @@ program define Rcall , rclass
 	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local RProfile : subinstr local RProfile "\" "/", all	
+		local RProfile : subinstr local RProfile "\" "/", all
+		local RSite : subinstr local RProfile "\" "/", all
 		local plusR : subinstr local plusR "\" "/", all
 	}
 
@@ -881,16 +903,20 @@ program define Rcall , rclass
 	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n //erase memory temporarily
 	
 	if !missing("`foreign'") file write `knot' "library(foreign)" _n
-	if !missing("`RProfile'") & missing("`vanilla'") file write `knot' "source('`RProfile'')" _n		//load the libraries 
+	if !missing("`RSite'") & missing("`vanilla'") 								///
+			file write `knot' "source('`RSite'')" _n			
+	if !missing("`RProfile'") & missing("`vanilla'") 							///
+			file write `knot' "source('`RProfile'')" _n							//load the libraries 
 	
 	file write `knot' `"`macval(0)'"' _n
-	//file write `knot' "save.image()" _n 				//kills the vanilla
+	if missing("`vanilla'") file write `knot' "save.image()" _n  				//kills the vanilla
 	file write `knot' "source('`source'')" _n
 	*file write `knot' `"plusR <- "`plusR'""' _n		//source stata.output() before exit
 	file write `knot' `"stata.output("`plusR'", "`vanilla'")"' _n
 	//file write `knot' "rm(stata.output)" _n	
 	//file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
-
+	
+	*if missing("`vanilla'") file write `knot' "save.image()" _n 
 	
 	if !missing("`forceload'") {
 		file write `knot' `"write.dta(`loaddata', "'							///
