@@ -37,8 +37,6 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 ***/
 
 
-
-*capture program drop matconvert
 program matconvert, rclass
 	
 	*mat list `0'
@@ -66,10 +64,7 @@ program matconvert, rclass
 	return local `0' "`code'"
 end
 
-
+// Create help file
+// ============================================
 * markdoc matconvert.ado, export(sthlp) replace
-
-/*
-matrix A = (1,2\3,4\0,0)
-matconvert A
 
