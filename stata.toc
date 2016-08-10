@@ -1,2 +1,2 @@
-v 1.1.4
+v 1.2.0
 d 'Rcall': Seamless interactive R in Stata 

@@ -6,7 +6,8 @@
 
 program Rcall_check
 	
-	syntax [anything] [, Rversion(real 0.0)]
+	*syntax [anything] [, Rversion(real 0.0)]
+	syntax [anything] [, Rversion(str)]
 	
 	// Check that Rcall is installed
 	// -------------------------------------------------------------------------
@@ -19,7 +20,8 @@ program Rcall_check
 	// Check that R is executable
 	// -------------------------------------------------------------------------
 	Rcall vanilla:                                                           ///
-	version = R.Version()\$minor;                                            ///
+	major = R.Version()\$major; minor = R.Version()\$minor; 				 ///
+	version = paste(major,minor, sep=".");                                   ///
 	if ("`anything'" != "") {                                                ///
 		pkglist = unlist(strsplit("`anything'", " +"));                      ///
 		for (i in 1:length(pkglist)) {                                       ///
@@ -33,8 +35,8 @@ program Rcall_check
 				break;                                                       ///
 			};                                                               ///
 		};                                                                   ///
-		rm(i, pkg, pkglist);                                                 ///
-    };
+    };																		 ///
+	rm(i, pkg, pkglist, major, minor);                                   
 	
 	// Return propper error
 	// -------------------------------------------------------------------------
@@ -47,8 +49,12 @@ program Rcall_check
 		err 198
 	}
 	
+	// Check R version 
+	// -------------------------------------------------------------------------
+	if "`rversion'" > "`r(version)'" {
+		di as err "R version `rversion' or higher is required. {help Rcall} "	///
+		"is using R `r(version)'"
+		err 198
+	}
+	
 end
-
-
-
-

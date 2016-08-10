@@ -1,80 +1,100 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.1.5
+Version: 1.2.0
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
-The package automatically returns {help return:rclass} R objects with 
-_numeric_, _integer_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
-classes in Stata. It also allows passing Stata __variables__, __data set__, 
-{help macro}, {help scalar}, and {help matrix} to R as well as load data from R 
+The command automatically returns {help return:rclass} R objects with 
+_integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
+classes to Stata. It also allows passing Stata variable, dataset, 
+macro, scalar, and matrix to R as well as load a dataframe from R 
 to Stata automatically, 
-which provides an automated reciprocal communication between Stata and R. 
-For more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
+which provides an automated reciprocal communication between Stata and R. For
+more information and examples visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 /***
 Syntax
 ======
 
-In general, the syntax of the {opt R:call} package can be abbreviated as 
-follows:
+To call R from Stata use the following syntax
 
 {p 8 16 2}
-{opt R:call} [{it:mode}] [{cmd::}] [{it:command}]
+{opt R:call} [{help Rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
+the package also includes a few subcommands to facilitate integrating R in Stata
 
-The {opt R:call} package was designed to be interactive. However, additional _modes_ were 
-designed to enhance the functionality of the package for embedding R script 
-in _ado_ programs or using it for _exploratory analysis_. 
-The table below summarizes the _mode_ subcommand
+{p 8 16 2}
+{opt R:call} [{help Rcall##subcommand:{it:subcommand}}]
+{p_end}
+
+the following functions can be used to communicate data from Stata to R: 
+
+{synoptset 22 tabbed}{...}
+{synopthdr:Function}
+{synoptline}
+{synopt:{opt st.scalar(name)}}passes a scalar to R{p_end}
+{synopt:{opt st.matrix(name)}}passes a matrix to R{p_end}
+{synopt:{opt st.var(varname)}}passes a numeric or string variable to R{p_end}
+{synopt:{opt st.data(filename)}}passes Stata data to R. without _filename_, the currently loaded data is used. {p_end}
+{synopt:{opt st.load(dataframe)}}loads data from R dataframe to Stata{p_end}
+{synoptline}
+{p2colreset}{...}
+
+{marker modes}{...}
+Modes
+=====
+
+The _mode_ changes the behavior of the package and it can be __vanilla__ or __sync__. 
+When the _mode_ is not specified, R is called interactively which is the default 
+mode. Finally, when the [{it:R-command}] is not specified, the console mode 
+will be executed which simulates R console within Stata results window for interactive 
+use. In all of these modes, __Rcall__ returns _rclass_ objects from R to Stata. These 
+modes are summarized below:
 
 {* the new Stata help format of putting detail before generality}{...}
 {synoptset 22 tabbed}{...}
 {synopthdr:Mode}
 {synoptline}
-{synopt:{opt vanilla}}Calls R non-interactively. This mode is advised for programmers 
-who wish to embed R in theis Stata packages{p_end}
+{synopt: __[vanilla](http://www.haghish.com/packages/Rcall.php#vanilla_mode)__ }Calls R non-interactively. This mode is advised for programmers 
+who wish to embed R in Stata packages{p_end}
 
-{synopt:{opt sync}}synchronizes _data_, _matrices_, and _scalars_ between 
+{synopt: __[sync](http://www.haghish.com/packages/Rcall.php#sync_mode)__ }executes R interactively and 
+synchronizes _matrices_ and _scalars_ between 
 R and Stata. Making a change in any of these objects in either Stata or 
-R will change the object in the other environment. Programmers are 
-advised not to use this mode in ado programs. {p_end}
+R will change the object in the other environment.  
+{p_end}
 
-{synopt:{opt setpath}}permanently defines the path to executable 
-R on the machine, which can be given as a string{p_end}
+{synopt:[interactive](http://www.haghish.com/packages/Rcall.php#interactive_mode)}when the mode is not specified, R is called interactively 
+which memorizes the actions, objects available in the R memory, the attached 
+datasets, and the loaded packages. {p_end}
+
+{synopt:[console](http://www.haghish.com/packages/Rcall.php#console_mode)}when the R command is not specified, R is called interactively 
+and in addition, R console is simulated within the results windows of Stata. 
+In the console mode users can type R commands directly in Stata and get the 
+results back interactively. {p_end}
 {synoptline}
 {p2colreset}{...}
 
+{marker subcommand}{...}
+Subcommands
+=================
 
-The colon sign [{cmd::}] is optional, only meant to separate the Stata command 
-from R command. The [{it:mode}] is subcommand changes the behavior of {opt R:call} 
-and can be __setpath__, __vanilla__, and __sync__. In addition to these modes, 
-{opt R:call} also includes an _R console mode_ which can be evoked by 
-executing {opt R:call} without any R command. 
-{help R##running_R:Read more about console mode...}
+__Rcall__ allows a few subcommands which provide several features to facilitate 
+working with the package interactivey. The subcommands are summarized in the 
+table below: 
 
-{p 8 16 2}
-{opt R:call} [{cmd:sync}] [{cmd::}]
-{p_end}
-
-
-In contrast, executing {opt R:call} with an R command will avoid entering 
-the _R console mode_. The __vanilla__ subcommand executes R non-interactively, but still 
-communicates data from R to Stata after execution. The __sync__ mode synchronizes 
-Stata and R objects which includes __data sets__, __matrices__, and __scalars__. 
-Read more about {help R##synchronize:sync} mode. 
-
-{p 8 16 2}
-{opt R:call} [{cmd:vanilla}] [{cmd::}] [{it:command}]
-{p_end}
-
-
-permanently setup the path to executable R on the machine, if different with the 
-default paths ({help R##Rpath:see below}).
-
-{p 8 16 2}
-{opt R:call} {cmd:setpath}  {it:"path/to/R"}
-{p_end}
+{* the new Stata help format of putting detail before generality}{...}
+{synoptset 22 tabbed}{...}
+{synopthdr:Subcommand}
+{synoptline}
+{synopt:[setpath](http://www.haghish.com/packages/Rcall.php#setpath_subcommand) {it:"path/to/R"}}permanently defines the path to executable 
+R on the machine.{p_end}
+{synopt:[clear](http://www.haghish.com/packages/Rcall.php#clear_subcommand)}erases 
+the R memory and history in the interactive mode. {p_end}
+{synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
+the R version and paths to R, RProfile, and Rhistory {p_end}
+{synoptline}
+{p2colreset}{...}
 
 Description
 ===========
@@ -92,7 +112,7 @@ _numeric_, _integer_, _character_, _logical_, _matrix_, _list_, and _NULL_
 classes are automatically returned to Stata as {help return:rclass}. 
 
 R objects with _data.frame_ class can be automatically loaded from R to 
-Stata using the __load.data()__ function (see below).
+Stata using the __st.load()__ function (see below).
 
 Communication from R to Stata
 ======================================
@@ -164,25 +184,10 @@ A _NULL_ example:
         NULL	
 		
 Regarding communicating R data set to Stata automatically, see the 
-__load.data(_dataframe_)__ function below. 
+__st.load(_dataframe_)__ function below. 
 		
 Communication from Stata to R
 ======================================
-
-The table below shows the of the functions needed for data communication from 
-Stata to R. 
-
-{* the new Stata help format of putting detail before generality}{...}
-{synoptset 22 tabbed}{...}
-{synopthdr:Function}
-{synoptline}
-{synopt:{opt st.scalar()}}passes a scalar to R{p_end}
-{synopt:{opt st.matrix()}}passes a matrix to R{p_end}
-{synopt:{opt st.var(varname)}}passes a numeric or string variable to R{p_end}
-{synopt:{opt st.data(filename)}}passes data from Stata to R{p_end}
-{synopt:{opt load.data(dataframe)}}loads data from R dataframe to Stata{p_end}
-{synoptline}
-{p2colreset}{...}
 
 For an ideal reciprocation between Stata and R, Stata should also easily 
 communicate variables to R. Local and global {help macro:macros} can be passed 
@@ -219,7 +224,7 @@ And of course, you can access the matrix from R in Stata as well:
         r1   97   98
         r2   99  100
 
-Passing variables from Stata to R is convenient, using the  
+Passing variables from Stata to R is convenient, using the 
 __st.var(_varname_)__ function. Therefore, any analysis can be executed in R 
 simply by passing the variables required for the analysis from Stata to R:
 
@@ -257,7 +262,7 @@ data to R.
         [1] 74 12
 		
 Finally, the data can be imported from R to Stata automatically, using the 		
-__load.data(_dataframe_)__ function. This function will automatically save a 
+__st.load(_dataframe_)__ function. This function will automatically save a 
 Stata data set from R and load it in Stata by clearing the current data set, 
 if there is any. Naturally, you can have more control over converting variable 
 types if you write a proper code in R for exporting Stata data sets. Nevertheless, 
@@ -265,7 +270,7 @@ the function should work just fine in most occasions:
 
         . clear 
         . R: mydata <- data.frame(cars) 
-        . R: load.data(mydata) 
+        . R: st.load(mydata) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}
@@ -274,134 +279,6 @@ the function should work just fine in most occasions:
      2. {c |}     4     10 {c |}
         {c BLC}{hline 14}{c BRC}
 
-{marker running_R}{...}
-Running R environment
-=====================
-
-To enter the R environment within Stata, 
-type {opt R:call}. This runs R in Stata 
-interactively similar to running {help mata} environment. However, with 
-every R command you execute, Stata obtains the objects from R 
-simultaniously. Note that similar to mata environment, you cannot 
-execute R commands from the Do-File Editor when the environment is 
-running. To execute R from Do-File Editor, you should call R using the 
-{opt R:call} command. Nevertheless, the 
-__st.scalar()__, __st.matrix()__, __st.data()__, and __load.data()__ functions 
-will continue to work when R environment is running. 
-
-        . scalar a = 999
-        . R:
-	{hline 49} R (type {cmd:end} to exit) {hline}
-        . a <- 2*(st.scalar(a))
-        . a
-        [1] 1998
-        . end
-	{hline}
-		
-        . display r(a)
-        1998
-		
-		
-The interactive mode also supports multi-line code. The __+__ sign is added 
-automatically:
-
-        . R:
-	{hline 49} R (type {cmd:end} to exit) {hline}
-        . myfunction <- function(x) {
-        +
-        . if (is.numeric(x)) {
-            +
-        .   return(x^2)
-            +
-        . }
-        +
-        . }
-        . (a <- myfunction(199))
-        . [1] 39601
-        . end
-	{hline}
-		
-        . display r(a)
-        39601
-		
-{marker Rpath}{...}
-R path setup
-============
-
-The package requires [R](https://cran.r-project.org/) to be installed on the machine. 
-The package detects R in the default paths based on the operating system. 
-The easiest way to see if R is accessible is to execute a command in R 
-
-        . R: print("Hello World") 
-        [1] "Hello World" 
- 
-If R is not accessible, you can also permanently 
-setup the path to R using the __setpath__ subcommand. For example, the 
-path to R on Mac 10.10 could be:
-
-    . {cmd:R setpath} "{it:/usr/bin/r}"
-
-{marker synchronize}{...}
-sync mode
-============
-
-By default, {opt R:call} returns _rclass_ objects from R to Stata and allows passing 
-Stata objects to R using several functions. However, the package also has a 
-__sync__ mode where it __automatically synchronizes the global environments 
-of Stata and R, allowing real-time synchronization between the two languages, 
-which consequently __replaces__ the objects whenever they change in either of 
-the environments. This mode is by default is __off__. 
-
-The __sync__ mode allows maximum interactive experience for _numeric_ and 
-_string_ scalars and _matrices_ in Stata. The mode 
-___does not synchronize global macros___. See the examples below to see 
-how a scalar or matrix change when the synchronization mode is __on__. 
-
-In the example below, the value of __a__ changes from __1__ to __0__ after it 
-is altered in R:
-
-        . scalar a = 1
-        . R sync: (a = 0)
-        [1] 0
-        . display a
-        0
-
-The same example is repeated __without__ sync mode:
-		
-        . scalar a = 1
-        . R: (a = 0)
-        [1] 0
-        . display a
-        1
-		
-The synchronize mode also replaces matrices in R and Stata, when there is a 
-change in the matric in either of the environments. Naturally, new 
-matrices also are synchronized:
-
-        . mat drop _all
-        . mat define A = (1,2,3 \ 4,5,6)
-        . R sync: B = A
-        . mat list B
-        
-        B[2,3]
-            c1  c2  c3 
-        r1   1   2   3
-        r2   4   5   6 
-        
-		. mat C = B/2
-        . R sync: C
-             [,1] [,2] [,3] 
-        [1,]  0.5  1.0  1.5 
-        [2,]  2.0  2.5  3.0 
-		
-As shown in the examples, any change made to the matrices, whether it has 
-happened in R or Stata will be instantly available in the other environment. 
-While such a level of integration between the two languages is __exciting__, 
-it requires a lot of caution and testing. This is rather an exploratory 
-feature which is not a main-stream approach to calling a foreign language 
-in a programming language. 
-__If you have suggestions or concerns in this regard, feel free to reach out to me for a discussion__.  
-	
 Remarks
 =======
 
@@ -429,37 +306,7 @@ that are of no use for you. The more objects you keep in R memory,
 the more time needed to automatically communicate those objects between 
 R and Stata.		
 
-Erasing R memory and detaching objects
-======================================
-
-When you work with __Rcall__ interactively (without __vanilla__ subcommand), 
-anything you do in R is memorized and 
-saved in a __.RData__ file automatically, even if you quit R using __q()__ 
-function. If you wish to clear the memory and erase everything defined in R, 
-you should __unlink__ the __.RData__ file and erase the objects:
-
-        . R: unlink(".RData") 	
-        . R: rm(list=ls())
-		
-However, the commands above do not erase the __attached__ packages and data sets. 
-you can view the attached objects in your R environment using the __search()__ 
-function. To detach packages or objects, use the __detach()__ function. Note that 
-packages are named as __"package:_name_"__. Here is an example of detaching a 
-data set and a package 
-
-        . R:
-	{hline 49} R (type {cmd:end} to exit) {hline}
-        . attach(cars)
-        . library(Rcpp)               # make sure you have it installed
-        . search()                    # Output is omitted ...
-        .
-        . detach(cars)
-        . detach("package:Rcpp")
-	{hline}
-
-detach("package:graphics", unload=TRUE)
-
-Example(s)
+Example
 =================
 
 Visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
@@ -495,124 +342,17 @@ program define R , rclass
 
 	// =========================================================================
 	// Syntax processing
-	//   - Retreive memory files "R Path", "Synchronize mode"
-	//   - Process the R inputs
+	//   - if the [:] appears first, it means the rest are not modes or subcommands
+	//   - Process the Rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
-	
-	capture prog drop Rpath
-	capture Rpath
-	
-	// -------------------------------------------------------------------------
-	// Input processing
-	// =========================================================================
-	
-	// Check if the command includes Colon in the beginning
-	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
-		local 0 : subinstr local 0 ":" ""
-	}
-	
-	// clear R memory
-	// ================
-	if substr(trim(`"`macval(0)'"'),1,5) == "clear" & 							///
-	trim(substr(trim(`"`macval(0)'"'),6,.)) == "" {
-		
-		capture erase .RData
-		
-		capture findfile RProfile.R, path("`c(sysdir_plus)'r")
-		if _rc == 0 {
-			capture erase "`r(fn)'"
-		}
-		exit
-	}
-	
-	// debug mode
-	// ================
-	if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
-		local 0 : subinstr local 0 "debug" ""
-		local debug 1
-		
-		if !missing("`debug'") {
-			di _n "{title:[1/5] Debug mode}" _n									///
-			"Running R in debug mode"
-		}	
-	}
-	
-	// Synchronize mode
-	// ================
-	else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |						///
-		substr(trim(`"`macval(0)'"'),1,5) == "sync:" |							///
-		substr(trim(`"`macval(0)'"'),1,4) == "sync" &							///
-		trim(`"`macval(0)'"') == "sync" {
-		local 0 : subinstr local 0 "sync" ""
-		global R_synchronize_mode on
-	}
-
-	
-	// Vanilla mode
-	// ============
-	if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
-		local 0 : subinstr local 0 "vanilla" ""
-		local vanilla --vanilla
-		if !missing("`debug'") {
-			di _n "{title:Vanilla}" _n											///
-			"Running R in non-interactive batch mode"
-		}	
-	}
-	
-	// Setpath
-	// =======
-	else if substr(trim(`"`macval(0)'"'),1,7) == "setpath" {
-		local 0 : subinstr local 0 "setpath" ""
-		confirm file `0'
-		tempfile Rpath
-		tempname knot
-		qui file open `knot' using "`Rpath'", write text replace
-		file write `knot' "program define Rpath" _n
-		file write `knot' `"	global Rpath `macval(0)'"' _n
-		file write `knot' "end" _n
-		qui file close `knot'
-		qui copy "`Rpath'" "`c(sysdir_plus)'r/Rpath.ado", replace
-		if !missing("`debug'") {
-			di "{title:Memorizing R path}" _n									///
-			`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
-		}
-		exit
-	}
-	
-	// Synchronize mode
-	// ================
-	/*
-	else if substr(trim(`"`macval(0)'"'),1,11) == "synchronize" {
-		local 0 : subinstr local 0 "synchronize" ""
-		if trim("`0'") != "on" & trim("`0'") != "off" {
-			di as err "{bf:synchronize} can only be {bf:on} or {bf:off}"
-			err 198
-		}
-		tempfile Rmode
-		tempname knot
-		qui file open `knot' using "`Rmode'", write text replace
-		file write `knot' "program define R_synchronize_mode" _n
-		file write `knot' `"	global R_synchronize_mode `0'"' _n
-		file write `knot' "end" _n
-		qui file close `knot'
-		qui copy "`Rmode'" "`c(sysdir_plus)'r/Rcall_synchronize_mode.ado", replace
-		if !missing("`debug'") {
-			di "{title:Memorizing R mode}" _n									///
-			`"the {bf:Rcall_synchronize.ado} is {bf:`0'}"' 
-		}
-		exit
-	}
-	*/
-	
-	// Check if the command includes Colon in the end
-	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
-		local 0 : subinstr local 0 ":" ""
-	}
 	
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
 	// =========================================================================
+	capture prog drop Rpath
+	capture Rpath
+	
 	if missing("$Rpath") {
 		
 		if "`c(os)'" == "Windows" {
@@ -659,10 +399,7 @@ program define R , rclass
 			display `"{err:`path'}"'
 		}
 	}	
-	
-	// -------------------------------------------------------------------------
-	// Test R
-	// =========================================================================
+
 	capture confirm file "`path'"
 	if _rc != 0 {
 		di as txt "{p}R was expected in:    `path'"
@@ -671,10 +408,176 @@ program define R , rclass
 	}
 	
 	// -------------------------------------------------------------------------
+	// Input processing
+	// =========================================================================
+	
+	// Check if the command includes Colon in the beginning
+	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
+		local 0 : subinstr local 0 ":" ""
+	}
+	
+	else {
+		
+		// debug mode
+		// ================
+		*if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
+		if `"`macval(1)'"' == "debug" {
+			local 0 : subinstr local 0 "debug" ""
+			tokenize `"`macval(0)'"'						//reset
+			local debug 1
+			if !missing("`debug'") {
+				di _n "{title:[1/5] Debug mode}" _n									///
+				"Running Rcall in debug mode"
+			}	
+		}
+
+		// clear R memory
+		// ================
+		if `"`macval(0)'"' == "clear" | `"`macval(0)'"' == "clear:" {
+			capture erase .RData
+			capture findfile RProfile.R, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				capture erase "`r(fn)'"
+			}
+			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				capture erase "`r(fn)'"
+				tempfile history
+				tempname knot
+				qui file open `knot' using "`history'", write text append
+				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+				qui file close `knot'
+				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+			}
+			display as txt "(R memory cleared)"
+			exit
+		}
+		
+		// describe R
+		// ================
+		if `"`macval(0)'"' == "describe" | `"`macval(1)'"' == "describe:" {
+			
+			di as txt "{hline 79}"
+			di _col(10) "{bf:R path}:" _col(20) _c 
+			di as txt `"{browse "/usr/bin/R"}"' 
+			
+			Rcall vanilla: version = R.Version()\$version.string;				///
+				lst <- ls(globalenv());											///
+				
+			di _col(7) "{bf:R version}:" _col(20) _c 
+			if !missing("`r(version)'") di as txt "`r(version)'"
+			else di as err "R was not accessed!"
+			
+			capture findfile RProfile.site, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				di _col(7) "{bf:R profile}:" _col(20) _c 
+				di as txt "{browse `r(fn)'}" 
+			}
+			
+			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				di _col(7) "{bf:R history}:" _col(20) _c 
+				di as txt "{browse `r(fn)'}" 
+			}
+			else {
+				tempfile history
+				tempname knot
+				qui file open `knot' using "`history'", write text append
+				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+				qui file close `knot'
+				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+				
+				di _col(7) "{bf:R History}:" _col(20) _c 
+				di as txt "{browse `c(sysdir_plus)'r/Rhistory.do}"
+			}
+			
+			di as txt "{hline 79}"
+			*display as txt "(R memory cleared)"
+			exit
+		}
+	
+		// Synchronize mode
+		// ================
+		*else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |						///
+		*	substr(trim(`"`macval(0)'"'),1,5) == "sync:" |							///
+		*	substr(trim(`"`macval(0)'"'),1,4) == "sync" &							///
+		*	trim(`"`macval(0)'"') == "sync" {
+		if `"`macval(1)'"' == "sync" | `"`macval(1)'"' == "sync:" {
+			local 0 : subinstr local 0 "sync" ""
+			global Rcall_synchronize_mode on
+			local mode sync
+		}
+
+		// Vanilla mode
+		// ============
+		*if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
+		if `"`macval(1)'"' == "vanilla" | `"`macval(1)'"' == "vanilla:" {
+			local 0 : subinstr local 0 "vanilla" ""
+			local vanilla --vanilla
+			if !missing("`debug'") {
+				di _n "{title:Vanilla}" _n											///
+				"Running R in non-interactive batch mode"
+			}
+			local mode vanilla
+		}
+	
+		// Setpath
+		// =======
+		*else if substr(trim(`"`macval(0)'"'),1,7) == "setpath" {
+		if `"`macval(1)'"' == "setpath" | `"`macval(1)'"' == "setpath:" {
+			local 0 : subinstr local 0 "setpath" ""
+			confirm file `0'
+			tempfile Rpath
+			tempname knot
+			qui file open `knot' using "`Rpath'", write text replace
+			file write `knot' "program define Rpath" _n
+			file write `knot' `"	global Rpath `macval(0)'"' _n
+			file write `knot' "end" _n
+			qui file close `knot'
+			qui copy "`Rpath'" "`c(sysdir_plus)'r/Rpath.ado", replace
+			if !missing("`debug'") {
+				di "{title:Memorizing R path}" _n									///
+				`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
+			}
+			exit
+		}
+	
+		// Synchronize mode
+		// ================
+		/*
+		else if substr(trim(`"`macval(0)'"'),1,11) == "synchronize" {
+			local 0 : subinstr local 0 "synchronize" ""
+			if trim("`0'") != "on" & trim("`0'") != "off" {
+				di as err "{bf:synchronize} can only be {bf:on} or {bf:off}"
+				err 198
+			}
+			tempfile Rmode
+			tempname knot
+			qui file open `knot' using "`Rmode'", write text replace
+			file write `knot' "program define R_synchronize_mode" _n
+			file write `knot' `"	global Rcall_synchronize_mode `0'"' _n
+			file write `knot' "end" _n
+			qui file close `knot'
+			qui copy "`Rmode'" "`c(sysdir_plus)'r/Rcall_synchronize_mode.ado", replace
+			if !missing("`debug'") {
+				di "{title:Memorizing R mode}" _n									///
+				`"the {bf:Rcall_synchronize.ado} is {bf:`0'}"' 
+			}
+			exit
+		}
+		*/
+	
+		// Check if the command includes Colon in the end
+		if substr(trim(`"`macval(0)'"'),1,1) == ":" {
+			local 0 : subinstr local 0 ":" ""
+		}
+	}	
+	
+	// -------------------------------------------------------------------------
 	// Execute interactive mode
 	// =========================================================================
 	if trim(`"`0'"') == "" {
-		if missing("`vanilla'") R_interactive
+		if missing("`vanilla'") Rcall_interactive
 		else {
 			di as err "the {bf:vanilla} mode cannot be called interactively"
 			err 198
@@ -685,7 +588,33 @@ program define R , rclass
 		"The command that you wish to execute in {bf:R} is:" _n(2) 				///
 		`"{err:`macval(0)'}"' 
 	}
+	
+	// -------------------------------------------------------------------------
+	// Create and update the history file
+	// =========================================================================
+	if missing("`vanilla'") {
 		
+		capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+		if _rc == 0 {
+			tempname knot
+			qui file open `knot' using "`r(fn)'", write text append	
+			qui file close `knot'
+		}
+		else {
+			tempfile history
+			tempname knot
+			qui file open `knot' using "`history'", write text append
+			file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+			if !missing(`"`macval(0)'"') {
+				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+			}
+			qui file close `knot'
+			quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+		}
+	}
+	
+	
+	
 	// -------------------------------------------------------------------------
 	// Searching for Matrix
 	// =========================================================================
@@ -776,7 +705,7 @@ program define R , rclass
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {
 			qui saveold _st.data.dta, version(11) replace 
-			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+			*local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"    		//???
 		}
 		else {
 			confirm file "`filename'"
@@ -794,11 +723,11 @@ program define R , rclass
 	// -------------------------------------------------------------------------
 	// Searching for Load Data
 	// =========================================================================
-	while strpos(`"`macval(0)'"',"load.data(") != 0 {
-		local br = strpos(`"`macval(0)'"',"load.data")
+	while strpos(`"`macval(0)'"',"st.load(") != 0 {
+		local br = strpos(`"`macval(0)'"',"st.load")
 		local l1 = substr(`"`macval(0)'"',1, `br'-1)
 		local l2 = substr(`"`macval(0)'"',`br',.)
-		local l2 : subinstr local l2 "load.data(" ""
+		local l2 : subinstr local l2 "st.load(" ""
 		local mt = strpos(`"`macval(l2)'"',")") 
 		local loaddata = substr(`"`macval(l2)'"',1, `mt'-1)
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
@@ -807,7 +736,7 @@ program define R , rclass
 		local forceload 1 						//load data to stata
 		
 		if !missing("`debug'") {
-			di _n "{title:load.data() function}" _n								///
+			di _n "{title:st.load() function}" _n								///
 			"You wish to force loading R data {bf:`loaddata'} to {bf:Stata}..." _n  
 		}
 		
@@ -1161,7 +1090,7 @@ program define R , rclass
 		*capture erase list.txt
 		*copy stata.output list.txt, replace
 		if missing("`debug'") capture erase stata.output
-		if missing("`debug'") capture erase R_synchronize
+		if missing("`debug'") capture erase Rcall_synchronize
 	}
 	
 	
@@ -1182,5 +1111,5 @@ program define R , rclass
 	
 	// Erase globals
 	macro drop Rpath
-	macro drop R_synchronize_mode
+	macro drop Rcall_synchronize_mode
 end

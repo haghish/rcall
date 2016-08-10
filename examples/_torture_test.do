@@ -21,9 +21,15 @@ net install Rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/
 // Setup R path permanently
 R setpath "/usr/bin/r"
 
-// -----------------------------------------------------------------------------
-// Vanilla (Non-Interactive)
+
+
 // =============================================================================
+// RCALL MODES 
+// =============================================================================
+
+
+// Vanilla (Non-Interactive)
+// -----------------------------------------------------------------------------
 R: rm(list=ls()) 
 Rcall: unlink(".RData")
 Rcall vanilla : object <- print("this")
@@ -31,6 +37,93 @@ return list
 
 // if you want to access the "object" you get an error that is not found
 Rcall: object
+
+
+// Interactive mode
+// -----------------------------------------------------------------------------
+R: a <- print("Hello World")
+R: q()						//does not remove the R objects in memory
+R: print(ls())
+
+R: rm(list=ls()) 			//remove the R objects in memory
+R: print(ls())
+
+//numeric and string objects
+Rcall: a <- 10
+R: b <- " or it can be string"
+display "The object value is can be numetic such as " r(a) r(b)
+
+//define a matrix
+R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+mat list r(A)
+
+// SPECIAL CHARACTERS
+
+R: attach(cars)
+R: cars\$speed		  //the $ sign must be 
+
+//Stata interprets $ sign in the middle of a word as global macro, use backslash
+R: head(cars\$speed)
+R: LM <- lm(cars\$dist~cars\$speed)
+R: LM
+return list //lm is not a list
+
+// Synchronizing mode
+// -----------------------------------------------------------------------------
+
+// SCALAR
+// -------------------------------
+Rcall clear
+scalar a = 1
+Rcall sync: a = 0
+di a
+
+//without synchronization
+scalar a = 1
+Rcall: a = 0
+di a
+
+
+//DEFENSIVE: missing scalar
+// -------------------------------
+scalar a = .
+Rcall: a 
+di a
+
+scalar a = 10
+Rcall sync: a 
+Rcall sync: a <- NA
+di a
+
+
+scalar a = .
+Rcall sync: a = "this is \n multiline \n text"
+di a
+
+
+
+// matrix
+// -------------------------------
+mat drop _all
+mat define A = (1,2,3 \ 4,5,6)
+Rcall sync: A
+Rcall sync: B = A
+mat list r(B)
+
+mat dir
+
+return list
+
+mat list C
+
+mat D = C/2
+mat list D
+
+Rcall: D
+
+
+
+
 
 // -----------------------------------------------------------------------------
 // Creating and Exporting Graphics!
@@ -59,36 +152,8 @@ R: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
 *******************************************************************
 
 
-// -----------------------------------------------------------------------------
-// From R to Stata (Interactive)
-// =============================================================================
 
-R: a <- print("Hello World")
-R: q()						//does not remove the R objects in memory
-R: print(ls())
 
-R: rm(list=ls()) 			//remove the R objects in memory
-R: print(ls())
-
-//numeric and string objects
-Rcall: a <- 10
-R: b <- " or it can be string"
-display "The object value is can be numetic such as " r(a) r(b)
-
-//define a matrix
-R: A = matrix(1:6, nrow=2, byrow = TRUE) 
-mat list r(A)
-
-// SPECIAL CHARACTERS
-
-R: attach(cars)
-R: cars\$speed		  //the $ sign must be 
-
-//Stata interprets $ sign in the middle of a word as global macro, use backslash
-R: head(cars\$speed)
-R: LM <- lm(cars\$dist~cars\$speed)
-R: LM
-return list //lm is not a list
 
 // -----------------------------------------------------------------------------
 // From Stata to R (Interactive)
@@ -284,73 +349,8 @@ R: print(st.var(make))
 
 
 
-// -----------------------------------------------------------------------------
-// Synchronizing mode
-// =============================================================================
-
-// SCALAR
-// -------------------------------
-// NON-INTERACTIVE MODE
-Rcall synchronize on
-scalar a = 1
-Rcall: a = 0
-return list
-di a
 
 
-Rcall synchronize off
-scalar a = 1
-Rcall: a = 0
-di a
-
-//DEFENSIVE: missing scalar
-// -------------------------------
-Rcall synchronize on
-scalar a = .
-Rcall: a 
-di a
-
-Rcall synchronize on
-scalar a = 10
-Rcall: a 
-Rcall: a <- NA
-di a
-
-
-Rcall synchronize on
-scalar a = .
-Rcall: a = "this is \n multiline \n text"
-di a
-
-
-
-// matrix
-// -------------------------------
-mat drop _all
-Rcall synchronize off
-mat define A = (1,2,3 \ 4,5,6)
-Rcall: A
-Rcall: B = A
-mat list r(B)
-
-
-mat drop _all
-Rcall synchronize on
-mat define A = (1,2,3 \ 4,5,6)
-Rcall: A
-Rcall: A
-Rcall: C = A
-
-mat dir
-
-return list
-
-mat list C
-
-mat D = C/2
-mat list D
-
-Rcall: D
 
 
 

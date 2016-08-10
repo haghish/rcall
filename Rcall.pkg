@@ -11,9 +11,9 @@ d KW: interactive
 d KW: bridge
 d KW: class
 d
-d Requires: Stata version 13 or higher
+d Requires: Stata version 12 or higher
 d
-d Distribution-Date: 20160725
+d Distribution-Date: 20160810
 d
 d Author: E.F. Haghish, University of Freiburg
 d Support: email haghish@imbi.uni-freiburg.de
@@ -30,3 +30,4 @@ f Rcall_interactive.ado
 f Rcall_synchronize.ado
 f varconvert.ado
 F stata.output.R
+F Rprofile.site

@@ -1,8 +1,4 @@
 
-// WATCH OUT FOR WEIRD BRACKET INTERPRETATION 
-// mm this is { weird} bracket {hi} {    //{hi} is preserved!
-
-*cap program drop Rcall_counter
 program Rcall_counter, rclass
 
 
