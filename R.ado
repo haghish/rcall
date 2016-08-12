@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.2.0
+Version: 1.2.1
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -704,14 +704,16 @@ program define R , rclass
 		
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {
-			qui saveold _st.data.dta, version(11) replace 
+			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(12) replace 
+			else qui saveold _st.data.dta, replace
 			*local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"    		//???
 		}
 		else {
 			confirm file "`filename'"
 			preserve
 			qui use "`filename'", clear
-			qui saveold _st.data.dta, version(11) replace 
+			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(12) replace 
+			else qui saveold _st.data.dta, replace
 			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
 			restore
 		}
