@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.2.1
+Version: 1.2.2
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -39,6 +39,12 @@ the following functions can be used to communicate data from Stata to R:
 {synopt:{opt st.load(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
 {p2colreset}{...}
+
+programmers can use __Rcall_check__ to evaluate the required version of R or R packages: 
+
+{p 8 16 2}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:Rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{p_end}
 
 {marker modes}{...}
 Modes
@@ -93,6 +99,8 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
+{synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand) , replace}copies 
+the __Rhistory.do__ file to the working directory{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -269,8 +277,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: mydata <- data.frame(cars) 
-        . R: st.load(mydata) 
+        . R: st.load(cars) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}
@@ -411,7 +418,8 @@ program define R , rclass
 	// Input processing
 	// =========================================================================
 	
-	// Check if the command includes Colon in the beginning
+	// Check if the command includes Colon in the beginning or not
+	// -----------------------------------------------------------
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
 		local 0 : subinstr local 0 ":" ""
 	}
@@ -445,7 +453,7 @@ program define R , rclass
 				tempfile history
 				tempname knot
 				qui file open `knot' using "`history'", write text append
-				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 				qui file close `knot'
 				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
 			}
@@ -483,7 +491,7 @@ program define R , rclass
 				tempfile history
 				tempname knot
 				qui file open `knot' using "`history'", write text append
-				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 				qui file close `knot'
 				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
 				
@@ -541,6 +549,33 @@ program define R , rclass
 			}
 			exit
 		}
+		
+		// HISTORY
+		// =======
+		if `"`macval(1)'"' == "history" {
+			local 0 : subinstr local 0 "history" ""
+			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				copy "`r(fn)'" Rhistory.do `0'
+				display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
+			}
+			else {
+				display as txt "(Rhistory is empty)"
+			}
+			exit
+		}
+		
+		
+/*		
+		// CHECK
+		// =======
+		if `"`macval(1)'"' == "check" {
+			local 0 : subinstr local 0 "check" ""
+			Rcall_check `0'
+			return add
+			exit
+		}
+*/		
 	
 		// Synchronize mode
 		// ================
@@ -598,13 +633,16 @@ program define R , rclass
 		if _rc == 0 {
 			tempname knot
 			qui file open `knot' using "`r(fn)'", write text append	
+			if !missing(`"`macval(0)'"') {
+				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+			}
 			qui file close `knot'
 		}
 		else {
 			tempfile history
 			tempname knot
 			qui file open `knot' using "`history'", write text append
-			file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'"
+			file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 			if !missing(`"`macval(0)'"') {
 				file write `knot' `"Rcall `mode': `macval(0)'"' _n
 			}

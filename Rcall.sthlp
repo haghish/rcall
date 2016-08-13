@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.2.1}
+{right:version 1.2.2}
 {title:Title}
 
 {phang}
@@ -41,6 +41,13 @@ the following functions can be used to communicate data from Stata to R:
 {synopt:{opt st.load(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
 {p2colreset}{...}
+
+{p 4 4 2}
+programmers can use {bf:Rcall_check} to evaluate the required version of R or R packages: 
+
+{p 8 16 2}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:Rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{p_end}
 
 {marker modes}{...}
 
@@ -97,6 +104,8 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
+{synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history} , replace}copies 
+the {bf:Rhistory.do} file to the working directory{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -296,8 +305,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: mydata <- data.frame(cars) 
-        . R: st.load(mydata) 
+        . R: st.load(cars) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}

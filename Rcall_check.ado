@@ -1,8 +1,4 @@
-* July 2016
-* E. F. Haghish
-* Department of Mathematics and Computer Science
-* University of Southern Denmark
-* @haghish 
+
 
 program Rcall_check
 	
@@ -58,3 +54,4 @@ program Rcall_check
 	}
 	
 end
+
