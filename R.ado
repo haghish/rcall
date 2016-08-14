@@ -345,7 +345,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 *cap prog drop R
 program define R , rclass
 	
-	version 12
+	*version 12
 
 	// =========================================================================
 	// Syntax processing
@@ -742,15 +742,20 @@ program define R , rclass
 		
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {
-			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(12) replace 
-			else qui saveold _st.data.dta, replace
-			*local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"    		//???
+			if "`c(version)'" >= "14" {
+				qui saveold _st.data.dta, version(11) replace
+			}	
+			else {
+				qui saveold _st.data.dta, replace
+			}	
+			
+			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"    		
 		}
 		else {
 			confirm file "`filename'"
 			preserve
 			qui use "`filename'", clear
-			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(12) replace 
+			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(11) replace 
 			else qui saveold _st.data.dta, replace
 			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
 			restore
