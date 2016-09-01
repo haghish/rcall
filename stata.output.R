@@ -97,7 +97,7 @@ stata.output <- function(plusR, Vanilla="") {
         
         # STRING
         # ------------------------------------
-        string = string(-c("stata.output"))  #remove stata.output from the list
+        string = string[string!= "stata.output"]  #remove stata.output from the list
         
         for (i in string) {
             iget <- get(i)

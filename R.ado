@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.0
+Version: 1.3.1
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -903,7 +903,7 @@ program define R , rclass
 	// =========================================================================
 	
 	*file write `knot' `"`macval(0)'"' _n
-	file write `knot' `"try({`macval(0)'})"' _n
+	if trim(`"`macval(0)'"') != "" file write `knot' `"try({`macval(0)'})"' _n
 	
 	
 	
