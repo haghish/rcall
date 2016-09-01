@@ -1,0 +1,15 @@
+# Global 
+# =====================
+Sys.setenv(LANG = "en")   
+
+# When calling R, do ...
+# ----------------------
+.First <- function(){
+	#R command
+}
+
+# When closing R, do ...
+# ----------------------
+.Last <- function(){ 
+	#R command
+}
