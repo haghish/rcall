@@ -6,3 +6,5 @@ TEST/Rcall_examples.do
 TEST/Rcall_examples.sthlp
 
 .RData
+
+Rcallmake.do

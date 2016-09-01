@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.2.2}
+{right:version 1.3.0}
 {title:Title}
 
 {phang}
@@ -81,7 +81,9 @@ datasets, and the loaded packages. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#console_mode":console}}when the R command is not specified, R is called interactively 
 and in addition, R console is simulated within the results windows of Stata. 
 In the console mode users can type R commands directly in Stata and get the 
-results back interactively. {p_end}
+results back interactively. Similarly, the results are returned to Stata 
+in the background and can be accessed in Stata when quiting the console 
+mode. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -105,7 +107,8 @@ the R memory and history in the interactive mode. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history} , replace}copies 
-the {bf:Rhistory.do} file to the working directory{p_end}
+the {bf:Rhistory.do} file to the working directory. The actual Rhistory file is 
+stored in {it:PLUS/r/Rhistory.do} {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -129,6 +132,14 @@ classes are automatically returned to Stata as {help return:rclass}.
 {p 4 4 2}
 R objects with {it:data.frame} class can be automatically loaded from R to 
 Stata using the {bf:st.load()} function (see below).
+
+{p 4 4 2}
+{bf:Rcall} uses the {bf:try} function to evaluate the R code and 
+returns {bf:r(rc)} scalar which is an indicator for errors occuring in R. if {bf:r(rc)} 
+equals zero, R has successfully executed the code. Otherwise, if {bf:r(rc)} equals 
+one an error has occured and {bf:Rcall} will return the error message and break the 
+execution. 
+
 
 
 {title:Communication from R to Stata}
@@ -274,11 +285,13 @@ simply by passing the variables required for the analysis from Stata to R:
 
 {p 4 4 2}
 The {opt R:call} package also allows to pass Stata data to R within 
-{bf:st.data({it:{help filename}})} function. This function relies on the {bf:foreign} 
+{bf:st.data({it:{help filename}})} function. This function relies on the {bf:readstata13} 
 package in R to load Stata data sets, without converting them to CSV or alike. 
-The {bf:foreign} package can be installed within Stata as follows:
+The {bf:readstata13} package 
+{browse "http://www.haghish.com/stata-blog/?p=21":is faster and more acurate then {bf:foreign} and {bf:haven} packages} 
+and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . R: install.packages("foreign", repos="http://cran.uk.r-project.org")
+        . R: install.packages("readstata13", repos="http://cran.uk.r-project.org")
 
 {p 4 4 2}
 Specify the relative or absolute path to the data set to transporting data 

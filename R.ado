@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.2.2
+Version: 1.3.0
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -77,7 +77,9 @@ datasets, and the loaded packages. {p_end}
 {synopt:[console](http://www.haghish.com/packages/Rcall.php#console_mode)}when the R command is not specified, R is called interactively 
 and in addition, R console is simulated within the results windows of Stata. 
 In the console mode users can type R commands directly in Stata and get the 
-results back interactively. {p_end}
+results back interactively. Similarly, the results are returned to Stata 
+in the background and can be accessed in Stata when quiting the console 
+mode. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -100,7 +102,8 @@ the R memory and history in the interactive mode. {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
 {synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand) , replace}copies 
-the __Rhistory.do__ file to the working directory{p_end}
+the __Rhistory.do__ file to the working directory. The actual Rhistory file is 
+stored in _PLUS/r/Rhistory.do_ {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -121,6 +124,13 @@ classes are automatically returned to Stata as {help return:rclass}.
 
 R objects with _data.frame_ class can be automatically loaded from R to 
 Stata using the __st.load()__ function (see below).
+
+__Rcall__ uses the __try__ function to evaluate the R code and 
+returns __r(rc)__ scalar which is an indicator for errors occuring in R. if __r(rc)__ 
+equals zero, R has successfully executed the code. Otherwise, if __r(rc)__ equals 
+one an error has occured and __Rcall__ will return the error message and break the 
+execution. 
+ 
 
 Communication from R to Stata
 ======================================
@@ -249,11 +259,13 @@ simply by passing the variables required for the analysis from Stata to R:
             11267.3       -238.3
 
 The {opt R:call} package also allows to pass Stata data to R within 
-__st.data(_{help filename}_)__ function. This function relies on the __foreign__ 
+__st.data(_{help filename}_)__ function. This function relies on the __readstata13__ 
 package in R to load Stata data sets, without converting them to CSV or alike. 
-The __foreign__ package can be installed within Stata as follows:
+The __readstata13__ package 
+[is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21) 
+and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . R: install.packages("foreign", repos="http://cran.uk.r-project.org")
+        . R: install.packages("readstata13", repos="http://cran.uk.r-project.org")
 
 Specify the relative or absolute path to the data set to transporting data 
 from Stata to R. For example: 
@@ -470,7 +482,7 @@ program define R , rclass
 			di as txt `"{browse "/usr/bin/R"}"' 
 			
 			Rcall vanilla: version = R.Version()\$version.string;				///
-				lst <- ls(globalenv());											///
+				lst <- ls(globalenv());											
 				
 			di _col(7) "{bf:R version}:" _col(20) _c 
 			if !missing("`r(version)'") di as txt "`r(version)'"
@@ -556,7 +568,7 @@ program define R , rclass
 			local 0 : subinstr local 0 "history" ""
 			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
-				copy "`r(fn)'" Rhistory.do `0'
+				copy "`r(fn)'" Rhistory.do, replace
 				display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
 			}
 			else {
@@ -612,6 +624,8 @@ program define R , rclass
 	// Execute interactive mode
 	// =========================================================================
 	if trim(`"`0'"') == "" {
+		local mode interactive
+		global Rcall_interactive_mode on
 		if missing("`vanilla'") Rcall_interactive
 		else {
 			di as err "the {bf:vanilla} mode cannot be called interactively"
@@ -749,7 +763,7 @@ program define R , rclass
 				qui saveold _st.data.dta, replace
 			}	
 			
-			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"    		
+			local dta : di "read.dta13(" `"""' "_st.data.dta" `"""' ")"    		
 		}
 		else {
 			confirm file "`filename'"
@@ -757,7 +771,7 @@ program define R , rclass
 			qui use "`filename'", clear
 			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(11) replace 
 			else qui saveold _st.data.dta, replace
-			local dta : di "read.dta(" `"""' "_st.data.dta" `"""' ")"
+			local dta : di "read.dta13(" `"""' "_st.data.dta" `"""' ")"
 			restore
 		}
 		
@@ -874,17 +888,45 @@ program define R , rclass
 		file write `knot' "source('Rcall_synchronize')" _n
 	}
 	
-	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n //erase memory temporarily
-	
-	if !missing("`foreign'") file write `knot' "library(foreign)" _n
+	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				// erase memory temporarily
+	if !missing("`foreign'") file write `knot' "library(readstata13)" _n		// load the readstata13 package
 	if !missing("`RSite'") & missing("`vanilla'") 								///
 			file write `knot' "source('`RSite'')" _n			
 	if !missing("`RProfile'") & missing("`vanilla'") 							///
-			file write `knot' "source('`RProfile'')" _n							//load the libraries 
+			file write `knot' "source('`RProfile'')" _n							// load the libraries 
 	
-	file write `knot' `"`macval(0)'"' _n
-	if missing("`vanilla'") file write `knot' "save.image()" _n  				//kills the vanilla
+	// -------------------------------------------------------------------------
+	// Handling Errors
+	//
+	// catch the errors and return proper error
+	// and only procede if the "rc" object is not missing
+	// =========================================================================
+	
+	*file write `knot' `"`macval(0)'"' _n
+	file write `knot' `"try({`macval(0)'})"' _n
+	
+	
+	
+	// if there was an error in R...
+	// -------------------------------------------------------------------------
+	file write `knot' `"if (class(.Last.value) != "try-error" ) {"' _n					/// there was an error
+	///"    print(.Last.value)" _n																	///
+	"    rc = 0" _n																
+	
+	if missing("`vanilla'") file write `knot' "save.image()" _n  				// save if mode is not vanilla
+	
+	file write `knot' "} else {"	_n											///
+	"    rc = 1" _n																///
+	"    error = geterrmessage()" _n											///
+	`"    error = gsub("Error in try({ :", "Error:", error, fixed = T)"' _n		///
+	"}" _n(2)
+	
+	// if R does not fail, it continues...
+	// -------------------------------------------------------------------------
+
+	
 	file write `knot' "source('`source'')" _n
+	
 	*file write `knot' `"plusR <- "`plusR'""' _n		//source stata.output() before exit
 	file write `knot' `"stata.output("`plusR'", "`vanilla'")"' _n
 	//file write `knot' "rm(stata.output)" _n	
@@ -963,6 +1005,7 @@ program define R , rclass
 	// If data was loaded automatically, remove the temporary data file
 	if !missing("`foreign'") capture qui erase _st.data.dta
 	
+	
 	type "`Rout'"
 	
 	if !missing("`debug'") {
@@ -973,7 +1016,13 @@ program define R , rclass
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
-	if substr(trim(`"`macval(0)'"'),1,3) != "q()" {
+	
+	// if "stata.output" is created, then continue the process. Otherwise, return 
+	// an error, because "rc" must be returned anyway...
+	
+	capture confirm file stata.output
+	if _rc == 0 & substr(trim(`"`macval(0)'"'),1,3) != "q()" {
+	
 		tempname hitch
 		qui file open `hitch' using "stata.output", read
 		file read `hitch' line
@@ -1005,6 +1054,8 @@ program define R , rclass
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
+				
+				if "`name'" == "rc" & "`line'" == "1" local Rerror 1
 				
 				if "$Rcall_synchronize_mode" == "on" {
 					scalar `name' = `line'
@@ -1047,16 +1098,21 @@ program define R , rclass
 					
 					if missing(`"`content'"') {
 						local content 1
-						local multiline : di `"`multiline'`line'"' 
+						local multiline : di `"`macval(multiline)'"' `"`macval(line)'"' 
 					}	
 					
 					else {
-						local multiline : di `"`multiline'{break}`line'"' 
+						local multiline : di `"`macval(multiline){break}'"' `"`macval(line)'"' 
 					}	
 					
 					file read `hitch' line
 					local jump 1
-				}
+				}	
+				
+				if "`name'" == "error" {
+					local multiline : subinstr local multiline "$" "\\$", all
+					local errorMessage = `"`macval(multiline)'"'
+				}	
 				
 				if "$Rcall_synchronize_mode" == "on" {
 					local test
@@ -1138,7 +1194,10 @@ program define R , rclass
 		if missing("`debug'") capture erase Rcall_synchronize
 	}
 	
-	
+	// return an error
+	else {
+		return scalar rc = 1
+	}
 	
 	// If data was loaded automatically, remove the temporary data file
 	
@@ -1157,4 +1216,10 @@ program define R , rclass
 	// Erase globals
 	macro drop Rpath
 	macro drop Rcall_synchronize_mode
+	
+	// generate error message
+	if "`Rerror'" == "1" {
+		display as error `"{p}`macval(errorMessage)'"'
+		if "$Rcall_interactive_mode" != "on" error 1
+	}
 end

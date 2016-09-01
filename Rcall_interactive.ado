@@ -1,3 +1,4 @@
+*cap prog drop Rcall_interactive
 
 program define Rcall_interactive
 
@@ -15,15 +16,25 @@ program define Rcall_interactive
 		qui disp _request(_nextcommand)
 		if `"`macval(nextcommand)'"' != "end" {
 	
+			global Rcall_interactive_mode on
 			// Count opened brackets
 			// -----------------------------------------------------------------
+			
+			
+			
 			Rcall_counter `nextcommand'
+			
+			// correct for the dollar sign
+			local nextcommand: subinstr local nextcommand "$" "\$", all
 			
 			scalar Rcall_counter = Rcall_counter + r(Rcall_counter)
 			if Rcall_counter == 0 {
 				
 				if missing("`tempfile'") {
-					if trim("`nextcommand'") != "" Rcall `sync': `nextcommand'
+					if trim("`nextcommand'") != "" {
+						Rcall `sync': `nextcommand'
+						macro drop Rcall_interactive_mode
+					}	
 				}
 				else {
 					file write `knot' `"`macval(nextcommand)'"' _n
@@ -31,6 +42,7 @@ program define Rcall_interactive
 					local tempfile 				//reset
 					*quietly copy "`Rscript'" "mytemp.R", replace
 					if trim("`nextcommand'") != "" Rcall `sync': source("`Rscript'")
+					macro drop Rcall_interactive_mode
 				}	
 			}
 			
@@ -53,6 +65,8 @@ program define Rcall_interactive
 	
 	else {
 		display as txt "{hline}"
+		
+		macro drop Rcall_interactive_mode
 		
 		// Erase memory
 		scalar drop Rcall_counter
