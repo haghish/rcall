@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.1
+Version: 1.3.2
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -532,7 +532,7 @@ program define Rcall , rclass
 		// ============
 		*if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		if `"`macval(1)'"' == "vanilla" | `"`macval(1)'"' == "vanilla:" {
-			local 0 : subinstr local 0 "vanilla" ""
+			local 0 : subinstr local 0 "vanilla" ""		
 			local vanilla --vanilla
 			if !missing("`debug'") {
 				di _n "{title:Vanilla}" _n											///
@@ -901,9 +901,11 @@ program define Rcall , rclass
 	// catch the errors and return proper error
 	// and only procede if the "rc" object is not missing
 	// =========================================================================
-	
+
 	*file write `knot' `"`macval(0)'"' _n
-	if trim(`"`macval(0)'"') != "" file write `knot' `"try({`macval(0)'})"' _n
+	if trim(`"`macval(0)'"') != "" {
+		file write `knot' "try({" `"`macval(0)'"' "})" _n
+	}	
 	
 	
 	
