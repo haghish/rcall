@@ -1230,5 +1230,5 @@ end
 // CREATE help file
 // =========================================================================
 
-markdoc Rcall.ado, export(sthlp) replace
+*markdoc Rcall.ado, export(sthlp) replace
 
