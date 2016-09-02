@@ -1,3 +1,5 @@
+// This function is very slow. Only use it when the size of the data is not big
+// ============================================================================
 
 program varconvert, rclass
 	
