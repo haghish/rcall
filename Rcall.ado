@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.3
+Version: 1.3.4
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -365,6 +365,8 @@ program define Rcall , rclass
 	//   - Process the Rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
+	
+		
 	
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
@@ -777,6 +779,18 @@ program define Rcall , rclass
 		
 		local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'	
+	}
+	
+	// make sure readstata13 is installed and updated regularly
+	// -------------------------------------------------------------------------
+	if "`foreign'" == "1" {
+		capture Rcall_check readstata13>=0.8.3 
+		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.3 "	///
+		"is required. Type:" _n "{p}R: install.packages("												///
+		`""readstata13", repos="http://cran.uk.r-project.org")"'
+		
+		// avoid slowing down Rcall
+		global Rcall_check 1
 	}
 	
 	// -------------------------------------------------------------------------
