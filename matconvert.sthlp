@@ -1,6 +1,6 @@
 {smcl}
 {title:Title}
-
+ 
 {phang}
 {cmd:matconvert} {hline 2} {bf:matconvert} belongs to {help Rcall} package. It takes the name of a Stata matrix and returns a code for constructing the same matrix in R. for more information visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
 
