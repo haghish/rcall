@@ -10,3 +10,11 @@ TEST/Rcall_examples.sthlp
 Rcallmake.do
 
 .Rhistory
+
+private/Rcpp/timesTwo.cpp
+
+private/Rcpp/Rcpp.cpp
+
+private/Rcpp/Rcpp.ado
+
+private/Rcpp/timesTen.ado

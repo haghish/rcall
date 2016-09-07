@@ -4,7 +4,7 @@
 //
 // carring the "summary" function in R to summarize data in Stata
 
-*cap prog drop qplot
+cap prog drop qplot
 program qplot
 	version 12
 	syntax varlist [, colour(name) size(name) shape(name) format(name)]
@@ -21,12 +21,14 @@ program qplot
 	}
 	
 	// default options
-	if missing("`colour'") local colour NULL
-	if missing("`shape'") local shape NULL
+	if !missing("`colour'") local colour ", colour = `colour'"
+	if !missing("`shape'") local shape ", shape = `shape'"
 	if missing("`format'") local format pdf
 	
 	Rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
-	qplot(data=st.data(), x =`2', y =`1', colour = `colour', shape = `shape')
+	qplot(data=st.data(), x =`2', y =`1' `colour' `shape')
+
 end
 
-qplot price mpg , colour(foreign) shape(foreign) format(pdf)
+*sysuse auto, clear
+*qplot price mpg , colour(foreign) shape(foreign) format(pdf)

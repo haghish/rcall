@@ -1,8 +1,8 @@
 
-*cap program drop lm
+cap program drop lm
 program lm, rclass
 
-	syntax varlist 
+	syntax varlist [if] [in]
 	
 	// Make sure the user is having Rcall installed and running
 	// =========================================================================
@@ -16,13 +16,18 @@ program lm, rclass
     local rest `*'
     local rest : subinstr local rest " " "+", all	
 	
+	marksample touse
+	preserve
+	quietly keep if `touse'
+	quietly keep `varlist' 
+	
 	// Run R function
 	// =========================================================================
 	Rcall vanilla: 										///
 	///attach(read.csv("`RData'")); 					/// load temporary data
 	attach(st.data()); 									/// load temporary data
-	out = lm(`first' ~ `rest'); 						/// fit the model
-	(out = summary(out));								/// display output
+	out = summary(lm(`first' ~ `rest')); 				/// fit the model
+	print(out);											/// display output
 	coefficients = as.matrix(out\$coefficients);		/// return coef
 	res_se = out\$sigma;								/// residual SE
 	res_df =  out\$df[2];								/// residual DF
@@ -33,17 +38,18 @@ program lm, rclass
 					out[[10]][1],out[[10]][1]);			/// 
 	rm(out);											/// erase stored results
 	
+	// restore the data
+	restore
 	
 	// Return scalars and matrices to Stata. The magin happens here
 	// =========================================================================
 	return add
-	
 end
 
 
 // test
 sysuse auto, clear
-lm price mpg 
+lm price mpg turn if price < 5000
 return list
 
 

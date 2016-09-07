@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.4
+Version: 1.3.5
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -443,7 +443,7 @@ program define Rcall , rclass
 		// debug mode
 		// ================
 		*if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
-		if `"`macval(1)'"' == "debug" {
+		if `"`macval(1)'"' == "debug" | `"`macval(1)'"' == "debug:" {
 			local 0 : subinstr local 0 "debug" ""
 			tokenize `"`macval(0)'"'						//reset
 			local debug 1
@@ -809,7 +809,7 @@ program define Rcall , rclass
 		local forceload 1 						//load data to stata
 		
 		if !missing("`debug'") {
-			di _n "{title:st.load() function}" _n								///
+			di as txt _n "{title:st.load() function}" _n						///
 			"You wish to force loading R data {bf:`loaddata'} to {bf:Stata}..." _n  
 		}
 		
@@ -951,7 +951,7 @@ program define Rcall , rclass
 	*if missing("`vanilla'") file write `knot' "save.image()" _n 
 	
 	if !missing("`forceload'") {
-		file write `knot' `"write.dta(`loaddata', "'							///
+		file write `knot' `"save.dta13(`loaddata', "'							///
 		`"file = "_load.data.dta", version = 11) "' _n
 	} 	
 	

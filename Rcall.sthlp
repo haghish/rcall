@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.3.4}
+{right:version 1.3.5}
 {title:Title}
 
 {phang}
