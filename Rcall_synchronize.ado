@@ -1,5 +1,6 @@
 
 // synchronizing from Stata to R
+// =============================
 
 *capture program drop Rcall_synchronize
 program Rcall_synchronize
@@ -79,11 +80,6 @@ program Rcall_synchronize
 	// -------------------------------------------------------------------------
 	// Create a Source file
 	// =========================================================================
-	
 	quietly copy "`Rscript'" "Rcall_synchronize", replace
 
 end
-
-*Rcall_synchronize
-
-*copy r(Rscript) sth.txt
