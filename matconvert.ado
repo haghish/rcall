@@ -38,9 +38,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 program matconvert, rclass
-	
-	*mat list `0'
-	
+
 	//Get number of rows
 	local row = rowsof(`0')
 	local col = colsof(`0')
@@ -60,7 +58,6 @@ program matconvert, rclass
 	
 	local code "matrix(c(`data'), nrow=`row', byrow = TRUE)"
 	display as txt "{p}`code'"
-
 	return local `0' "`code'"
 end
 
