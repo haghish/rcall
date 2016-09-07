@@ -1,5 +1,7 @@
 # Rcall : seamless R in Stata
 
+<a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
+
 __`Rcall`__ runs [__R__](https://cran.r-project.org/) commands in Stata and allow the two software automatically communicate _variables_, 
 _matrices_, and _data_. more information read the help file or 
 [visit diagram homepage](http://www.haghish.com/packages/Rcall.php). 
