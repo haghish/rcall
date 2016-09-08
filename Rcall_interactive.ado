@@ -31,7 +31,7 @@ program define Rcall_interactive
 			if Rcall_counter == 0 {
 				
 				if missing("`tempfile'") {
-					if trim("`nextcommand'") != "" {
+					if trim(`"`macval(nextcommand)'"') != "" {
 						Rcall `sync': `nextcommand'
 						macro drop Rcall_interactive_mode
 					}	
@@ -41,7 +41,7 @@ program define Rcall_interactive
 					qui file close `knot'
 					local tempfile 				//reset
 					*quietly copy "`Rscript'" "mytemp.R", replace
-					if trim("`nextcommand'") != "" Rcall `sync': source("`Rscript'")
+					if trim(`"`macval(nextcommand)'"') != "" Rcall `sync': source("`Rscript'")
 					macro drop Rcall_interactive_mode
 				}	
 			}
