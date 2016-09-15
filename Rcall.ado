@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.5
+Version: 1.4.0
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -366,7 +366,7 @@ program define Rcall , rclass
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
 	
-		
+	macro drop RcallError								
 	
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
@@ -1029,13 +1029,21 @@ program define Rcall , rclass
 		"The final step is returning objects from R to Stata" _n
 	}
 	
+	
+	
+	// This has to be an engine for itself
+	
+	
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
 	
-	// if "stata.output" is created, then continue the process. Otherwise, return 
-	// an error, because "rc" must be returned anyway...
+	call_return using "stata.output" , `debug'
+	return add
 	
+/*
+	// if "stata_output" is created, then continue the process. Otherwise, return 
+	// an error, because "rc" must be returned anyway...
 	capture confirm file stata.output
 	if _rc == 0 & substr(trim(`"`macval(0)'"'),1,3) != "q()" {
 	
@@ -1214,9 +1222,9 @@ program define Rcall , rclass
 	else {
 		return scalar rc = 1
 	}
-	
+*/
+
 	// If data was loaded automatically, remove the temporary data file
-	
 	if !missing("`forceload'") {
 		capture confirm file _load.data.dta
 		if _rc != 0 {
@@ -1233,13 +1241,17 @@ program define Rcall , rclass
 	macro drop Rpath
 	macro drop Rcall_synchronize_mode
 	
-	// generate error message
-	if "`Rerror'" == "1" {
-		display as error `"{p}`macval(errorMessage)'"'
-		if "$Rcall_interactive_mode" != "on" error 1
+	
+	// stop Rcall execution if error has occured
+	// -------------------------------------------------------------------------
+	if "$RcallError" == "1" {
+		macro drop RcallError
+		if "$Rcall_interactive_mode" != "on" {
+			error 1
+		}
 	}
+	
 end
-
 
 
 // -------------------------------------------------------------------------
