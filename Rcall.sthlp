@@ -106,8 +106,8 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
-{synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history} , replace}copies 
-the {bf:Rhistory.do} file to the working directory. The actual Rhistory file is 
+{synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history}}opens
+the {bf:Rhistory.do} file in Do-File Editor. The Rhistory is 
 stored in {it:PLUS/r/Rhistory.do} {p_end}
 {synoptline}
 {p2colreset}{...}

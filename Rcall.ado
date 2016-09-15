@@ -101,8 +101,8 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
-{synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand) , replace}copies 
-the __Rhistory.do__ file to the working directory. The actual Rhistory file is 
+{synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand)}opens
+the __Rhistory.do__ file in Do-File Editor. The Rhistory is 
 stored in _PLUS/r/Rhistory.do_ {p_end}
 {synoptline}
 {p2colreset}{...}
@@ -570,8 +570,9 @@ program define Rcall , rclass
 			local 0 : subinstr local 0 "history" ""
 			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
-				copy "`r(fn)'" Rhistory.do, replace
-				display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
+				*copy "`r(fn)'" Rhistory.do, replace
+				*display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
+				doedit "`r(fn)'"
 			}
 			else {
 				display as txt "(Rhistory is empty)"
