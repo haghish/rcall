@@ -1,5 +1,5 @@
 {smcl}
-{right:version 1.3.5}
+{right:version 1.4.0}
 {title:Title}
 
 {phang}
@@ -106,9 +106,12 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
-{synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history} , replace}copies 
-the {bf:Rhistory.do} file to the working directory. The actual Rhistory file is 
-stored in {it:PLUS/r/Rhistory.do} {p_end}
+{synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history}}opens
+{bf:Rhistory.do} in do-file editor which stores the history of the 
+interactive R session. {p_end}
+{synopt: {browse "http://www.haghish.com/packages/Rcall.php#site_subcommand":site}}opens
+{bf:Rprofile.site} in do-file editor which is 
+used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
 

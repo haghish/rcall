@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.3.5
+Version: 1.4.0
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -101,9 +101,12 @@ R on the machine.{p_end}
 the R memory and history in the interactive mode. {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
-{synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand) , replace}copies 
-the __Rhistory.do__ file to the working directory. The actual Rhistory file is 
-stored in _PLUS/r/Rhistory.do_ {p_end}
+{synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand)}opens
+__Rhistory.do__ in do-file editor which stores the history of the 
+interactive R session. {p_end}
+{synopt:[site](http://www.haghish.com/packages/Rcall.php#site_subcommand)}opens
+__Rprofile.site__ in do-file editor which is 
+used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -366,7 +369,7 @@ program define R , rclass
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
 	
-		
+	macro drop RcallError								
 	
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
@@ -570,11 +573,26 @@ program define R , rclass
 			local 0 : subinstr local 0 "history" ""
 			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
-				copy "`r(fn)'" Rhistory.do, replace
-				display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
+				*copy "`r(fn)'" Rhistory.do, replace
+				*display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
+				doedit "`r(fn)'"
 			}
 			else {
 				display as txt "(Rhistory is empty)"
+			}
+			exit
+		}
+		
+		// SITE
+		// =======
+		if `"`macval(1)'"' == "site" {
+			local 0 : subinstr local 0 "site" ""
+			capture findfile Rprofile.site, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				doedit "`r(fn)'"
+			}
+			else {
+				display as err "{bf:Rprofile.site} was not found!"
 			}
 			exit
 		}
@@ -1029,13 +1047,21 @@ program define R , rclass
 		"The final step is returning objects from R to Stata" _n
 	}
 	
+	
+	
+	// This has to be an engine for itself
+	
+	
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
 	
-	// if "stata.output" is created, then continue the process. Otherwise, return 
-	// an error, because "rc" must be returned anyway...
+	call_return using "stata.output" , `debug'
+	return add
 	
+/*
+	// if "stata_output" is created, then continue the process. Otherwise, return 
+	// an error, because "rc" must be returned anyway...
 	capture confirm file stata.output
 	if _rc == 0 & substr(trim(`"`macval(0)'"'),1,3) != "q()" {
 	
@@ -1214,9 +1240,9 @@ program define R , rclass
 	else {
 		return scalar rc = 1
 	}
-	
+*/
+
 	// If data was loaded automatically, remove the temporary data file
-	
 	if !missing("`forceload'") {
 		capture confirm file _load.data.dta
 		if _rc != 0 {
@@ -1233,9 +1259,14 @@ program define R , rclass
 	macro drop Rpath
 	macro drop Rcall_synchronize_mode
 	
-	// generate error message
-	if "`Rerror'" == "1" {
-		display as error `"{p}`macval(errorMessage)'"'
-		if "$Rcall_interactive_mode" != "on" error 1
+	
+	// stop Rcall execution if error has occured
+	// -------------------------------------------------------------------------
+	if "$RcallError" == "1" {
+		macro drop RcallError
+		if "$Rcall_interactive_mode" != "on" {
+			error 1
+		}
 	}
+	
 end
