@@ -11,6 +11,8 @@ echo "Greetings from Stata"
 echo "how about some \nmulti-line \nstring?"
 echo 'Hello World'
 
+sysuse auto, clear
+echo st.var(price)
 
 
 

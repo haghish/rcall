@@ -102,8 +102,11 @@ the R memory and history in the interactive mode. {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns 
 the R version and paths to R, RProfile, and Rhistory {p_end}
 {synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand)}opens
-the __Rhistory.do__ file in Do-File Editor. The Rhistory is 
-stored in _PLUS/r/Rhistory.do_ {p_end}
+__Rhistory.do__ in do-file editor which stores the history of the 
+interactive R session. {p_end}
+{synopt:[site](http://www.haghish.com/packages/Rcall.php#site_subcommand)}opens
+__Rprofile.site__ in do-file editor which is 
+used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -576,6 +579,20 @@ program define Rcall , rclass
 			}
 			else {
 				display as txt "(Rhistory is empty)"
+			}
+			exit
+		}
+		
+		// SITE
+		// =======
+		if `"`macval(1)'"' == "site" {
+			local 0 : subinstr local 0 "site" ""
+			capture findfile Rprofile.site, path("`c(sysdir_plus)'r")
+			if _rc == 0 {
+				doedit "`r(fn)'"
+			}
+			else {
+				display as err "{bf:Rprofile.site} was not found!"
 			}
 			exit
 		}
