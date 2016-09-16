@@ -11,16 +11,6 @@ Similarly, it allows passing _macro_, _matrix_, _scalar_, and _data_ from Stata 
 __`Rcall`__ makes it so easy to run [__R__](https://cran.r-project.org/) within Stata interactively, pass data or a matrix to R, 
 and access the results (numeric, matrix, character, lists) wutomatically within Stata which simply brings the power of [__R__](https://cran.r-project.org/) as well as all other programming languages that can be used interactively in R (e.g. C++ using [Rcpp](http://rcpp.org/) or JavaScript using [V8](https://cran.r-project.org/web/packages/V8/index.html)) in Stata. 
 
-        
-Author
-------
-  **E. F. Haghish**  
-  Center for Medical Biometry and Medical Informatics    
-  University of Freiburg, Germany        
-  _haghish@imbi.uni-freiburg.de_       
-  _http://www.haghish.com/packages/Rcall.php_      
-  _[@Haghish](https://twitter.com/Haghish)_      
-  
 Installation
 ------------
 
@@ -38,9 +28,19 @@ option ensures that you _reinstall_ the package, even if the release date is not
 ```js
 net install Rcall, replace  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
 ```    
+        
+Author
+------
+  **E. F. Haghish**  
+  Center for Medical Biometry and Medical Informatics    
+  University of Freiburg, Germany        
+  _haghish@imbi.uni-freiburg.de_       
+  _http://www.haghish.com/packages/Rcall.php_      
+  _[@Haghish](https://twitter.com/Haghish)_      
+  
 
 
 Examples
 ------------
 
-The __examples__ directory includes the torture test file that can serve as a good example. 
+The [__examples__](https://github.com/haghish/Rcall/tree/master/examples) directory includes the torture test file that can serve as a good example. 
