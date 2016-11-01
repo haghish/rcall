@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.4.1
+Version: 1.4.2
 Title: {opt R:call}
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -361,7 +361,7 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 program define Rcall , rclass
 	
 	*version 12
-
+	
 	// =========================================================================
 	// Syntax processing
 	//   - if the [:] appears first, it means the rest are not modes or subcommands
@@ -434,7 +434,7 @@ program define Rcall , rclass
 	// -------------------------------------------------------------------------
 	// Input processing
 	// =========================================================================
-	
+			
 	// Check if the command includes Colon in the beginning or not
 	// -----------------------------------------------------------
 	if substr(trim(`"`macval(0)'"'),1,1) == ":" {
@@ -442,14 +442,17 @@ program define Rcall , rclass
 	}
 	
 	else {
-		
-		// debug mode
+		//check WHY windows version requierd this tokenize here and Mac doesn't!
+		tokenize `"`macval(0)'"'
+
+		// debug mode (begining)
 		// ================
 		*if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
 		if `"`macval(1)'"' == "debug" | `"`macval(1)'"' == "debug:" {
 			local 0 : subinstr local 0 "debug" ""
+			di as err `"02: `macval(0)'"'
 			tokenize `"`macval(0)'"'						//reset
-			local debug 1
+			local debug debug
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n									///
 				"Running Rcall in debug mode"
@@ -523,9 +526,9 @@ program define Rcall , rclass
 	
 		// Synchronize mode
 		// ================
-		*else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |						///
-		*	substr(trim(`"`macval(0)'"'),1,5) == "sync:" |							///
-		*	substr(trim(`"`macval(0)'"'),1,4) == "sync" &							///
+		*else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |					///
+		*	substr(trim(`"`macval(0)'"'),1,5) == "sync:" |						///
+		*	substr(trim(`"`macval(0)'"'),1,4) == "sync" &						///
 		*	trim(`"`macval(0)'"') == "sync" {
 		if `"`macval(1)'"' == "sync" | `"`macval(1)'"' == "sync:" {
 			local 0 : subinstr local 0 "sync" ""
@@ -540,12 +543,27 @@ program define Rcall , rclass
 			local 0 : subinstr local 0 "vanilla" ""		
 			local vanilla --vanilla
 			if !missing("`debug'") {
-				di _n "{title:Vanilla}" _n											///
+				di _n "{title:Vanilla}" _n										///
 				"Running R in non-interactive batch mode"
 			}
 			local mode vanilla
 		}
-	
+		
+		// debug mode AGAIN (ending)
+		// =========================
+		*if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
+		tokenize `"`macval(0)'"'
+		if `"`macval(1)'"' == "debug" | `"`macval(1)'"' == "debug:" {
+			local 0 : subinstr local 0 "debug" ""
+			di as err `"02: `macval(0)'"'
+			tokenize `"`macval(0)'"'						//reset
+			local debug debug
+			if !missing("`debug'") {
+				di _n "{title:[1/5] Debug mode}" _n								///
+				"Running Rcall in debug mode"
+			}	
+		}
+		
 		// Setpath
 		// =======
 		*else if substr(trim(`"`macval(0)'"'),1,7) == "setpath" {
@@ -1277,4 +1295,5 @@ end
 // =========================================================================
 
 *markdoc Rcall.ado, export(sthlp) replace
+
 

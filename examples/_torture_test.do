@@ -7,7 +7,7 @@
 //		* PROBLEM WITH CHARACTER VECTORS
 // =============================================================================
 R: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
-
+R: mylist
 ********************************************************************************
 
 
@@ -32,6 +32,7 @@ R setpath "/usr/bin/r"
 // -----------------------------------------------------------------------------
 R: rm(list=ls()) 
 Rcall: unlink(".RData")
+Rcall clear //alternatively! a new subcommand
 Rcall vanilla : object <- print("this")
 return list
 
@@ -114,12 +115,13 @@ mat dir
 
 return list
 
+Rcall sync: C = B+A
 mat list C
 
 mat D = C/2
 mat list D
 
-Rcall: D
+Rcall sync: D
 
 
 
@@ -301,7 +303,7 @@ Rcall: timesTen(10)
 // =============================================================================
 timer clear
 timer on 1
-	R:
+	R vanilla: 
 timer off 1
 timer list
 
@@ -313,20 +315,7 @@ of this number.
 I SHOULD SPEED UP THIS PROCESS
 */
 
-timer clear
-timer on 1
-	R:
-	R:
-	R:
-	R:
-	R:
-	R:
-	R:
-	R:
-	R:
-	R:
-timer off 1
-timer list
+
 
 
 // -----------------------------------------------------------------------------
@@ -334,7 +323,7 @@ timer list
 // =============================================================================
 Rcall vanilla library(foreign)
 Rcall library(foreign)
-Rcall vanilla: detach("package:foreign", unload=TRUE)
+Rcall vanilla: detach("package:foreign", unload=TRUE) //GET ERROR
 Rcall: detach("package:foreign", unload=TRUE)
 R: search()
 
