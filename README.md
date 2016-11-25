@@ -14,21 +14,12 @@ and access the results (numeric, matrix, character, lists) wutomatically within 
 Installation
 ------------
 
-<!--
-The __diagram__ releases are also hosted on SSC server. So you can download the latest release as follows:
+The [__`github package`__](https://github.com/haghish/github) can be used to install __Rcall__ from GitHub conveniently. 
 
-    ssc install diagram   //NOT YET RELEASED ON SSC
-    ssc install webimage  //NOT YET RELEASED ON SSC               
-
-
-You can also directly download __diagram__ from GitHub which includes the latest beta version (unreleased). -->
-To install from GitHub, the `force` 
-option ensures that you _reinstall_ the package, even if the release date is not yet changed. The release date only is changed for new releases and not for the current development.  
-  
 ```js
-net install Rcall, replace  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
-```    
-        
+github install haghish/Rcall
+```
+
 Author
 ------
   **E. F. Haghish**  

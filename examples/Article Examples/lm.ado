@@ -1,5 +1,5 @@
 
-cap program drop lm
+*cap program drop lm
 program lm, rclass
 
 	syntax varlist [if] [in]
@@ -48,6 +48,7 @@ end
 
 
 // test
+/*
 sysuse auto, clear
 lm price mpg turn if price < 5000
 return list
