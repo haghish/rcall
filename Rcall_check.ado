@@ -4,9 +4,34 @@ program Rcall_check
 
 	syntax [anything] [, Rversion(str) RCALLversion(str)]
 	
-	// Check Rcall version
+	// Check Rcall version from the Rcall.ado
 	// -------------------------------------------------------------------------
-	local CURRENTRCALLVERSION 1.33
+	qui local location "`c(pwd)'"
+	qui cd "`c(sysdir_plus)'"
+	qui cd r
+	tempname hitch
+	file open `hitch' using "Rcall.ado", read
+	file read `hitch' line
+	while r(eof)==0 & substr(`"`macval(line)'"',1,8) != "Version:" {
+		file read `hitch' line
+	}
+	if substr(trim(`"`macval(line)'"'),1,8) == "Version:" {
+		local line = substr(`"`macval(line)'"',9,.)
+		local line : subinstr local line "." " ", all
+		tokenize "`line'"		
+		local CURRENTRCALLVERSION `1'	
+		macro shift
+		while !missing("`1'") {
+			local sub `sub'`1'
+			macro shift
+		}
+		local CURRENTRCALLVERSION `CURRENTRCALLVERSION'.`sub'
+	}
+	cap qui cd "`location'"
+				
+
+	// Prepare the required Rcall version
+	// -------------------------------------------------------------------------
 	if !missing("`rcallversion'") {
 		local requiredversion `rcallversion'
 		local requiredversion : subinstr local requiredversion "." " ", all
