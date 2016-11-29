@@ -158,8 +158,14 @@ stata.output <- function(plusR, Vanilla="") {
             iget <- get(i)
             rows <- dim(iget)
             content <- paste("//MATRIX", i)
+            colnames = colnames(iget)
+            rownames = rownames(iget)
             write(content, file=stata.output, append=TRUE)
             write(paste("rownumber:", rows[1]), file=stata.output, append=TRUE)
+            write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
+                  file=stata.output, append=TRUE)
+            write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
+                  file=stata.output, append=TRUE)
             
             #Add comma
             

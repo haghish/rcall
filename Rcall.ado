@@ -1063,6 +1063,8 @@ program define Rcall , rclass
 	if !missing("`debug'") {
 		di _n "{title:[5/5] rclass return}" _n								///
 		"The final step is returning objects from R to Stata" _n
+		
+		di "{browse stata.output}"
 	}
 	
 	
