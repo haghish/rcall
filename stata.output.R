@@ -162,11 +162,15 @@ stata.output <- function(plusR, Vanilla="") {
             rownames = rownames(iget)
             write(content, file=stata.output, append=TRUE)
             write(paste("rownumber:", rows[1]), file=stata.output, append=TRUE)
-            write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
-                  file=stata.output, append=TRUE)
-            write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
-                  file=stata.output, append=TRUE)
             
+            if (!is.null(colnames)) {
+                write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
+                  file=stata.output, append=TRUE)
+            }    
+            if (!is.null(rownames)) {
+                write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
+                  file=stata.output, append=TRUE)
+            }
             #Add comma
             
             write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE

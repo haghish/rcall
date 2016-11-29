@@ -156,22 +156,23 @@ program call_return , rclass
 					local rownumber : di `"`macval(line)'"'
 				}
 				
-				//GET COLUMN NAMES
 				file read `hitch' line
+				
+				//GET COLUMN NAMES
 				if substr(`"`macval(line)'"',1,9) == "colnames:" {
 					local line : subinstr local line "colnames:" ""
 					local colname : di `"`macval(line)'"'
+					file read `hitch' line
 				}
 				
 				//GET ROW NAMES
-				file read `hitch' line
 				if substr(`"`macval(line)'"',1,9) == "rownames:" {
 					local line : subinstr local line "rownames:" ""
 					local rowname : di `"`macval(line)'"'
+					file read `hitch' line
 				}
 				
 				// READ THE MATRIX
-				file read `hitch' line
 				local content
 				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
 					local content `content' `line' 
