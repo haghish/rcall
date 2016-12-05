@@ -1,6 +1,6 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.4.3
-Title: {opt R:call}
+Version: 1.5.1
+Title: Rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
 _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
@@ -377,58 +377,68 @@ program define Rcall , rclass
 	capture prog drop Rpath
 	capture Rpath
 	
-	if missing("$Rpath") {
-		
-		if "`c(os)'" == "Windows" {
+	tokenize `"`macval(0)'"'
+	
+	if `"`macval(1)'"' != "setpath" | `"`macval(1)'"' != "setpath:" {
+		if missing("$Rpath") {
 			
-			// 1- try both "Program Files" and "Program Files (86)" 
-			// 2- Get the list of directories that begin with R-*
-			// 3- select the last one
-			
-			local wd : pwd
-			capture quietly cd "C:\Program Files\R"
-			if _rc != 0 {
-				capture quietly cd "C:\Program Files (x86)\R"
+			if "`c(os)'" == "Windows" {
+				
+				// 1- try both "Program Files" and "Program Files (86)" 
+				// 2- Get the list of directories that begin with R-*
+				// 3- select the last one
+				
+				local wd : pwd
+				capture quietly cd "C:\Program Files\R"
 				if _rc != 0 {
-					display as err "R was not found on your system. Setup R path manually"
-					exit 198
+					capture quietly cd "C:\Program Files (x86)\R"
+					if _rc != 0 {
+						display as err "R was not found on your system. Setup R path manually"
+						exit 198
+					}
 				}
+				local folder : pwd
+				local Rdir : dir "`folder'" dirs "R-*"
+				tokenize `"`Rdir'"'
+				while `"`1'"' != "" {
+					local newest_R `"`1'"'
+					macro shift
+				}
+				quietly cd `"`newest_R'\bin"'
+				local path : pwd
+				local path : display "`path'\R.exe"			
+				quietly cd "`wd'"
 			}
-			local folder : pwd
-			local Rdir : dir "`folder'" dirs "R-*"
-			tokenize `"`Rdir'"'
-			while `"`1'"' != "" {
-				local newest_R `"`1'"'
-				macro shift
+			
+			// for linux and Mac try 2 possible default paths
+			else {
+				local path "/usr/bin/r"
+				capture confirm file "`path'"
+				if _rc != 0 {
+					local path "/usr/local/bin/R"
+				}	
 			}
-			quietly cd `"`newest_R'\bin"'
-			local path : pwd
-			local path : display "`path'\R.exe"			
-			quietly cd "`wd'"
+			if !missing("`debug'") {
+				di _n "{title:Path to R}" _n								///
+				"The path to R was {err:guessed} to be:"  _n
+				display `"{err:`path'}"'
+			}
 		}
 		else {
-			local path "/usr/bin/r"
-		}
-		if !missing("`debug'") {
-			di _n "{title:Path to R}" _n								///
-			"The path to R was {err:guessed} to be:"  _n
-			display `"{err:`path'}"'
-		}
-	}
-	else {
-		local path = "$Rpath"
-		if !missing("`debug'") {
-			di _n "{title:Path to R}" _n								///
-			"The path to R was obtained from {err:Rpath.ado} to be:"  _n
-			display `"{err:`path'}"'
-		}
-	}	
+			local path = "$Rpath"
+			if !missing("`debug'") {
+				di _n "{title:Path to R}" _n								///
+				"The path to R was obtained from {err:Rpath.ado} to be:"  _n
+				display `"{err:`path'}"'
+			}
+		}	
 
-	capture confirm file "`path'"
-	if _rc != 0 {
-		di as txt "{p}R was expected in:    `path'"
-		display as err "{bf:Rcall} could not find R on your system"
-		err 198
+		capture confirm file "`path'"
+		if _rc != 0 {
+			di as txt "{p}R was expected in:    `path'"
+			display as err "{bf:Rcall} could not find R on your system"
+			err 198
+		}
 	}
 	
 	// -------------------------------------------------------------------------

@@ -1,33 +1,27 @@
-d 'Rcall': Seamless interactive R in Stata. The command also return
-d  rclass R objects (numeric, character, list, matrix, etc)
+d 'RCALL': seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata.
+d The command automatically returns {help return:rclass} R objects with 
+d {it:integer}, {it:numeric}, {it:character}, {it:logical}, {it:matrix}, {it:data.frame}, {it:list}, and {it:NULL} 
+d classes to Stata. It also allows passing Stata variable, dataset, 
+d macro, scalar, and matrix to R as well as load a dataframe from R 
+d to Stata automatically, 
+d which provides an automated reciprocal communication between Stata and R. For
+d more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
 d
-d 
-d KW: Rstat
-d KW: R
-d KW: rsource
-d KW: useR
-d KW: programming
-d KW: interactive
-d KW: bridge
-d KW: class
+d Distribution-Date: 20161205
 d
-d Requires: Stata version 12 or higher
-d
-d Distribution-Date: 20160916
-d
-d Author: E.F. Haghish, University of Freiburg
-d Support: email haghish@imbi.uni-freiburg.de
-d
-f call_return.ado
-f matconvert.ado
-f matconvert.sthlp
-f R.ado
-f Rcall.ado
-f Rcall.sthlp
-f Rcall_check.ado
-f Rcall_counter.ado
-f Rcall_interactive.ado
-f Rcall_synchronize.ado
-f varconvert.ado
-F stata.output.R
+F call_return.ado
+F make_R_abb.do
+F matconvert.ado
+F matconvert.sthlp
+F qplot.ado
+F R.ado
+F R.sthlp
+F Rcall.ado
+F Rcall.sthlp
+F Rcall_check.ado
+F Rcall_counter.ado
+F Rcall_interactive.ado
+F Rcall_synchronize.ado
 F Rprofile.site
+F stata.output.r
+F varconvert.ado
