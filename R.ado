@@ -398,7 +398,7 @@ program define R , rclass
 					}
 				}
 				local folder : pwd
-				local Rdir : dir "`folder'" dirs "R-*"
+				local Rdir : dir "`folder'" dirs "R-*", respectcase
 				tokenize `"`Rdir'"'
 				while `"`1'"' != "" {
 					local newest_R `"`1'"'
