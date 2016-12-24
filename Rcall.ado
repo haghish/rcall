@@ -379,7 +379,7 @@ program define Rcall , rclass
 	
 	tokenize `"`macval(0)'"'
 	
-	if `"`macval(1)'"' != "setpath" | `"`macval(1)'"' != "setpath:" {
+	if `"`macval(1)'"' != "setpath" & `"`macval(1)'"' != "setpath:" {
 		if missing("$Rpath") {
 			
 			if "`c(os)'" == "Windows" {
