@@ -8,7 +8,7 @@ program define Rcall_interactive
 	
 	if "$Rcall_synchronize_mode" == "on" {
 		Rcall_synchronize 	
-		Rcall: source("Rcall_synchronize")
+		rcall: source("Rcall_synchronize")
 		local sync sync
 	}
 	
@@ -32,7 +32,7 @@ program define Rcall_interactive
 				
 				if missing("`tempfile'") {
 					if trim(`"`macval(nextcommand)'"') != "" {
-						Rcall `sync': `nextcommand'
+						rcall `sync': `nextcommand'
 						macro drop Rcall_interactive_mode
 					}	
 				}
@@ -41,7 +41,7 @@ program define Rcall_interactive
 					qui file close `knot'
 					local tempfile 				//reset
 					*quietly copy "`Rscript'" "mytemp.R", replace
-					if trim(`"`macval(nextcommand)'"') != "" Rcall `sync': source("`Rscript'")
+					if trim(`"`macval(nextcommand)'"') != "" rcall `sync': source("`Rscript'")
 					macro drop Rcall_interactive_mode
 				}	
 			}
