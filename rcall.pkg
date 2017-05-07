@@ -12,7 +12,7 @@ d
 F call_return.ado
 F matconvert.ado
 F matconvert.sthlp
-F qplot.ado
+F rplot.ado
 F R.ado
 F rcall.ado
 F rcall.sthlp
