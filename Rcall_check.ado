@@ -55,7 +55,7 @@ program rcall_check
 	
 	// Check that R is executable
 	// -------------------------------------------------------------------------
-	Rcall vanilla:                                                           	///
+	rcall vanilla:                                                           	///
 	major = R.Version()\$major; minor = R.Version()\$minor; 				 	///
 	version = paste(major,minor, sep=".");                                   	///
 	if ("`anything'" != "") {                                                	///
