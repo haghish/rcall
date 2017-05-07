@@ -1,6 +1,8 @@
 # Rcall : seamless R in Stata
 
-> <span style="color:red;">WARNING</span>: to comply with the rules of Stata Journal, `Rcall` command was renamed to `rcall`, `Rcall_check` command was renamed to `rcall_check`, and the package will have no official abbreviation for shortenning the `rcall` command. 
+> <span style="color:red;">WARNING</span>: to comply with the rules of Stata Journal and from version 2.0.0 forth, `Rcall` command was renamed to `rcall`, `Rcall_check` command was renamed to `rcall_check`, and the package will have no official abbreviation for shortenning the `rcall` command.
+
+--- 
 
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
