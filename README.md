@@ -1,5 +1,8 @@
 # Rcall : seamless R in Stata
 
+> <span style="color:red;">WARNING</span>: to comply with the rules of Stata Journal, `Rcall` command was renamed to `rcall`, `Rcall_check` command was renamed to `rcall_check`, and the package will have no official abbreviation for shortenning the `rcall` command. 
+
+
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
 
 __`Rcall`__ runs [__R__](https://cran.r-project.org/) commands in Stata and allow the two software automatically communicate _variables_, 
@@ -17,7 +20,7 @@ Installation
 The [__`github package`__](https://github.com/haghish/github) can be used to install __Rcall__ from GitHub conveniently. 
 
 ```js
-github install haghish/Rcall
+github install haghish/rcall
 ```
 
 Author
