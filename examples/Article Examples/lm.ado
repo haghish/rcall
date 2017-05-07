@@ -6,7 +6,7 @@ program lm, rclass
 	
 	// Make sure the user is having Rcall installed and running
 	// =========================================================================
-	Rcall_check
+	rcall_check
 	
 	// Syntax processing
 	// =========================================================================

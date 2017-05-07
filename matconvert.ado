@@ -1,9 +1,9 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
 Version:
 Title: matconvert
-Description: __matconvert__ belongs to {help Rcall} package. It takes the 
+Description: __matconvert__ belongs to {help rcall} package. It takes the 
 name of a Stata matrix and returns a code for constructing the same matrix in R.
-for more information visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
+for more information visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 

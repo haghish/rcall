@@ -1,16 +1,16 @@
 
-*cap prog drop Rcall_check
-program Rcall_check
+*cap prog drop rcall_check
+program rcall_check
 
 	syntax [anything] [, Rversion(str) RCALLversion(str)]
 	
-	// Check Rcall version from the Rcall.ado
+	// Check rcall version from the rcall.ado
 	// -------------------------------------------------------------------------
 	qui local location "`c(pwd)'"
 	qui cd "`c(sysdir_plus)'"
 	qui cd r
 	tempname hitch
-	file open `hitch' using "Rcall.ado", read
+	file open `hitch' using "rcall.ado", read
 	file read `hitch' line
 	while r(eof)==0 & substr(`"`macval(line)'"',1,8) != "Version:" {
 		file read `hitch' line
@@ -30,7 +30,7 @@ program Rcall_check
 	cap qui cd "`location'"
 				
 
-	// Prepare the required Rcall version
+	// Prepare the required rcall version
 	// -------------------------------------------------------------------------
 	if !missing("`rcallversion'") {
 		local requiredversion `rcallversion'
@@ -44,9 +44,9 @@ program Rcall_check
 		}
 		local version `version'.`secondary'
 		
-		// return error if Rcall is old
+		// return error if rcall is old
 		if `version' > `CURRENTRCALLVERSION' {
-			display as err "{help Rcall} version `rcallversion' or newer is "	///
+			display as err "{help rcall} version `rcallversion' or newer is "	///
 			"required"
 			err 198
 		}
@@ -82,14 +82,14 @@ program Rcall_check
 		err 198
 	} 
 	else if missing(r(version)) {
-		di as err "{help Rcall} could not access R on your system"
+		di as err "{help rcall} could not access R on your system"
 		err 198
 	}
 	
 	// Check R version 
 	// -------------------------------------------------------------------------
 	if "`rversion'" > "`r(version)'" {
-		di as err "R version `rversion' or higher is required. {help Rcall} "	///
+		di as err "R version `rversion' or higher is required. {help rcall} "	///
 		"is using R `r(version)'"
 		err 198
 	}

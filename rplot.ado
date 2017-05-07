@@ -4,14 +4,14 @@
 //
 // carring the "summary" function in R to summarize data in Stata
 
-cap prog drop qplot
-program qplot
+*cap prog drop rplot
+program rplot
 	version 12
 	syntax varlist [, colour(name) shape(name) format(name)]
 	
 	// check for the required packages and versions
 	// -------------------------------------------------------------------------
-	Rcall_check ggplot2>=2.1.0 , r(3.1.0) rcall(1.3.3)
+	rcall_check ggplot2>=2.1.0 , r(3.1.0) rcall(1.3.3)
 	
 	// Checking the variables
 	// -------------------------------------------------------------------------
@@ -39,7 +39,7 @@ program qplot
 	if !missing("`shape'") local shape ", shape = `shape'"
 	if missing("`format'") local format pdf
 	
-	Rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
+	rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
 	qplot(data=st.data(), x =`2', y =`1' `colour' `shape')
 	
 	di as txt "({browse Rplot.`format'} was produced)" 

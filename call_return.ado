@@ -250,7 +250,7 @@ program call_return , rclass
 	
 	// generate error message
 	// -------------------------------------------------------------------------
-	// but do not stop Rcall, because error message should be returned by Rcall
+	// but do not stop rcall, because error message should be returned by rcall
 	// or the main caller program
 	if "`Rerror'" == "1" {
 		global RcallError 1

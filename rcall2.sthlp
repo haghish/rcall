@@ -1,15 +1,15 @@
 {smcl}
-{right:version 1.5.1}
+{right:version 2.0.0}
 {title:Title}
 
 {phang}
-{cmd:Rcall} {hline 2} seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The command automatically returns {help return:rclass} R objects with 
+{cmd:rcall} {hline 2} seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata. The command automatically returns {help return:rclass} R objects with 
  {it:integer}, {it:numeric}, {it:character}, {it:logical}, {it:matrix}, {it:data.frame}, {it:list}, and {it:NULL} 
  classes to Stata. It also allows passing Stata variable, dataset, 
  macro, scalar, and matrix to R as well as load a dataframe from R 
  to Stata automatically, 
  which provides an automated reciprocal communication between Stata and R. For
- more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage}.
+ more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage}.
  
 
 {title:Syntax}
@@ -18,14 +18,14 @@
 To call R from Stata use the following syntax
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
+rcall [{help rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 {p 4 4 2}
 the package also includes a few subcommands to facilitate integrating R in Stata
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##subcommand:{it:subcommand}}]
+rcall [{help rcall##subcommand:{it:subcommand}}]
 {p_end}
 
 {p 4 4 2}
@@ -43,10 +43,10 @@ the following functions can be used to communicate data from Stata to R:
 {p2colreset}{...}
 
 {p 4 4 2}
-programmers can use {bf:Rcall_check} to evaluate the required version of R or R packages: 
+programmers can use {bf:rcall_check} to evaluate the required version of R or R packages: 
 
 {p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:Rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
 {p_end}
 
 {marker modes}{...}
@@ -58,7 +58,7 @@ The {it:mode} changes the behavior of the package and it can be {bf:vanilla} or 
 When the {it:mode} is not specified, R is called interactively which is the default 
 mode. Finally, when the [{it:R-command}] is not specified, the console mode 
 will be executed which simulates R console within Stata results window for interactive 
-use. In all of these modes, {bf:Rcall} returns {it:rclass} objects from R to Stata. These 
+use. In all of these modes, {bf:rcall} returns {it:rclass} objects from R to Stata. These 
 modes are summarized below:
 
 {* the new Stata help format of putting detail before generality}{...}
@@ -92,7 +92,7 @@ mode. {p_end}
 {title:Subcommands}
 
 {p 4 4 2}
-{bf:Rcall} allows a few subcommands which provide several features to facilitate 
+{bf:rcall} allows a few subcommands which provide several features to facilitate 
 working with the package interactivey. The subcommands are summarized in the 
 table below: 
 
@@ -121,7 +121,7 @@ used for customizing R when is called from Stata. {p_end}
 {p 4 4 2}
 {bf: {browse "https://cran.r-project.org/":R statistical language}} is a free software 
 and programming langage for statistical computing and graphics. 
-The {opt R:call} package combines the power of R with Stata, allowing the 
+The rcall package combines the power of R with Stata, allowing the 
 Stata users to call R interactively within Stata and communicate 
 data and analysis results between R and Stata simultaniously. 
 
@@ -137,10 +137,10 @@ R objects with {it:data.frame} class can be automatically loaded from R to
 Stata using the {bf:st.load()} function (see below).
 
 {p 4 4 2}
-{bf:Rcall} uses the {bf:try} function to evaluate the R code and 
+{bf:rcall} uses the {bf:try} function to evaluate the R code and 
 returns {bf:r(rc)} scalar which is an indicator for errors occuring in R. if {bf:r(rc)} 
 equals zero, R has successfully executed the code. Otherwise, if {bf:r(rc)} equals 
-one an error has occured and {bf:Rcall} will return the error message and break the 
+one an error has occured and {bf:rcall} will return the error message and break the 
 execution. 
 
 
@@ -149,21 +149,21 @@ execution.
 
 {p 4 4 2}
 Stata automatically receives R objects as {help return:rclass} anytime 
-the {opt R:call} is executed. If R is running interactively 
+the rcall is executed. If R is running interactively 
 (i.e. without {bf:vanilla} subcommand), the previous objects still remain accessable 
 to Stata, unless they are changed or erased from R. Moreover, the packages 
 that you load from Stata in R remain loaded until you detach them. 
 
 {p 4 4 2}
 Accessing R objects in Stata is simultanious which makes working with 
-{opt R:call} convenient. For example a {it:numeric}, or {it:string} vector which is 
+rcall convenient. For example a {it:numeric}, or {it:string} vector which is 
 defined in R, can be accessed in Stata as simple as calling the name of that 
 object withing {help rclass} i.e. {bf:r({it:objectname})}.    {break}
 
 {p 4 4 2}
 A {it:numeric} object example:
 
-        . R: a <- 100 
+        . rcall: a <- 100 
         . display r(a)  	
         100 	
 		
@@ -171,31 +171,31 @@ A {it:numeric} object example:
 Without the {bf:vanilla} subcommand, the defined object remains in the memory of 
 R and consequently, returned to Stata anytime R is called.
 
-        . R: a 
+        . rcall: a 
         [1] 100 
 		
 {p 4 4 2}
 A {it:string} object example:
 		
-        . R: str <- "Hello World" 
+        . rcall: str <- "Hello World" 
         . display r(str)  	
         Hello World
 		
-        . R: str <- c("Hello", "World") 
+        . rcall: str <- c("Hello", "World") 
         . display r(str)  	
         "Hello"  "World"
 		
 {p 4 4 2}
 A {it:vector} example:
 
-        . R: v <- c(1,2,3,4,5)
+        . rcall: v <- c(1,2,3,4,5)
         . display r(v)  	
         1 2 3 4 5
 
 {p 4 4 2}
 A {it:matrix} example:
 
-        . R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+        . rcall: A = matrix(1:6, nrow=2, byrow = TRUE) 
         . mat list r(A) 
         r(A)[2,3]
             c1  c2  c3  	
@@ -205,21 +205,21 @@ A {it:matrix} example:
 {p 4 4 2}
 A {it:list} example:
 
-        . R: mylist <- list(a=c(1:10))
+        . rcall: mylist <- list(a=c(1:10))
         . display r(mylist_a) 
         1 2 3 4 5 6 7 8 9 10
 
 {p 4 4 2}
 A {it:logical} example:
 
-        . R: l <- T 
+        . rcall: l <- T 
         . display r(l)
         TRUE
 		
 {p 4 4 2}
 A {it:NULL} example:
 
-        . R: n <- NULL
+        . rcall: n <- NULL
         . display r(n)
         NULL	
 		
@@ -234,10 +234,10 @@ Regarding communicating R data set to Stata automatically, see the
 For an ideal reciprocation between Stata and R, Stata should also easily 
 communicate variables to R. Local and global {help macro:macros} can be passed 
 within R code, since Stata automatically interprets them while it passes the 
-code to {opt R:call} command, as shown in the example below:
+code to rcall command, as shown in the example below:
 
         . global a 99 
-        . R: (a <- $a)  	
+        . rcall: (a <- $a)  	
         [1] 99 		
 
 {p 4 4 2}
@@ -245,7 +245,7 @@ In order to pass a {help scalar} from Stata to R, you can
 use the {bf:st.scalar()} function as shown below:
 
         . scalar a = 50 
-        . R: (a <- st.scalar(a))  	
+        . rcall: (a <- st.scalar(a))  	
         [1] 50 		
 
 {p 4 4 2}
@@ -254,8 +254,8 @@ the {bf:st.matrix()} function as shown below:
 
         . matrix A = (1,2\3,4) 
         . matrix B = (96,96\96,96) 		
-        . R: C <- st.matrix(A) + st.matrix(B)
-        . R: C 
+        . rcall: C <- st.matrix(A) + st.matrix(B)
+        . rcall: C 
              [,1] [,2]
         [1,]   97   98
         [2,]   99  100
@@ -275,9 +275,9 @@ Passing variables from Stata to R is convenient, using the
 simply by passing the variables required for the analysis from Stata to R:
 
         . sysuse auto, clear 
-        . R: dep <- st.var(price)		
-        . R: pre <- st.var(mpg)	
-        . R: lm(dep~pre)
+        . rcall: dep <- st.var(price)		
+        . rcall: pre <- st.var(mpg)	
+        . rcall: lm(dep~pre)
 
         Call:
         lm(formula = dep ~ pre)
@@ -287,29 +287,29 @@ simply by passing the variables required for the analysis from Stata to R:
             11267.3       -238.3
 
 {p 4 4 2}
-The {opt R:call} package also allows to pass Stata data to R within 
+The rcall package also allows to pass Stata data to R within 
 {bf:st.data({it:{help filename}})} function. This function relies on the {bf:readstata13} 
 package in R to load Stata data sets, without converting them to CSV or alike. 
 The {bf:readstata13} package 
 {browse "http://www.haghish.com/stata-blog/?p=21":is faster and more acurate then {bf:foreign} and {bf:haven} packages} 
 and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . R: install.packages("readstata13", repos="http://cran.uk.r-project.org")
+        . rcall: install.packages("readstata13", repos="http://cran.uk.r-project.org")
 
 {p 4 4 2}
 Specify the relative or absolute path to the data set to transporting data 
 from Stata to R. For example: 
 
-        . R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
-        . R: dim(data)
+        . rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
+        . rcall: dim(data)
 
 {p 4 4 2}
 If the {it:filename} is not specified, the function passes the currently loaded 
 data to R. 
 
         . sysuse auto, clear 
-        . R: data <- st.data() 
-        . R: dim(data) 
+        . rcall: data <- st.data() 
+        . rcall: dim(data) 
         [1] 74 12
 		
 {p 4 4 2}
@@ -321,7 +321,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: st.load(cars) 
+        . rcall: st.load(cars) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}
@@ -338,16 +338,16 @@ You should be careful with using Stata symbols in R. For example, the {bf:$}
 sign in Stata is preserved for global macros. To use this sign in R, you 
 should place a backslash before it to pass it to R. For example:
 
-        . R: head(cars\$speed)
+        . rcall: head(cars\$speed)
 
 {p 4 4 2}
 Also, the object name in R can include a dot, for example:
 
-        . R: a.name <- "anything" 
+        . rcall: a.name <- "anything" 
 		
 {p 4 4 2}
-The {opt R:call} package returns scalars and locals which can only include 
-underscore in the names (e.g. a_name). {opt R:call} automatically converts 
+The rcall package returns scalars and locals which can only include 
+underscore in the names (e.g. a_name). rcall automatically converts 
 dots to underscore in the name. In the example above, if you type {cmd:return list} 
 in Stata, you would get a macro as follos:
 
@@ -365,7 +365,7 @@ R and Stata.
 {title:Example}
 
 {p 4 4 2}
-Visit  {browse "http://www.haghish.com/packages/Rcall.php":Rcall homepage} for more examples and 
+Visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage} for more examples and 
 documentation. 
 
 
@@ -381,7 +381,7 @@ University of Southern Denmark       {break}
 haghish@imbi.uni-freiburg.de       {break}
 
 {p 4 4 2}
-{browse "www.haghish.com/packages/Rcall.php":Rcall Homepage}           {break}
+{browse "www.haghish.com/packages/Rcall.php":rcall Homepage}           {break}
 Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}       {break}
 
     {hline}

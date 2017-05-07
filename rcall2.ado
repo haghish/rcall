@@ -1,6 +1,6 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.5.1
-Title: Rcall
+Version: 2.0.0
+Title: rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
 _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
@@ -8,7 +8,7 @@ classes to Stata. It also allows passing Stata variable, dataset,
 macro, scalar, and matrix to R as well as load a dataframe from R 
 to Stata automatically, 
 which provides an automated reciprocal communication between Stata and R. For
-more information and examples visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
+more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 /***
@@ -18,13 +18,13 @@ Syntax
 To call R from Stata use the following syntax
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
+rcall [{help rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 the package also includes a few subcommands to facilitate integrating R in Stata
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##subcommand:{it:subcommand}}]
+rcall [{help rcall##subcommand:{it:subcommand}}]
 {p_end}
 
 the following functions can be used to communicate data from Stata to R: 
@@ -40,10 +40,10 @@ the following functions can be used to communicate data from Stata to R:
 {synoptline}
 {p2colreset}{...}
 
-programmers can use __Rcall_check__ to evaluate the required version of R or R packages: 
+programmers can use __rcall_check__ to evaluate the required version of R or R packages: 
 
 {p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:Rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
 {p_end}
 
 {marker modes}{...}
@@ -54,7 +54,7 @@ The _mode_ changes the behavior of the package and it can be __vanilla__ or __sy
 When the _mode_ is not specified, R is called interactively which is the default 
 mode. Finally, when the [{it:R-command}] is not specified, the console mode 
 will be executed which simulates R console within Stata results window for interactive 
-use. In all of these modes, __Rcall__ returns _rclass_ objects from R to Stata. These 
+use. In all of these modes, __rcall__ returns _rclass_ objects from R to Stata. These 
 modes are summarized below:
 
 {* the new Stata help format of putting detail before generality}{...}
@@ -87,7 +87,7 @@ mode. {p_end}
 Subcommands
 =================
 
-__Rcall__ allows a few subcommands which provide several features to facilitate 
+__rcall__ allows a few subcommands which provide several features to facilitate 
 working with the package interactivey. The subcommands are summarized in the 
 table below: 
 
@@ -115,7 +115,7 @@ Description
 
 __[R statistical language](https://cran.r-project.org/)__ is a free software 
 and programming langage for statistical computing and graphics. 
-The {opt R:call} package combines the power of R with Stata, allowing the 
+The rcall package combines the power of R with Stata, allowing the 
 Stata users to call R interactively within Stata and communicate 
 data and analysis results between R and Stata simultaniously. 
 
@@ -128,10 +128,10 @@ classes are automatically returned to Stata as {help return:rclass}.
 R objects with _data.frame_ class can be automatically loaded from R to 
 Stata using the __st.load()__ function (see below).
 
-__Rcall__ uses the __try__ function to evaluate the R code and 
+__rcall__ uses the __try__ function to evaluate the R code and 
 returns __r(rc)__ scalar which is an indicator for errors occuring in R. if __r(rc)__ 
 equals zero, R has successfully executed the code. Otherwise, if __r(rc)__ equals 
-one an error has occured and __Rcall__ will return the error message and break the 
+one an error has occured and __rcall__ will return the error message and break the 
 execution. 
  
 
@@ -139,47 +139,47 @@ Communication from R to Stata
 ======================================
 
 Stata automatically receives R objects as {help return:rclass} anytime 
-the {opt R:call} is executed. If R is running interactively 
+the rcall is executed. If R is running interactively 
 (i.e. without __vanilla__ subcommand), the previous objects still remain accessable 
 to Stata, unless they are changed or erased from R. Moreover, the packages 
 that you load from Stata in R remain loaded until you detach them. 
 
 Accessing R objects in Stata is simultanious which makes working with 
-{opt R:call} convenient. For example a _numeric_, or _string_ vector which is 
+rcall convenient. For example a _numeric_, or _string_ vector which is 
 defined in R, can be accessed in Stata as simple as calling the name of that 
 object withing {help rclass} i.e. __r(_objectname_)__.  
 
 A _numeric_ object example:
 
-        . R: a <- 100 
+        . rcall: a <- 100 
         . display r(a)  	
         100 	
 		
 Without the __vanilla__ subcommand, the defined object remains in the memory of 
 R and consequently, returned to Stata anytime R is called.
 
-        . R: a 
+        . rcall: a 
         [1] 100 
 		
 A _string_ object example:
 		
-        . R: str <- "Hello World" 
+        . rcall: str <- "Hello World" 
         . display r(str)  	
         Hello World
 		
-        . R: str <- c("Hello", "World") 
+        . rcall: str <- c("Hello", "World") 
         . display r(str)  	
         "Hello"  "World"
 		
 A _vector_ example:
 
-        . R: v <- c(1,2,3,4,5)
+        . rcall: v <- c(1,2,3,4,5)
         . display r(v)  	
         1 2 3 4 5
 
 A _matrix_ example:
 
-        . R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+        . rcall: A = matrix(1:6, nrow=2, byrow = TRUE) 
         . mat list r(A) 
         r(A)[2,3]
             c1  c2  c3  	
@@ -188,19 +188,19 @@ A _matrix_ example:
 		
 A _list_ example:
 
-        . R: mylist <- list(a=c(1:10))
+        . rcall: mylist <- list(a=c(1:10))
         . display r(mylist_a) 
         1 2 3 4 5 6 7 8 9 10
 
 A _logical_ example:
 
-        . R: l <- T 
+        . rcall: l <- T 
         . display r(l)
         TRUE
 		
 A _NULL_ example:
 
-        . R: n <- NULL
+        . rcall: n <- NULL
         . display r(n)
         NULL	
 		
@@ -213,17 +213,17 @@ Communication from Stata to R
 For an ideal reciprocation between Stata and R, Stata should also easily 
 communicate variables to R. Local and global {help macro:macros} can be passed 
 within R code, since Stata automatically interprets them while it passes the 
-code to {opt R:call} command, as shown in the example below:
+code to rcall command, as shown in the example below:
 
         . global a 99 
-        . R: (a <- $a)  	
+        . rcall: (a <- $a)  	
         [1] 99 		
 
 In order to pass a {help scalar} from Stata to R, you can 
 use the __st.scalar()__ function as shown below:
 
         . scalar a = 50 
-        . R: (a <- st.scalar(a))  	
+        . rcall: (a <- st.scalar(a))  	
         [1] 50 		
 
 Similarly, Stata {help matrix:matrices} can be seamlessly passed to R using 
@@ -231,8 +231,8 @@ the __st.matrix()__ function as shown below:
 
         . matrix A = (1,2\3,4) 
         . matrix B = (96,96\96,96) 		
-        . R: C <- st.matrix(A) + st.matrix(B)
-        . R: C 
+        . rcall: C <- st.matrix(A) + st.matrix(B)
+        . rcall: C 
              [,1] [,2]
         [1,]   97   98
         [2,]   99  100
@@ -250,9 +250,9 @@ __st.var(_varname_)__ function. Therefore, any analysis can be executed in R
 simply by passing the variables required for the analysis from Stata to R:
 
         . sysuse auto, clear 
-        . R: dep <- st.var(price)		
-        . R: pre <- st.var(mpg)	
-        . R: lm(dep~pre)
+        . rcall: dep <- st.var(price)		
+        . rcall: pre <- st.var(mpg)	
+        . rcall: lm(dep~pre)
         
         Call:
         lm(formula = dep ~ pre)
@@ -261,27 +261,27 @@ simply by passing the variables required for the analysis from Stata to R:
         (Intercept)          pre  
             11267.3       -238.3
 
-The {opt R:call} package also allows to pass Stata data to R within 
+The rcall package also allows to pass Stata data to R within 
 __st.data(_{help filename}_)__ function. This function relies on the __readstata13__ 
 package in R to load Stata data sets, without converting them to CSV or alike. 
 The __readstata13__ package 
 [is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21) 
 and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . R: install.packages("readstata13", repos="http://cran.uk.r-project.org")
+        . rcall: install.packages("readstata13", repos="http://cran.uk.r-project.org")
 
 Specify the relative or absolute path to the data set to transporting data 
 from Stata to R. For example: 
 
-        . R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
-        . R: dim(data)
+        . rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
+        . rcall: dim(data)
 
 If the _filename_ is not specified, the function passes the currently loaded 
 data to R. 
 
         . sysuse auto, clear 
-        . R: data <- st.data() 
-        . R: dim(data) 
+        . rcall: data <- st.data() 
+        . rcall: dim(data) 
         [1] 74 12
 		
 Finally, the data can be imported from R to Stata automatically, using the 		
@@ -292,7 +292,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: st.load(cars) 
+        . rcall: st.load(cars) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}
@@ -308,14 +308,14 @@ You should be careful with using Stata symbols in R. For example, the __$__
 sign in Stata is preserved for global macros. To use this sign in R, you 
 should place a backslash before it to pass it to R. For example:
 
-        . R: head(cars\$speed)
+        . rcall: head(cars\$speed)
 
 Also, the object name in R can include a dot, for example:
  
-        . R: a.name <- "anything" 
+        . rcall: a.name <- "anything" 
 		
-The {opt R:call} package returns scalars and locals which can only include 
-underscore in the names (e.g. a_name). {opt R:call} automatically converts 
+The rcall package returns scalars and locals which can only include 
+underscore in the names (e.g. a_name). rcall automatically converts 
 dots to underscore in the name. In the example above, if you type {cmd:return list} 
 in Stata, you would get a macro as follos:
 
@@ -331,7 +331,7 @@ R and Stata.
 Example
 =================
 
-Visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
+Visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
 documentation. 
 
 Author
@@ -345,7 +345,7 @@ Department of Mathematics and Computer Science
 University of Southern Denmark     
 haghish@imbi.uni-freiburg.de     
       
-[Rcall Homepage](www.haghish.com/packages/Rcall.php)         
+[rcall Homepage](www.haghish.com/packages/Rcall.php)         
 Package Updates on [Twitter](http://www.twitter.com/Haghish)     
 
 - - -
@@ -357,8 +357,8 @@ This help file was dynamically produced by {help markdoc:MarkDoc Literate Progra
 
 
 
-*cap prog drop Rcall
-program define Rcall , rclass
+*cap prog drop rcall
+program define rcall , rclass
 	
 	*version 12
 	
@@ -631,7 +631,7 @@ program define Rcall , rclass
 		// =======
 		if `"`macval(1)'"' == "check" {
 			local 0 : subinstr local 0 "check" ""
-			Rcall_check `0'
+			rcall_check `0'
 			return add
 			exit
 		}
@@ -830,7 +830,7 @@ program define Rcall , rclass
 	// make sure readstata13 is installed and updated regularly
 	// -------------------------------------------------------------------------
 	if "`foreign'" == "1" {
-		capture Rcall_check readstata13>=0.8.5 
+		capture rcall_check readstata13>=0.8.5 
 		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.3 "	///
 		"is required. Type:" _n "{p}R: install.packages("												///
 		`""readstata13", repos="http://cran.uk.r-project.org")"'
@@ -1306,6 +1306,6 @@ end
 // CREATE help file
 // =========================================================================
 
-*markdoc Rcall.ado, export(sthlp) replace
+*markdoc rcall.ado, export(sthlp) replace
 
 

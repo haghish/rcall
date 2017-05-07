@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.5.1
+Version: 1.5.2
 Title: Rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -40,10 +40,10 @@ the following functions can be used to communicate data from Stata to R:
 {synoptline}
 {p2colreset}{...}
 
-programmers can use __Rcall_check__ to evaluate the required version of R or R packages: 
+programmers can use __rcall_check__ to evaluate the required version of R or R packages: 
 
 {p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:Rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
 {p_end}
 
 {marker modes}{...}
@@ -631,7 +631,7 @@ program define R , rclass
 		// =======
 		if `"`macval(1)'"' == "check" {
 			local 0 : subinstr local 0 "check" ""
-			Rcall_check `0'
+			rcall_check `0'
 			return add
 			exit
 		}
@@ -830,7 +830,7 @@ program define R , rclass
 	// make sure readstata13 is installed and updated regularly
 	// -------------------------------------------------------------------------
 	if "`foreign'" == "1" {
-		capture Rcall_check readstata13>=0.8.5 
+		capture rcall_check readstata13>=0.8.5 
 		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.3 "	///
 		"is required. Type:" _n "{p}R: install.packages("												///
 		`""readstata13", repos="http://cran.uk.r-project.org")"'
