@@ -6,30 +6,32 @@ program define Rcall_interactive
 	scalar Rcall_counter = 0
 	tempfile Rscript
 	
+	
 	if "$Rcall_synchronize_mode" == "on" {
 		Rcall_synchronize 	
 		rcall: source("Rcall_synchronize")
-		local sync sync
+		*local sync sync
+		global Rcall_synchronize_mode2 "on"
+		macro drop Rcall_synchronize_mode
 	}
+	
 	
 	while `"`macval(nextcommand)'"' != "end" {
 		qui disp _request(_nextcommand)
 		if `"`macval(nextcommand)'"' != "end" {
 	
 			global Rcall_interactive_mode on
+			
 			// Count opened brackets
 			// -----------------------------------------------------------------
-			
-			
-			
 			Rcall_counter `nextcommand'
 			
 			// correct for the dollar sign
 			local nextcommand: subinstr local nextcommand "$" "\$", all
 			
 			scalar Rcall_counter = Rcall_counter + r(Rcall_counter)
+			
 			if Rcall_counter == 0 {
-				
 				if missing("`tempfile'") {
 					if trim(`"`macval(nextcommand)'"') != "" {
 						rcall `sync': `nextcommand'
@@ -41,7 +43,9 @@ program define Rcall_interactive
 					qui file close `knot'
 					local tempfile 				//reset
 					*quietly copy "`Rscript'" "mytemp.R", replace
-					if trim(`"`macval(nextcommand)'"') != "" rcall `sync': source("`Rscript'")
+					if trim(`"`macval(nextcommand)'"') != "" {
+						rcall `sync': source("`Rscript'")
+					}
 					macro drop Rcall_interactive_mode
 				}	
 			}
@@ -70,6 +74,10 @@ program define Rcall_interactive
 		
 		// Erase memory
 		scalar drop Rcall_counter
+		
+		// if the interactive mode was also synchronized, define the marker
+		global Rcall_synchronize_mode3 "on"
+		if !missing("`debug'") di as err "set Rcall_synchronize_mode3 = $Rcall_synchronize_mode3"		
 	}
 
 end

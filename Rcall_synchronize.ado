@@ -5,6 +5,8 @@
 *capture program drop Rcall_synchronize
 program Rcall_synchronize
 	
+	if !missing("`debug'") di as err "entering Rcall_synchronize"
+	
 	tempfile Rscript
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace

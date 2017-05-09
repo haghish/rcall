@@ -36,7 +36,7 @@ program call_return , rclass
 				local line : subinstr local line "//NULL " ""
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
-				if "$Rcall_synchronize_mode" == "on" {
+				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 					scalar `name' = "NULL"
 				}
 				else {
@@ -51,12 +51,14 @@ program call_return , rclass
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
-				if "`name'" == "rc" & "`line'" == "1" local Rerror 1
-				if "$Rcall_synchronize_mode" == "on" {
-					scalar `name' = `line'
-				}
-				else {
-					return scalar `name' = `line'
+				if "`name'" != "Rcall_counter" {
+					if "`name'" == "rc" & "`line'" == "1" local Rerror 1
+					if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
+						scalar `name' = `line'
+					}
+					else {
+						return scalar `name' = `line'
+					}
 				}
 			}
 			
@@ -107,7 +109,7 @@ program call_return , rclass
 					local errorMessage = `"`macval(multiline)'"'
 				}	
 				
-				if "$Rcall_synchronize_mode" == "on" {
+				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 					local test
 					capture local test : di `multiline'
 					if !missing("`test'") scalar `name' = `multiline'
@@ -144,6 +146,7 @@ program call_return , rclass
 			// MATRIX OBJECT (NUMERIC)
 			// =================================================================
 			if substr(`"`macval(line)'"',1,9) == "//MATRIX " {
+		
 				local line : subinstr local line "//MATRIX " ""
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local line : subinstr local line "$" "_", all //avoid "$" in name
@@ -223,11 +226,13 @@ program call_return , rclass
 				if !missing("`rowname'") {
 					matrix rownames `name' = `rowname'
 				}
-				
-				if "$Rcall_synchronize_mode" == "on" {
+
+				if !missing("`debug'") di as err "Rcall_synchronize_mode3 is $Rcall_synchronize_mode3"
+
+				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 					mat define `name'_copy = `name'
 					return matrix `name' = `name'
-					mat `name' = `name'_copy
+					mat `name' = `name'_copy				
 					mat drop `name'_copy
 				}	
 				else {
@@ -256,6 +261,8 @@ program call_return , rclass
 		global RcallError 1
 		display as error `"{p}`macval(errorMessage)'"'
 	}
+	
+	macro drop Rcall_synchronize_mode3
 	
 end
 
