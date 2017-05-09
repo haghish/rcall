@@ -365,7 +365,7 @@ program define rcall , rclass
 	// =========================================================================
 	// Syntax processing
 	//   - if the [:] appears first, it means the rest are not modes or subcommands
-	//   - Process the Rcall inputs
+	//   - Process the rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
 	
@@ -436,7 +436,7 @@ program define rcall , rclass
 		capture confirm file "`path'"
 		if _rc != 0 {
 			di as txt "{p}R was expected in:    `path'"
-			display as err "{bf:Rcall} could not find R on your system"
+			display as err "{bf:rcall} could not find R on your system"
 			err 198
 		}
 	}
@@ -465,7 +465,7 @@ program define rcall , rclass
 			local debug debug
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n									///
-				"Running Rcall in debug mode"
+				"Running rcall in debug mode"
 			}	
 		}
 
@@ -499,7 +499,7 @@ program define rcall , rclass
 			di _col(10) "{bf:R path}:" _col(20) _c 
 			di as txt `"{browse "/usr/bin/R"}"' 
 			
-			Rcall vanilla: version = R.Version()\$version.string;				///
+			rcall vanilla: version = R.Version()\$version.string;				///
 				lst <- ls(globalenv());											
 				
 			di _col(7) "{bf:R version}:" _col(20) _c 
@@ -570,7 +570,7 @@ program define rcall , rclass
 			local debug debug
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n								///
-				"Running Rcall in debug mode"
+				"Running rcall in debug mode"
 			}	
 		}
 		
@@ -696,7 +696,7 @@ program define rcall , rclass
 			tempname knot
 			qui file open `knot' using "`r(fn)'", write text append	
 			if !missing(`"`macval(0)'"') {
-				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+				file write `knot' `"rcall `mode': `macval(0)'"' _n
 			}
 			qui file close `knot'
 		}
@@ -706,7 +706,7 @@ program define rcall , rclass
 			qui file open `knot' using "`history'", write text append
 			file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 			if !missing(`"`macval(0)'"') {
-				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+				file write `knot' `"rcall `mode': `macval(0)'"' _n
 			}
 			qui file close `knot'
 			quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
@@ -835,7 +835,7 @@ program define rcall , rclass
 		"is required. Type:" _n "{p}R: install.packages("												///
 		`""readstata13", repos="http://cran.uk.r-project.org")"'
 		
-		// avoid slowing down Rcall
+		// avoid slowing down rcall
 		global Rcall_check 1
 	}
 	
@@ -1290,7 +1290,7 @@ program define rcall , rclass
 	macro drop Rcall_synchronize_mode
 	
 	
-	// stop Rcall execution if error has occured
+	// stop rcall execution if error has occured
 	// -------------------------------------------------------------------------
 	if "$RcallError" == "1" {
 		macro drop RcallError
