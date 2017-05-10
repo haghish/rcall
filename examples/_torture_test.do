@@ -6,8 +6,8 @@
 //		* Character class is messed up in the list
 //		* PROBLEM WITH CHARACTER VECTORS
 // =============================================================================
-R: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
-R: mylist
+rcall: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
+rcall: mylist
 ********************************************************************************
 
 
@@ -16,10 +16,11 @@ R: mylist
 // =============================================================================
 
 // Install the package from GitHub
-net install Rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
+*net install rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
+github install haghish/rcall
 
 // Setup R path permanently
-R setpath "/usr/bin/r"
+rcall setpath "/usr/bin/r"
 
 
 
@@ -30,43 +31,44 @@ R setpath "/usr/bin/r"
 
 // Vanilla (Non-Interactive)
 // -----------------------------------------------------------------------------
-R: rm(list=ls()) 
-Rcall: unlink(".RData")
-Rcall clear //alternatively! a new subcommand
-Rcall vanilla : object <- print("this")
+rcall: rm(list=ls()) 
+rcall: unlink(".RData")
+rcall clear //alternatively! a new subcommand
+rcall vanilla : object <- print("this")
 return list
 
-// if you want to access the "object" you get an error that is not found
-Rcall: object
+// if you want to access the "object" you get an error that is not found because 
+// it was defined in vanilla mode
+rcall: object
 
 
 // Interactive mode
 // -----------------------------------------------------------------------------
-R: a <- print("Hello World")
-R: q()						//does not remove the R objects in memory
-R: print(ls())
+rcall: a <- print("Hello World")
+rcall: q()						//does not remove the R objects in memory
+rcall: print(ls())
 
-R: rm(list=ls()) 			//remove the R objects in memory
-R: print(ls())
+rcall: rm(list=ls()) 			//remove the R objects in memory
+rcall: print(ls())
 
 //numeric and string objects
-Rcall: a <- 10
-R: b <- " or it can be string"
+rcall: a <- 10
+rcall: b <- " or it can be string"
 display "The object value is can be numetic such as " r(a) r(b)
 
 //define a matrix
-R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+rcall: A = matrix(1:6, nrow=2, byrow = TRUE) 
 mat list r(A)
 
 // SPECIAL CHARACTERS
 
-R: attach(cars)
-R: cars\$speed		  //the $ sign must be 
+rcall: attach(cars)
+rcall: cars\$speed		  //the $ sign must be 
 
 //Stata interprets $ sign in the middle of a word as global macro, use backslash
-R: head(cars\$speed)
-R: LM <- lm(cars\$dist~cars\$speed)
-R: LM
+rcall: head(cars\$speed)
+rcall: LM <- lm(cars\$dist~cars\$speed)
+rcall: LM
 return list //lm is not a list
 
 // Synchronizing mode
@@ -74,31 +76,31 @@ return list //lm is not a list
 
 // SCALAR
 // -------------------------------
-Rcall clear
+rcall clear
 scalar a = 1
-Rcall sync: a = 0
+rcall sync: a = 0
 di a
 
 //without synchronization
 scalar a = 1
-Rcall: a = 0
+rcall: a = 0
 di a
 
 
 //DEFENSIVE: missing scalar
 // -------------------------------
 scalar a = .
-Rcall: a 
+rcall: a 
 di a
 
 scalar a = 10
-Rcall sync: a 
-Rcall sync: a <- NA
+rcall sync: a 
+rcall sync: a <- NA
 di a
 
 
 scalar a = .
-Rcall sync: a = "this is \n multiline \n text"
+rcall sync: a = "this is \n multiline \n text"
 di a
 
 
@@ -107,21 +109,21 @@ di a
 // -------------------------------
 mat drop _all
 mat define A = (1,2,3 \ 4,5,6)
-Rcall sync: A
-Rcall sync: B = A
+rcall sync: A
+rcall sync: B = A
 mat list r(B)
 
 mat dir
 
 return list
 
-Rcall sync: C = B+A
+rcall sync: C = B+A
 mat list C
 
 mat D = C/2
 mat list D
 
-Rcall sync: D
+rcall sync: D
 
 
 
@@ -136,21 +138,21 @@ Rcall sync: D
 // from Stata
 
 // Creating a PDF file named Rplots.pdf
-R: plot(1,1)
+rcall: plot(1,1)
 
 // Creating a PNG file named mypng.png
-R: png("mypng.png");plot(rnorm(100), main="This is my PNG file");
+rcall: png("mypng.png");plot(rnorm(100), main="This is my PNG file");
 
 // Creating a postscript file named whatever.eps
-R: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
-//R: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); dev.off();
+rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
+//rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); dev.off();
 
 
 *******************************************************************
 // THIS WILL NOT WORK
-R: setEPS()
-R: postscript("postscriot.eps")
-R: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
+rcall: setEPS()
+rcall: postscript("postscriot.eps")
+rcall: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
 *******************************************************************
 
 
@@ -160,46 +162,46 @@ R: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
 // -----------------------------------------------------------------------------
 // From Stata to R (Interactive)
 // =============================================================================
-R: rm(list=ls()) 			//remove the R objects in memory
+rcall: rm(list=ls()) 			//remove the R objects in memory
 
 // NUMERIC and STRING LOCAL & GLOBAL
 // ---------------------------------------
 local  a = 99
 global b = 99
-Rcall: c <- `a' + $b
+rcall: c <- `a' + $b
 display r(c)
 
 global a "thi is a string"
-Rcall: b <- "$a"
+rcall: b <- "$a"
 display r(b)
 
 
 // st.matrix() : Passing a NUMERIC matrix from Stata to R
 // ----------------------------------------
 matrix A = (1,2\3,4) 
-Rcall: A <- st.matrix(A) + st.matrix(A) + st.matrix(A) + st.matrix(A)
+rcall: A <- st.matrix(A) + st.matrix(A) + st.matrix(A) + st.matrix(A)
 mat list r(A)
 
-R: rm(list=ls())
+rcall: rm(list=ls())
 matrix A = (1,2\3,4) 
 matrix B = (96,96\96,96) 		
-R: C <- st.matrix(A) + st.matrix(B)
-R: C
+rcall: C <- st.matrix(A) + st.matrix(B)
+rcall: C
 
 // st.scalar() : Passing a NUMERIC & STRING SCALAR to R
 // ----------------------------------------
 scalar a = 999
-Rcall: a <- st.scalar(a)
+rcall: a <- st.scalar(a)
 display r(a)
 
 scalar a = "or string scalar"
-Rcall: a <- st.scalar(a)
+rcall: a <- st.scalar(a)
 display r(a)
 
 
 // multiple-line string
 // ----------------------------------------
-Rcall debug: A = list(a="hi there this is pretty long \n there \n and here")
+rcall debug: A = list(a="hi there this is pretty long \n there \n and here")
 return list
 
 
@@ -207,33 +209,33 @@ return list
 // ----------------------------------------
 
 sysuse auto, clear
-R: data <- st.data()
-R: dim(data)
+rcall: data <- st.data()
+rcall: dim(data)
 
 clear
-R: rm(list=ls())
-R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta)
+rcall: rm(list=ls())
+rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta)
 
 
 // load.data() : Passing Data from R to Stata 
 // ----------------------------------------
 clear 
-Rcall: mydata <- data.frame(cars) 
-Rcall: load.data(mydata) 
+rcall: mydata <- data.frame(cars) 
+rcall: load.data(mydata) 
 list in 1/2
 
 
 // -----------------------------------------------------------------------------
 // Source an R script file and get all of the objects back to Stata
 // =============================================================================
-R: rm(list=ls())
-R: source('https://raw.githubusercontent.com/haghish/Rcall/master/examples/get.R')
+rcall: rm(list=ls())
+rcall: source('https://raw.githubusercontent.com/haghish/Rcall/master/examples/get.R')
 mat list r(matrixObject)
 display r(mystr)
 
 
-Rcall: unlink(".RData") //This deletes the workspace file
-Rcall: rm(list=ls())
+rcall: unlink(".RData") //This deletes the workspace file
+rcall: rm(list=ls())
 
 // -----------------------------------------------------------------------------
 // Trying Rcpp package
@@ -250,15 +252,15 @@ script file and source it all at once.
 */
 
 cd "/Users/haghish/Documents/Packages/Rcall"
-Rcall: library(Rcpp)
-Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); timesTwo(2);timesTwo(999);
+rcall: library(Rcpp)
+rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); timesTwo(2);timesTwo(999);
 
-Rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
+rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 
 //save the results of Rcpp in an R object, and get it back in Stata!
 display r(a)
 
-Rcall: detach("package:Rcpp")
+rcall: detach("package:Rcpp")
 
 // -----------------------------------------------------------------------------
 // RProfile : Detach packages, data, variables, etc..
@@ -274,10 +276,10 @@ if you don't need a data set, package, etc, remove them from the R Workspace and
 detach the packages. 
 */
 
-R: search()
-Rcall: detach("package:Rcpp", unload=TRUE)
-Rcall: detach("package:foreign", unload=TRUE)
-R: search()
+rcall: search()
+rcall: detach("package:Rcpp", unload=TRUE)
+rcall: detach("package:foreign", unload=TRUE)
+rcall: search()
 
 
 // -----------------------------------------------------------------------------
@@ -290,20 +292,28 @@ R: search()
 
 
 
-Rcall:  timesTen <- function(x) { 												///
+rcall:  timesTen <- function(x) { 												///
 			return(x*10)														///
 		}
 
-Rcall: timesTen(10)		
+rcall: timesTen(10)		
 
 
 	
 // -----------------------------------------------------------------------------
 // Execution time
 // =============================================================================
+rcall clear
+
 timer clear
 timer on 1
-	R vanilla: 
+	rcall vanilla: print("")
+timer off 1
+timer list
+
+timer clear
+timer on 1
+	rcall: print("")
 timer off 1
 timer list
 
@@ -321,11 +331,11 @@ I SHOULD SPEED UP THIS PROCESS
 // -----------------------------------------------------------------------------
 // The Vanilla mode should not influence the loaded functions
 // =============================================================================
-Rcall vanilla library(foreign)
-Rcall library(foreign)
-Rcall vanilla: detach("package:foreign", unload=TRUE) //GET ERROR
-Rcall: detach("package:foreign", unload=TRUE)
-R: search()
+rcall vanilla library(foreign)
+rcall library(foreign)
+rcall vanilla: detach("package:foreign", unload=TRUE) //GET ERROR
+rcall: detach("package:foreign", unload=TRUE)
+rcall: search()
 
 
 // -----------------------------------------------------------------------------
@@ -333,8 +343,8 @@ R: search()
 // =============================================================================
 
 sysuse auto, clear
-Rcall: print(st.var(price))
-R: print(st.var(make))
+rcall: print(st.var(price))
+rcall: print(st.var(make))
 
 
 
