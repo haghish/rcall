@@ -4,12 +4,12 @@
 
 tempfile edited
 tempname hitch knot
-qui file open `hitch' using "Rcall.ado", read
+qui file open `hitch' using "rcall.ado", read
 qui file open `knot' using "`edited'", write text replace
 file read `hitch' line
 while r(eof) == 0 {
-	local line : subinstr local line "cap prog drop Rcall" "cap prog drop R"
-	local line : subinstr local line "program define Rcall" "program define R"
+	local line : subinstr local line "cap prog drop rcall" "cap prog drop R"
+	local line : subinstr local line "program define rcall" "program define R"
 	file write `knot' `"`macval(line)'"' _n
 	file read `hitch' line
 	if substr(`"`macval(line)'"',1,3) == "end" {
@@ -26,4 +26,4 @@ cap prog drop R
 // CREATE help file
 // =========================================================================
 
-markdoc Rcall.ado, export(sthlp) replace
+markdoc rcall.ado, export(sthlp) replace

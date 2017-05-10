@@ -1,6 +1,6 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 1.5.2
-Title: Rcall
+Version: 2.0.0
+Title: rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
 _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_ 
@@ -8,7 +8,7 @@ classes to Stata. It also allows passing Stata variable, dataset,
 macro, scalar, and matrix to R as well as load a dataframe from R 
 to Stata automatically, 
 which provides an automated reciprocal communication between Stata and R. For
-more information and examples visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php).
+more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
 ----------------------------------------------------- DO NOT EDIT THIS LINE ***/
 
 /***
@@ -18,13 +18,13 @@ Syntax
 To call R from Stata use the following syntax
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
+rcall [{help rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 the package also includes a few subcommands to facilitate integrating R in Stata
 
 {p 8 16 2}
-{opt R:call} [{help Rcall##subcommand:{it:subcommand}}]
+rcall [{help rcall##subcommand:{it:subcommand}}]
 {p_end}
 
 the following functions can be used to communicate data from Stata to R: 
@@ -54,7 +54,7 @@ The _mode_ changes the behavior of the package and it can be __vanilla__ or __sy
 When the _mode_ is not specified, R is called interactively which is the default 
 mode. Finally, when the [{it:R-command}] is not specified, the console mode 
 will be executed which simulates R console within Stata results window for interactive 
-use. In all of these modes, __Rcall__ returns _rclass_ objects from R to Stata. These 
+use. In all of these modes, __rcall__ returns _rclass_ objects from R to Stata. These 
 modes are summarized below:
 
 {* the new Stata help format of putting detail before generality}{...}
@@ -87,7 +87,7 @@ mode. {p_end}
 Subcommands
 =================
 
-__Rcall__ allows a few subcommands which provide several features to facilitate 
+__rcall__ allows a few subcommands which provide several features to facilitate 
 working with the package interactivey. The subcommands are summarized in the 
 table below: 
 
@@ -115,7 +115,7 @@ Description
 
 __[R statistical language](https://cran.r-project.org/)__ is a free software 
 and programming langage for statistical computing and graphics. 
-The {opt R:call} package combines the power of R with Stata, allowing the 
+The rcall package combines the power of R with Stata, allowing the 
 Stata users to call R interactively within Stata and communicate 
 data and analysis results between R and Stata simultaniously. 
 
@@ -128,10 +128,10 @@ classes are automatically returned to Stata as {help return:rclass}.
 R objects with _data.frame_ class can be automatically loaded from R to 
 Stata using the __st.load()__ function (see below).
 
-__Rcall__ uses the __try__ function to evaluate the R code and 
+__rcall__ uses the __try__ function to evaluate the R code and 
 returns __r(rc)__ scalar which is an indicator for errors occuring in R. if __r(rc)__ 
 equals zero, R has successfully executed the code. Otherwise, if __r(rc)__ equals 
-one an error has occured and __Rcall__ will return the error message and break the 
+one an error has occured and __rcall__ will return the error message and break the 
 execution. 
  
 
@@ -139,47 +139,47 @@ Communication from R to Stata
 ======================================
 
 Stata automatically receives R objects as {help return:rclass} anytime 
-the {opt R:call} is executed. If R is running interactively 
+the rcall is executed. If R is running interactively 
 (i.e. without __vanilla__ subcommand), the previous objects still remain accessable 
 to Stata, unless they are changed or erased from R. Moreover, the packages 
 that you load from Stata in R remain loaded until you detach them. 
 
 Accessing R objects in Stata is simultanious which makes working with 
-{opt R:call} convenient. For example a _numeric_, or _string_ vector which is 
+rcall convenient. For example a _numeric_, or _string_ vector which is 
 defined in R, can be accessed in Stata as simple as calling the name of that 
 object withing {help rclass} i.e. __r(_objectname_)__.  
 
 A _numeric_ object example:
 
-        . R: a <- 100 
+        . rcall: a <- 100 
         . display r(a)  	
         100 	
 		
 Without the __vanilla__ subcommand, the defined object remains in the memory of 
 R and consequently, returned to Stata anytime R is called.
 
-        . R: a 
+        . rcall: a 
         [1] 100 
 		
 A _string_ object example:
 		
-        . R: str <- "Hello World" 
+        . rcall: str <- "Hello World" 
         . display r(str)  	
         Hello World
 		
-        . R: str <- c("Hello", "World") 
+        . rcall: str <- c("Hello", "World") 
         . display r(str)  	
         "Hello"  "World"
 		
 A _vector_ example:
 
-        . R: v <- c(1,2,3,4,5)
+        . rcall: v <- c(1,2,3,4,5)
         . display r(v)  	
         1 2 3 4 5
 
 A _matrix_ example:
 
-        . R: A = matrix(1:6, nrow=2, byrow = TRUE) 
+        . rcall: A = matrix(1:6, nrow=2, byrow = TRUE) 
         . mat list r(A) 
         r(A)[2,3]
             c1  c2  c3  	
@@ -188,19 +188,19 @@ A _matrix_ example:
 		
 A _list_ example:
 
-        . R: mylist <- list(a=c(1:10))
+        . rcall: mylist <- list(a=c(1:10))
         . display r(mylist_a) 
         1 2 3 4 5 6 7 8 9 10
 
 A _logical_ example:
 
-        . R: l <- T 
+        . rcall: l <- T 
         . display r(l)
         TRUE
 		
 A _NULL_ example:
 
-        . R: n <- NULL
+        . rcall: n <- NULL
         . display r(n)
         NULL	
 		
@@ -213,17 +213,17 @@ Communication from Stata to R
 For an ideal reciprocation between Stata and R, Stata should also easily 
 communicate variables to R. Local and global {help macro:macros} can be passed 
 within R code, since Stata automatically interprets them while it passes the 
-code to {opt R:call} command, as shown in the example below:
+code to rcall command, as shown in the example below:
 
         . global a 99 
-        . R: (a <- $a)  	
+        . rcall: (a <- $a)  	
         [1] 99 		
 
 In order to pass a {help scalar} from Stata to R, you can 
 use the __st.scalar()__ function as shown below:
 
         . scalar a = 50 
-        . R: (a <- st.scalar(a))  	
+        . rcall: (a <- st.scalar(a))  	
         [1] 50 		
 
 Similarly, Stata {help matrix:matrices} can be seamlessly passed to R using 
@@ -231,8 +231,8 @@ the __st.matrix()__ function as shown below:
 
         . matrix A = (1,2\3,4) 
         . matrix B = (96,96\96,96) 		
-        . R: C <- st.matrix(A) + st.matrix(B)
-        . R: C 
+        . rcall: C <- st.matrix(A) + st.matrix(B)
+        . rcall: C 
              [,1] [,2]
         [1,]   97   98
         [2,]   99  100
@@ -250,9 +250,9 @@ __st.var(_varname_)__ function. Therefore, any analysis can be executed in R
 simply by passing the variables required for the analysis from Stata to R:
 
         . sysuse auto, clear 
-        . R: dep <- st.var(price)		
-        . R: pre <- st.var(mpg)	
-        . R: lm(dep~pre)
+        . rcall: dep <- st.var(price)		
+        . rcall: pre <- st.var(mpg)	
+        . rcall: lm(dep~pre)
         
         Call:
         lm(formula = dep ~ pre)
@@ -261,27 +261,27 @@ simply by passing the variables required for the analysis from Stata to R:
         (Intercept)          pre  
             11267.3       -238.3
 
-The {opt R:call} package also allows to pass Stata data to R within 
+The rcall package also allows to pass Stata data to R within 
 __st.data(_{help filename}_)__ function. This function relies on the __readstata13__ 
 package in R to load Stata data sets, without converting them to CSV or alike. 
 The __readstata13__ package 
 [is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21) 
 and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . R: install.packages("readstata13", repos="http://cran.uk.r-project.org")
+        . rcall: install.packages("readstata13", repos="http://cran.uk.r-project.org")
 
 Specify the relative or absolute path to the data set to transporting data 
 from Stata to R. For example: 
 
-        . R: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
-        . R: dim(data)
+        . rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta) 
+        . rcall: dim(data)
 
 If the _filename_ is not specified, the function passes the currently loaded 
 data to R. 
 
         . sysuse auto, clear 
-        . R: data <- st.data() 
-        . R: dim(data) 
+        . rcall: data <- st.data() 
+        . rcall: dim(data) 
         [1] 74 12
 		
 Finally, the data can be imported from R to Stata automatically, using the 		
@@ -292,7 +292,7 @@ types if you write a proper code in R for exporting Stata data sets. Nevertheles
 the function should work just fine in most occasions: 
 
         . clear 
-        . R: st.load(cars) 
+        . rcall: st.load(cars) 
         . list in 1/2
         {c TLC}{hline 14}{c TRC}
         {c |} speed   dist {c |}
@@ -308,14 +308,14 @@ You should be careful with using Stata symbols in R. For example, the __$__
 sign in Stata is preserved for global macros. To use this sign in R, you 
 should place a backslash before it to pass it to R. For example:
 
-        . R: head(cars\$speed)
+        . rcall: head(cars\$speed)
 
 Also, the object name in R can include a dot, for example:
  
-        . R: a.name <- "anything" 
+        . rcall: a.name <- "anything" 
 		
-The {opt R:call} package returns scalars and locals which can only include 
-underscore in the names (e.g. a_name). {opt R:call} automatically converts 
+The rcall package returns scalars and locals which can only include 
+underscore in the names (e.g. a_name). rcall automatically converts 
 dots to underscore in the name. In the example above, if you type {cmd:return list} 
 in Stata, you would get a macro as follos:
 
@@ -331,7 +331,7 @@ R and Stata.
 Example
 =================
 
-Visit [Rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
+Visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and 
 documentation. 
 
 Author
@@ -345,7 +345,7 @@ Department of Mathematics and Computer Science
 University of Southern Denmark     
 haghish@imbi.uni-freiburg.de     
       
-[Rcall Homepage](www.haghish.com/packages/Rcall.php)         
+[rcall Homepage](www.haghish.com/packages/Rcall.php)         
 Package Updates on [Twitter](http://www.twitter.com/Haghish)     
 
 - - -
@@ -365,7 +365,7 @@ program define R , rclass
 	// =========================================================================
 	// Syntax processing
 	//   - if the [:] appears first, it means the rest are not modes or subcommands
-	//   - Process the Rcall inputs
+	//   - Process the rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
 	
@@ -379,7 +379,7 @@ program define R , rclass
 	
 	tokenize `"`macval(0)'"'
 	
-	if `"`macval(1)'"' != "setpath" | `"`macval(1)'"' != "setpath:" {
+	if `"`macval(1)'"' != "setpath" & `"`macval(1)'"' != "setpath:" {
 		if missing("$Rpath") {
 			
 			if "`c(os)'" == "Windows" {
@@ -436,7 +436,7 @@ program define R , rclass
 		capture confirm file "`path'"
 		if _rc != 0 {
 			di as txt "{p}R was expected in:    `path'"
-			display as err "{bf:Rcall} could not find R on your system"
+			display as err "{bf:rcall} could not find R on your system"
 			err 198
 		}
 	}
@@ -465,7 +465,7 @@ program define R , rclass
 			local debug debug
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n									///
-				"Running Rcall in debug mode"
+				"Running rcall in debug mode"
 			}	
 		}
 
@@ -499,7 +499,7 @@ program define R , rclass
 			di _col(10) "{bf:R path}:" _col(20) _c 
 			di as txt `"{browse "/usr/bin/R"}"' 
 			
-			Rcall vanilla: version = R.Version()\$version.string;				///
+			rcall vanilla: version = R.Version()\$version.string;				///
 				lst <- ls(globalenv());											
 				
 			di _col(7) "{bf:R version}:" _col(20) _c 
@@ -536,10 +536,6 @@ program define R , rclass
 	
 		// Synchronize mode
 		// ================
-		*else if substr(trim(`"`macval(0)'"'),1,5) == "sync " |					///
-		*	substr(trim(`"`macval(0)'"'),1,5) == "sync:" |						///
-		*	substr(trim(`"`macval(0)'"'),1,4) == "sync" &						///
-		*	trim(`"`macval(0)'"') == "sync" {
 		if `"`macval(1)'"' == "sync" | `"`macval(1)'"' == "sync:" {
 			local 0 : subinstr local 0 "sync" ""
 			global Rcall_synchronize_mode on
@@ -570,7 +566,7 @@ program define R , rclass
 			local debug debug
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n								///
-				"Running Rcall in debug mode"
+				"Running rcall in debug mode"
 			}	
 		}
 		
@@ -626,41 +622,9 @@ program define R , rclass
 		}
 		
 		
-/*		
-		// CHECK
-		// =======
-		if `"`macval(1)'"' == "check" {
-			local 0 : subinstr local 0 "check" ""
-			rcall_check `0'
-			return add
-			exit
-		}
-*/		
+		
 	
-		// Synchronize mode
-		// ================
-		/*
-		else if substr(trim(`"`macval(0)'"'),1,11) == "synchronize" {
-			local 0 : subinstr local 0 "synchronize" ""
-			if trim("`0'") != "on" & trim("`0'") != "off" {
-				di as err "{bf:synchronize} can only be {bf:on} or {bf:off}"
-				err 198
-			}
-			tempfile Rmode
-			tempname knot
-			qui file open `knot' using "`Rmode'", write text replace
-			file write `knot' "program define R_synchronize_mode" _n
-			file write `knot' `"	global Rcall_synchronize_mode `0'"' _n
-			file write `knot' "end" _n
-			qui file close `knot'
-			qui copy "`Rmode'" "`c(sysdir_plus)'r/Rcall_synchronize_mode.ado", replace
-			if !missing("`debug'") {
-				di "{title:Memorizing R mode}" _n									///
-				`"the {bf:Rcall_synchronize.ado} is {bf:`0'}"' 
-			}
-			exit
-		}
-		*/
+
 	
 		// Check if the command includes Colon in the end
 		if substr(trim(`"`macval(0)'"'),1,1) == ":" {
@@ -669,12 +633,22 @@ program define R , rclass
 	}	
 	
 	// -------------------------------------------------------------------------
-	// Execute interactive mode
+	// Execute interactive mode (including sync)
 	// =========================================================================
 	if trim(`"`0'"') == "" {
 		local mode interactive
 		global Rcall_interactive_mode on
-		if missing("`vanilla'") Rcall_interactive
+		
+		// avoid the sync mode to get repeated in each trial
+		*if "$Rcall_synchronize_mode" == "on" {	
+		*	Rcall_synchronize
+		*	global Rcall_synchronize_mode2 "on"
+		*	macro drop Rcall_synchronize_mode
+		*}
+		
+		if missing("`vanilla'") {
+			Rcall_interactive
+		}
 		else {
 			di as err "the {bf:vanilla} mode cannot be called interactively"
 			err 198
@@ -696,7 +670,7 @@ program define R , rclass
 			tempname knot
 			qui file open `knot' using "`r(fn)'", write text append	
 			if !missing(`"`macval(0)'"') {
-				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+				file write `knot' `"rcall `mode': `macval(0)'"' _n
 			}
 			qui file close `knot'
 		}
@@ -706,7 +680,7 @@ program define R , rclass
 			qui file open `knot' using "`history'", write text append
 			file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 			if !missing(`"`macval(0)'"') {
-				file write `knot' `"Rcall `mode': `macval(0)'"' _n
+				file write `knot' `"rcall `mode': `macval(0)'"' _n
 			}
 			qui file close `knot'
 			quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
@@ -733,7 +707,7 @@ program define R , rclass
 			matconvert `mat'
 		}
 		qui matconvert `mat'
-		local l2 = "`r(`mat')'" + "`l2'"		
+		local l2 = `"`r(`mat')'"' + "`l2'"		
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 	}
 	
@@ -835,7 +809,7 @@ program define R , rclass
 		"is required. Type:" _n "{p}R: install.packages("												///
 		`""readstata13", repos="http://cran.uk.r-project.org")"'
 		
-		// avoid slowing down Rcall
+		// avoid slowing down rcall
 		global Rcall_check 1
 	}
 	
@@ -943,9 +917,11 @@ program define R , rclass
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
 	
-	if "$Rcall_synchronize_mode" == "on" {	
-		Rcall_synchronize
-		file write `knot' "source('Rcall_synchronize')" _n
+	if "$Rcall_interactive_mode" != "on" {
+		if "$Rcall_synchronize_mode" == "on" {	
+			Rcall_synchronize
+			file write `knot' "source('Rcall_synchronize')" _n
+		}
 	}
 	
 	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				// erase memory temporarily
@@ -1085,192 +1061,10 @@ program define R , rclass
 	// -------------------------------------------------------------------------
 	// Returning objects to Stata
 	// =========================================================================
-	
+	// ???: AVOID returning in console mode
 	call_return using "stata.output" , `debug'
 	return add
-	
-/*
-	// if "stata_output" is created, then continue the process. Otherwise, return 
-	// an error, because "rc" must be returned anyway...
-	capture confirm file stata.output
-	if _rc == 0 & substr(trim(`"`macval(0)'"'),1,3) != "q()" {
-	
-		tempname hitch
-		qui file open `hitch' using "stata.output", read
-		file read `hitch' line
-		
-		while r(eof) == 0 {
-			
-			local jump									// reset
-			
-			// NULL OBJECT 
-			// ===========================
-			if substr(`"`macval(line)'"',1,7) == "//NULL " {	
-				local line : subinstr local line "//NULL " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local name : di `"`macval(line)'"'
-				
-				if "$Rcall_synchronize_mode" == "on" {
-					scalar `name' = "NULL"
-				}
-				else {
-					return local `name' "NULL"
-				}
-				
-			}
-			
-			// SCALAR OBJECT 
-			// ===========================
-			if substr(`"`macval(line)'"',1,9) == "//SCALAR " {
-				local line : subinstr local line "//SCALAR " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local name : di `"`macval(line)'"'
-				file read `hitch' line
-				
-				if "`name'" == "rc" & "`line'" == "1" local Rerror 1
-				
-				if "$Rcall_synchronize_mode" == "on" {
-					scalar `name' = `line'
-				}
-				else {
-					return scalar `name' = `line'
-				}
-			}
-			
-			// NUMERIC OBJECT LENGTH > 1 
-			// ===========================
-			if substr(`"`macval(line)'"',1,14) == "//NUMERICLIST " {
-				local line : subinstr local line "//NUMERICLIST " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local name : di `"`macval(line)'"'
-				file read `hitch' line
-				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					local content `content' `line' 
-					file read `hitch' line
-					local jump 1
-				}
-				return local `name' = "`content'"
-				//CANNOT BE DEFINED IN STATA
-			}
-			
-			// STRING OBJECT AND CLIST
-			// ===========================
-			if substr(`"`macval(line)'"',1,9) == "//STRING " |					///
-			substr(`"`macval(line)'"',1,8) == "//CLIST " {
-				local line : subinstr local line "//STRING " ""
-				local line : subinstr local line "//CLIST " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local line : subinstr local line "$" "_", all //avoid "$" in name
-				local name : di `"`macval(line)'"'
-				file read `hitch' line
-				local content
-				local multiline
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" & trim(`"`macval(line)'"') != "" {	
-					
-					if missing(`"`content'"') {
-						local content 1
-						local multiline : di `"`macval(multiline)'"' `"`macval(line)'"' 
-					}	
-					
-					else {
-						local multiline : di `"`macval(multiline){break}'"' `"`macval(line)'"' 
-					}	
-					
-					file read `hitch' line
-					local jump 1
-				}	
-				
-				if "`name'" == "error" {
-					local multiline : subinstr local multiline "$" "\\$", all
-					local errorMessage = `"`macval(multiline)'"'
-				}	
-				
-				if "$Rcall_synchronize_mode" == "on" {
-					local test
-					capture local test : di `multiline'
-					if !missing("`test'") scalar `name' = `multiline'
-					else scalar `name' = "`multiline'"
-					return local `name' `"`macval(multiline)'"'
-				}
-				else {
-					return local `name' `"`macval(multiline)'"'
-				}
-			}
-			
-			// LIST OBJECT (NUMERIC)
-			// ===========================
-			if substr(`"`macval(line)'"',1,7) == "//LIST " {
-				local line : subinstr local line "//LIST " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local line : subinstr local line "$" "_", all //avoid "$" in name
-				
-				local name : di `"`macval(line)'"'
-				
-				file read `hitch' line
-				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					if missing(`"`content'"') local content : di `"`content'`line'"' 
-					else local content : di `"`content'`line'"' 
-					file read `hitch' line
-					local jump 1
-				}
-				return local `name' "`content'"
-				//CANNOT BE DEFINED IN STATA
-			}
-			
-			// MATRIX OBJECT (NUMERIC)
-			// ===========================
-			if substr(`"`macval(line)'"',1,9) == "//MATRIX " {
-				local line : subinstr local line "//MATRIX " ""
-				local line : subinstr local line "." "_", all //avoid "." in name
-				local line : subinstr local line "$" "_", all //avoid "$" in name
-				local name : di `"`macval(line)'"'
-				
-				//GET NUMBER OF ROWS
-				file read `hitch' line
-				if substr(`"`macval(line)'"',1,11) == "rownumber: " {
-					local line : subinstr local line "rownumber: " ""
-					local rownumber : di `"`macval(line)'"'
-				}
-				
-				file read `hitch' line
-				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					local content `content' `line' 
-					file read `hitch' line
-					local jump 1
-				}
-				matrix define `name' = (`content')
-				*mat list `name'
-				mata: `name' = st_matrix("`name'") 
-				*mata: `name'
-				mata: st_matrix("`name'", rowshape(`name', `rownumber'))  
-				
-				if "$Rcall_synchronize_mode" == "on" {
-					mat define `name'_copy = `name'
-					return matrix `name' = `name'
-					mat `name' = `name'_copy
-					mat drop `name'_copy
-				}	
-				else {
-					return matrix `name' = `name'
-				}	
-			}
-			
-			if missing("`jump'") file read `hitch' line
-		}
-		*capture erase list.txt
-		*copy stata.output list.txt, replace
-		if missing("`debug'") capture erase stata.output
-		if missing("`debug'") capture erase Rcall_synchronize
-	}
-	
-	// return an error
-	else {
-		return scalar rc = 1
-	}
-*/
+
 
 	// If data was loaded automatically, remove the temporary data file
 	if !missing("`forceload'") {
@@ -1290,7 +1084,7 @@ program define R , rclass
 	macro drop Rcall_synchronize_mode
 	
 	
-	// stop Rcall execution if error has occured
+	// stop rcall execution if error has occured
 	// -------------------------------------------------------------------------
 	if "$RcallError" == "1" {
 		macro drop RcallError
