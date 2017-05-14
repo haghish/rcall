@@ -1,4 +1,4 @@
-*capture program drop call_return
+//capture program drop call_return
 
 program call_return , rclass 
 	
@@ -30,6 +30,10 @@ program call_return , rclass
 		while r(eof) == 0 {
 			local jump									// reset
 			
+			
+			if !missing("`debug'") di as err " Rcall_synchronize_mode is : $Rcall_synchronize_mode"
+			if !missing("`debug'") di as err "Rcall_synchronize_mode3 is : $Rcall_synchronize_mode3"
+			
 			// NULL OBJECT 
 			// ===========================
 			if substr(`"`macval(line)'"',1,7) == "//NULL " {	
@@ -38,6 +42,7 @@ program call_return , rclass
 				local name : di `"`macval(line)'"'
 				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 					scalar `name' = "NULL"
+					return local `name' "NULL"
 				}
 				else {
 					return local `name' "NULL"
@@ -55,6 +60,7 @@ program call_return , rclass
 					if "`name'" == "rc" & "`line'" == "1" local Rerror 1
 					if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 						scalar `name' = `line'
+						return scalar `name' = `line'
 					}
 					else {
 						return scalar `name' = `line'
@@ -227,7 +233,7 @@ program call_return , rclass
 					matrix rownames `name' = `rowname'
 				}
 
-				if !missing("`debug'") di as err "Rcall_synchronize_mode3 is $Rcall_synchronize_mode3"
+				
 
 				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
 					mat define `name'_copy = `name'
