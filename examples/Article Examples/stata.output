@@ -1,0 +1,18 @@
+//SCALAR a
+1
+//SCALAR num
+100
+//SCALAR price_mean
+6165.257
+//SCALAR rc
+0
+//STRING error
+Error in load.data(data) : could not find function "load.data"
+
+//STRING str
+my string has changed
+//MATRIX C
+rownumber: 2
+colnames: c1 c2
+rownames: r1 r2
+97, 98, 99, 100

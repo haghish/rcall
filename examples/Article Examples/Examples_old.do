@@ -5,40 +5,43 @@
 // Modes
 // =============================================================================
 
-R: try(rm(a))
-R: a = 1
-Rcall vanilla: a
-R: a
+rcall: try(rm(a))
+rcall: a = 1
+rcall vanilla: a //returns an error! it's not defined in vanilla mode.
+rcall: a
 
 // -----------------------------------------------------------------------------
 // Data Communication Examples
 // =============================================================================
 global num 10
 global str "my string"
-R: print($num); print("$str");
+rcall: print($num); print("$str");
 
 
 scalar num = 10
-R: (num = st.scalar(num)*st.scalar(num))
+rcall: (num = st.scalar(num)*st.scalar(num))
 return list
 display num
 
 scalar str = "my string"
-Rcall: (str = paste(st.scalar(str), "has changed"))
+rcall: (str = paste(st.scalar(str), "has changed"))
 
 matrix A = (1,2\3,4) 
 matrix B = (96,96\96,96)  
-R: C <- st.matrix(A) + st.matrix(B) 
+rcall: C <- st.matrix(A) + st.matrix(B) 
+return list
 
 quietly sysuse auto, clear
-R: (price_mean = mean(st.var(price)))
-R: data = st.data()
-R: data = data[,1:5]
-R: load.data(data)
+rcall: (price_mean = mean(st.var(price)))
+rcall: data = st.data()
+rcall: data = data[,1:5]
+rcall: st.load(data)
 list in 1
 
-R: data2 = st.data("/Applications/Stata/ado/base/l/lifeexp.dta")
-R: load.data(data2)
+//BEFORE RUNNING THE NEXT EXAMPLE make sure the path to "lifeexp.dta" is correct. 
+// this depends on your OS. 
+rcall: data2 = st.data("/Applications/Stata/ado/base/l/lifeexp.dta")
+rcall: st.load(data2)
 list in 1
 
 return list
