@@ -463,6 +463,7 @@ program define rcall , rclass
 			di as err `"02: `macval(0)'"'
 			tokenize `"`macval(0)'"'						//reset
 			local debug debug
+			global debug 1
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n									///
 				"Running rcall in debug mode"
@@ -564,6 +565,7 @@ program define rcall , rclass
 			di as err `"02: `macval(0)'"'
 			tokenize `"`macval(0)'"'						//reset
 			local debug debug
+			global debug 1
 			if !missing("`debug'") {
 				di _n "{title:[1/5] Debug mode}" _n								///
 				"Running rcall in debug mode"
@@ -1092,6 +1094,8 @@ program define rcall , rclass
 			error 1
 		}
 	}
+	
+	macro drop debug
 	
 end
 

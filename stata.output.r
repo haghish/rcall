@@ -1,4 +1,57 @@
+# ------------------------------------------------------------------------------
+# a function to adjust the returned column names, since Stata doesn't accept
+# multi-words names
+# ==============================================================================
+adj.names = function(x) {
+    for (i in 1:length(x)) {
+        word = unlist(strsplit(x[i], " "))
+        if (length(word) >= 2) {
+            newWord = NULL
+            for (j in 1:(length(word)-1)) {
+                last = substr(word[j], nchar(word[j]), nchar(word[j]))
+                Next = substr(word[j+1], 1, 1)
+                
+                # if there is a sign in between, combine the words. otherwise add
+                # a dash
+                if (last == "." | last == ":" | last == ";" | last == "~"
+                    | last == "+" | last == "-" | last == "*"
+                    | last == "$" | last == "|" | last == "[" 
+                    | last == "(" | last == "%" | last == "!"
+                    | last == "@" | last == "#" | last == "{"
+                    | last == "&" | last == "=" | last == "?") {
+                    word[j+1] = paste0(word[j], word[j+1])
+                }
+                else if (Next == "." | Next == ":" | Next == ";" | Next == "~"
+                     | Next == "+" | Next == "-" | Next == "*" | Next == "_"
+                     | Next == "$" | Next == "|" | Next == "[" 
+                     | Next == "(" | Next == "%" | Next == "!"
+                     | Next == "@" | Next == "#" | Next == "{"
+                     | Next == "&" | Next == "=" | Next == "?") {
+                    word[j+1] = paste0(word[j], word[j+1])
+                }
+                else {
+                    word[j+1] = paste0(word[j], "-", word[j+1])
+                }
+                
+                newWord = word[j+1]
+                
+                # Avoid these characters in the names! yet another limit...
+                #       - dot
+                newWord = gsub(".", "-", newWord, fixed = T)
+            }
+            
+            if (!is.null(newWord)) {
+                x[i] = newWord
+            }
+        }
+    }
+    return(x)
+}
 
+
+# ------------------------------------------------------------------------------
+# a function to return values from R to Stata
+# ==============================================================================
 stata.output <- function(plusR, Vanilla="") {
     
     # --------------------------------------------------------------------------
@@ -158,8 +211,11 @@ stata.output <- function(plusR, Vanilla="") {
             iget <- get(i)
             rows <- dim(iget)
             content <- paste("//MATRIX", i)
-            colnames = colnames(iget)
-            rownames = rownames(iget)
+            
+            # adjust the names for Stata
+            colnames = adj.names(colnames(iget))
+            rownames = adj.names(rownames(iget))
+            
             write(content, file=stata.output, append=TRUE)
             write(paste("rownumber:", rows[1]), file=stata.output, append=TRUE)
             
