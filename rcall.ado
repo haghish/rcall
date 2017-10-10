@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 2.0.0
+Version: 2.1.2
 Title: rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -368,7 +368,7 @@ program define rcall , rclass
 	//   - Process the rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
-	
+	     
 	macro drop RcallError								
 	
 	// -------------------------------------------------------------------------
@@ -376,7 +376,6 @@ program define rcall , rclass
 	// =========================================================================
 	capture prog drop Rpath
 	capture Rpath
-	
 	tokenize `"`macval(0)'"'
 	
 	if `"`macval(1)'"' != "setpath" & `"`macval(1)'"' != "setpath:" {
@@ -406,7 +405,8 @@ program define rcall , rclass
 				}
 				quietly cd `"`newest_R'\bin"'
 				local path : pwd
-				local path : display "`path'\R.exe"			
+				local path : display "`path'\R.exe"	
+				*global Rpath : display "`path'"  
 				quietly cd "`wd'"
 			}
 			
@@ -416,6 +416,7 @@ program define rcall , rclass
 				capture confirm file "`path'"
 				if _rc != 0 {
 					local path "/usr/local/bin/R"
+					global Rpath : display "`path'"
 				}	
 			}
 			if !missing("`debug'") {
@@ -498,7 +499,7 @@ program define rcall , rclass
 			
 			di as txt "{hline 79}"
 			di _col(10) "{bf:R path}:" _col(20) _c 
-			di as txt `"{browse "/usr/bin/R"}"' 
+			di as txt `"{browse "`path'$Rpath"}"' 
 			
 			rcall vanilla: version = R.Version()\$version.string;				///
 				lst <- ls(globalenv());											
@@ -510,13 +511,13 @@ program define rcall , rclass
 			capture findfile RProfile.site, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
 				di _col(7) "{bf:R profile}:" _col(20) _c 
-				di as txt "{browse `r(fn)'}" 
+				di as txt `"{browse "`r(fn)'"}"'
 			}
 			
 			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
 				di _col(7) "{bf:R history}:" _col(20) _c 
-				di as txt "{browse `r(fn)'}" 
+				di as txt `"{browse "`r(fn)'"}"'
 			}
 			else {
 				tempfile history
@@ -531,7 +532,6 @@ program define rcall , rclass
 			}
 			
 			di as txt "{hline 79}"
-			*display as txt "(R memory cleared)"
 			exit
 		}
 	
