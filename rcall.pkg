@@ -16,10 +16,10 @@ F R.ado
 F rcall.ado
 F rcall.sthlp
 F rcall_check.ado
-F rcall_counter.ado
-F rcall_interactive.ado
-F rcall_synchronize.ado
+F Rcall_counter.ado
+F Rcall_interactive.ado
+F Rcall_synchronize.ado
 F rplot.ado
-F rprofile.site
+F Rprofile.site
 F stata.output.r
 F varconvert.ado
