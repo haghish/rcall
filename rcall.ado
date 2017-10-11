@@ -497,9 +497,12 @@ program define rcall , rclass
 		// ================
 		if `"`macval(0)'"' == "describe" | `"`macval(1)'"' == "describe:" {
 			
+			if "$Rpath" != "" local dpath "$Rpath"
+			else if "`path'" != "" local dpath "`path'"
+			
 			di as txt "{hline 79}"
 			di _col(10) "{bf:R path}:" _col(20) _c 
-			di as txt `"{browse "`path'$Rpath"}"' 
+			di as txt `"{browse "`dpath'"}"' 
 			
 			rcall vanilla: version = R.Version()\$version.string;				///
 				lst <- ls(globalenv());											
@@ -1104,6 +1107,6 @@ end
 // CREATE help file
 // =========================================================================
 
-*markdoc rcall.ado, export(sthlp) replace
+*markdoc rcall.ado, export(sthlp) replace build 
 
 

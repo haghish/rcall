@@ -26,4 +26,4 @@ cap prog drop R
 // CREATE help file
 // =========================================================================
 
-markdoc rcall.ado, export(sthlp) replace
+markdoc rcall.ado, export(sthlp) replace // build
