@@ -1100,11 +1100,11 @@ program define rcall , rclass
 	
 	macro drop debug
 	
-	/*
+	
 	if missing("`debug'") {
 		capture qui erase stata.output
 	}
-	*/
+
 	
 end
 

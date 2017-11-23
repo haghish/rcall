@@ -3,49 +3,53 @@
 # multi-words names
 # ==============================================================================
 adj.names = function(x) {
-    for (i in 1:length(x)) {
-        word = unlist(strsplit(x[i], " "))
-        if (length(word) >= 2) {
-            newWord = NULL
-            for (j in 1:(length(word)-1)) {
-                last = substr(word[j], nchar(word[j]), nchar(word[j]))
-                Next = substr(word[j+1], 1, 1)
-                
-                # if there is a sign in between, combine the words. otherwise add
-                # a dash
-                if (last == "." | last == ":" | last == ";" | last == "~"
-                    | last == "+" | last == "-" | last == "*"
-                    | last == "$" | last == "|" | last == "[" 
-                    | last == "(" | last == "%" | last == "!"
-                    | last == "@" | last == "#" | last == "{"
-                    | last == "&" | last == "=" | last == "?") {
-                    word[j+1] = paste0(word[j], word[j+1])
+    if (!is.null(x)) {
+        for (i in 1:length(x)) {
+            word = unlist(strsplit(x[i], " "))
+            if (length(word) >= 2) {
+                newWord = NULL
+                for (j in 1:(length(word)-1)) {
+                    last = substr(word[j], nchar(word[j]), nchar(word[j]))
+                    Next = substr(word[j+1], 1, 1)
+                    
+                    # if there is a sign in between, combine the words. otherwise add
+                    # a dash
+                    if (last == "." | last == ":" | last == ";" | last == "~"
+                        | last == "+" | last == "-" | last == "*"
+                        | last == "$" | last == "|" | last == "[" 
+                        | last == "(" | last == "%" | last == "!"
+                        | last == "@" | last == "#" | last == "{"
+                        | last == "&" | last == "=" | last == "?") {
+                        word[j+1] = paste0(word[j], word[j+1])
+                    }
+                    else if (Next == "." | Next == ":" | Next == ";" | Next == "~"
+                             | Next == "+" | Next == "-" | Next == "*" | Next == "_"
+                             | Next == "$" | Next == "|" | Next == "[" 
+                             | Next == "(" | Next == "%" | Next == "!"
+                             | Next == "@" | Next == "#" | Next == "{"
+                             | Next == "&" | Next == "=" | Next == "?") {
+                        word[j+1] = paste0(word[j], word[j+1])
+                    }
+                    else {
+                        word[j+1] = paste0(word[j], "-", word[j+1])
+                    }
+                    
+                    newWord = word[j+1]
+                    
+                    # Avoid these characters in the names! yet another limit...
+                    #       - dot
+                    newWord = gsub(".", "-", newWord, fixed = T)
                 }
-                else if (Next == "." | Next == ":" | Next == ";" | Next == "~"
-                     | Next == "+" | Next == "-" | Next == "*" | Next == "_"
-                     | Next == "$" | Next == "|" | Next == "[" 
-                     | Next == "(" | Next == "%" | Next == "!"
-                     | Next == "@" | Next == "#" | Next == "{"
-                     | Next == "&" | Next == "=" | Next == "?") {
-                    word[j+1] = paste0(word[j], word[j+1])
-                }
-                else {
-                    word[j+1] = paste0(word[j], "-", word[j+1])
-                }
                 
-                newWord = word[j+1]
-                
-                # Avoid these characters in the names! yet another limit...
-                #       - dot
-                newWord = gsub(".", "-", newWord, fixed = T)
-            }
-            
-            if (!is.null(newWord)) {
-                x[i] = newWord
+                if (!is.null(newWord)) {
+                    x[i] = newWord
+                }
             }
         }
+        return(x)
+    } else {
+        return(NULL)
     }
-    return(x)
 }
 
 
@@ -221,11 +225,11 @@ stata.output <- function(plusR, Vanilla="") {
             
             if (!is.null(colnames)) {
                 write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
-                  file=stata.output, append=TRUE)
+                      file=stata.output, append=TRUE)
             }    
             if (!is.null(rownames)) {
                 write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
-                  file=stata.output, append=TRUE)
+                      file=stata.output, append=TRUE)
             }
             #Add comma
             
