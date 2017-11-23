@@ -105,7 +105,7 @@ the R version and paths to R, RProfile, and Rhistory {p_end}
 __Rhistory.do__ in do-file editor which stores the history of the 
 interactive R session. {p_end}
 {synopt:[site](http://www.haghish.com/packages/Rcall.php#site_subcommand)}opens
-__Rprofile.site__ in do-file editor which is 
+__rprofile.site__ in do-file editor which is 
 used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
@@ -475,7 +475,7 @@ program define rcall , rclass
 		// ================
 		if `"`macval(0)'"' == "clear" | `"`macval(0)'"' == "clear:" {
 			capture erase .RData
-			capture findfile RProfile.R, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.R, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
 				capture erase "`r(fn)'"
 			}
@@ -511,7 +511,7 @@ program define rcall , rclass
 			if !missing("`r(version)'") di as txt "`r(version)'"
 			else di as err "R was not accessed!"
 			
-			capture findfile RProfile.site, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.site, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
 				di _col(7) "{bf:R profile}:" _col(20) _c 
 				di as txt `"{browse "`r(fn)'"}"'
@@ -616,12 +616,12 @@ program define rcall , rclass
 		// =======
 		if `"`macval(1)'"' == "site" {
 			local 0 : subinstr local 0 "site" ""
-			capture findfile Rprofile.site, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.site, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
 				doedit "`r(fn)'"
 			}
 			else {
-				display as err "{bf:Rprofile.site} was not found!"
+				display as err "{bf:rprofile.site} was not found!"
 			}
 			exit
 		}
@@ -894,14 +894,14 @@ program define rcall , rclass
 	}
 	
 	
-	capture findfile Rprofile.site, path("`c(sysdir_plus)'r")
+	capture findfile rprofile.site, path("`c(sysdir_plus)'r")
 	if _rc == 0 {
 		local RSite `r(fn)'
 	}
 	
-	capture findfile RProfile.R, path("`c(sysdir_plus)'r")
+	capture findfile rprofile.R, path("`c(sysdir_plus)'r")
 	if _rc == 0 {
-		local RProfile `r(fn)'
+		local rprofile `r(fn)'
 	}
 	
 	// get the path to PLUS/r
@@ -909,8 +909,8 @@ program define rcall , rclass
 	
 	//Change the stata.output.R path in Windows
 	if "`c(os)'" == "Windows" {
-		local RProfile : subinstr local RProfile "\" "/", all
-		local RSite : subinstr local RProfile "\" "/", all
+		local rprofile : subinstr local rprofile "\" "/", all
+		local RSite : subinstr local rprofile "\" "/", all
 		local plusR : subinstr local plusR "\" "/", all
 	}
 
@@ -933,8 +933,8 @@ program define rcall , rclass
 	if !missing("`foreign'") file write `knot' "library(readstata13)" _n		// load the readstata13 package
 	if !missing("`RSite'") & missing("`vanilla'") 								///
 			file write `knot' "source('`RSite'')" _n			
-	if !missing("`RProfile'") & missing("`vanilla'") 							///
-			file write `knot' "source('`RProfile'')" _n							// load the libraries 
+	if !missing("`rprofile'") & missing("`vanilla'") 							///
+			file write `knot' "source('`rprofile'')" _n							// load the libraries 
 	
 	// -------------------------------------------------------------------------
 	// Handling Errors
@@ -973,7 +973,7 @@ program define rcall , rclass
 	*file write `knot' `"plusR <- "`plusR'""' _n		//source stata.output() before exit
 	file write `knot' `"stata.output("`plusR'", "`vanilla'")"' _n
 	//file write `knot' "rm(stata.output)" _n	
-	//file write `knot' `"try(rm(stata.output, RProfile), silent=TRUE)"' _n	
+	//file write `knot' `"try(rm(stata.output, rprofile), silent=TRUE)"' _n	
 	
 	*if missing("`vanilla'") file write `knot' "save.image()" _n 
 	

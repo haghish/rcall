@@ -20,6 +20,6 @@ F rcall_counter.ado
 F rcall_interactive.ado
 F rcall_synchronize.ado
 F rplot.ado
-F Rprofile.site
+F rprofile.site
 F stata.output.r
 F varconvert.ado

@@ -110,7 +110,7 @@ the R version and paths to R, RProfile, and Rhistory {p_end}
 {bf:Rhistory.do} in do-file editor which stores the history of the 
 interactive R session. {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#site_subcommand":site}}opens
-{bf:Rprofile.site} in do-file editor which is 
+{bf:rprofile.site} in do-file editor which is 
 used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
