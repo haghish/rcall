@@ -267,6 +267,7 @@ stata.output <- function(plusR, Vanilla="") {
                                        packageList != "package:datasets" &
                                        packageList != "package:methods" &
                                        packageList != "Autoloads" &
+                                       packageList != "tools:rstudio" &
                                        packageList != "package:base" ]
         
         RProfile <- file.path(plusR, "RProfile.R")
