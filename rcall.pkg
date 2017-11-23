@@ -7,7 +7,7 @@ d to Stata automatically,
 d which provides an automated reciprocal communication between Stata and R. For
 d more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage}.
 d
-d Distribution-Date: 20171011
+d Distribution-Date: 20171123
 d
 F call_return.ado
 F matconvert.ado
@@ -16,9 +16,9 @@ F R.ado
 F rcall.ado
 F rcall.sthlp
 F rcall_check.ado
-F Rcall_counter.ado
-F Rcall_interactive.ado
-F Rcall_synchronize.ado
+F rcall_counter.ado
+F rcall_interactive.ado
+F rcall_synchronize.ado
 F rplot.ado
 F Rprofile.site
 F stata.output.r

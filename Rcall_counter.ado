@@ -1,5 +1,5 @@
 
-program Rcall_counter, rclass
+program rcall_counter, rclass
 
 
 local openbrackets 0
@@ -32,8 +32,8 @@ local openbrackets 0
 		local 0 `"`macval(l2)'"'
 	}	
 
-	return scalar Rcall_counter = `openbrackets'
+	return scalar rcall_counter = `openbrackets'
 	
 end
 
-*Rcall_counter	this is a line {} whatever comes next { {
+*rcall_counter	this is a line {} whatever comes next { {

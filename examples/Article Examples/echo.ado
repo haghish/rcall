@@ -1,6 +1,6 @@
 
 program echo
-	Rcall vanilla: cat(`0')
+	rcall vanilla: cat(`0')
 end
 
 

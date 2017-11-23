@@ -11,7 +11,7 @@ program summary, byable(recall)
 	preserve
 	quietly keep if `touse'
 	quietly keep `varlist' 
-	Rcall vanilla: sapply(st.data(), summary)
+	rcall vanilla: sapply(st.data(), summary)
 	restore
 end
 

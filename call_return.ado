@@ -31,8 +31,8 @@ program call_return , rclass
 			local jump									// reset
 			
 			
-			if !missing("`debug'") di as err " Rcall_synchronize_mode is : $Rcall_synchronize_mode"
-			if !missing("`debug'") di as err "Rcall_synchronize_mode3 is : $Rcall_synchronize_mode3"
+			if !missing("`debug'") di as err " rcall_synchronize_mode is : $rcall_synchronize_mode"
+			if !missing("`debug'") di as err "rcall_synchronize_mode3 is : $rcall_synchronize_mode3"
 			
 			// NULL OBJECT 
 			// ===========================
@@ -40,7 +40,7 @@ program call_return , rclass
 				local line : subinstr local line "//NULL " ""
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
-				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
+				if "$rcall_synchronize_mode" == "on" | "$rcall_synchronize_mode3" == "on" {
 					scalar `name' = "NULL"
 					return local `name' "NULL"
 				}
@@ -56,9 +56,9 @@ program call_return , rclass
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
-				if "`name'" != "Rcall_counter" {
+				if "`name'" != "rcall_counter" {
 					if "`name'" == "rc" & "`line'" == "1" local Rerror 1
-					if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
+					if "$rcall_synchronize_mode" == "on" | "$rcall_synchronize_mode3" == "on" {
 						scalar `name' = `line'
 						return scalar `name' = `line'
 					}
@@ -115,7 +115,7 @@ program call_return , rclass
 					local errorMessage = `"`macval(multiline)'"'
 				}	
 				
-				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
+				if "$rcall_synchronize_mode" == "on" | "$rcall_synchronize_mode3" == "on" {
 					local test
 					capture local test : di `multiline'
 					if !missing("`test'") scalar `name' = `multiline'
@@ -235,7 +235,7 @@ program call_return , rclass
 
 				
 
-				if "$Rcall_synchronize_mode" == "on" | "$Rcall_synchronize_mode3" == "on" {
+				if "$rcall_synchronize_mode" == "on" | "$rcall_synchronize_mode3" == "on" {
 					mat define `name'_copy = `name'
 					return matrix `name' = `name'
 					mat `name' = `name'_copy				
@@ -250,7 +250,7 @@ program call_return , rclass
 		*capture erase list.txt
 		*copy `using' list.txt, replace
 		if missing("`debug'") capture erase "`using'"
-		if missing("`debug'") capture erase Rcall_synchronize
+		if missing("`debug'") capture erase rcall_synchronize
 	}
 	
 	// return an error
@@ -268,7 +268,7 @@ program call_return , rclass
 		display as error `"{p}`macval(errorMessage)'"'
 	}
 	
-	macro drop Rcall_synchronize_mode3
+	macro drop rcall_synchronize_mode3
 	
 end
 

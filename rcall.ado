@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 2.1.2
+Version: 2.2.0
 Title: rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -542,7 +542,7 @@ program define rcall , rclass
 		// ================
 		if `"`macval(1)'"' == "sync" | `"`macval(1)'"' == "sync:" {
 			local 0 : subinstr local 0 "sync" ""
-			global Rcall_synchronize_mode on
+			global rcall_synchronize_mode on
 			local mode sync
 		}
 
@@ -642,17 +642,17 @@ program define rcall , rclass
 	// =========================================================================
 	if trim(`"`0'"') == "" {
 		local mode interactive
-		global Rcall_interactive_mode on
+		global rcall_interactive_mode on
 		
 		// avoid the sync mode to get repeated in each trial
-		*if "$Rcall_synchronize_mode" == "on" {	
-		*	Rcall_synchronize
-		*	global Rcall_synchronize_mode2 "on"
-		*	macro drop Rcall_synchronize_mode
+		*if "$rcall_synchronize_mode" == "on" {	
+		*	rcall_synchronize
+		*	global rcall_synchronize_mode2 "on"
+		*	macro drop rcall_synchronize_mode
 		*}
 		
 		if missing("`vanilla'") {
-			Rcall_interactive
+			rcall_interactive
 		}
 		else {
 			di as err "the {bf:vanilla} mode cannot be called interactively"
@@ -922,10 +922,10 @@ program define rcall , rclass
 	tempname knot
 	qui file open `knot' using "`Rscript'", write text replace
 	
-	if "$Rcall_interactive_mode" != "on" {
-		if "$Rcall_synchronize_mode" == "on" {	
-			Rcall_synchronize
-			file write `knot' "source('Rcall_synchronize')" _n
+	if "$rcall_interactive_mode" != "on" {
+		if "$rcall_synchronize_mode" == "on" {	
+			rcall_synchronize
+			file write `knot' "source('rcall_synchronize')" _n
 		}
 	}
 	
@@ -1086,19 +1086,25 @@ program define rcall , rclass
 	
 	// Erase globals
 	macro drop Rpath
-	macro drop Rcall_synchronize_mode
+	macro drop rcall_synchronize_mode
 	
 	
 	// stop rcall execution if error has occured
 	// -------------------------------------------------------------------------
 	if "$RcallError" == "1" {
 		macro drop RcallError
-		if "$Rcall_interactive_mode" != "on" {
+		if "$rcall_interactive_mode" != "on" {
 			error 1
 		}
 	}
 	
 	macro drop debug
+	
+	/*
+	if missing("`debug'") {
+		capture qui erase stata.output
+	}
+	*/
 	
 end
 

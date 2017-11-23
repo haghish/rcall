@@ -2,10 +2,10 @@
 // synchronizing from Stata to R
 // =============================
 
-*capture program drop Rcall_synchronize
-program Rcall_synchronize
+*capture program drop rcall_synchronize
+program rcall_synchronize
 	
-	if !missing("`debug'") di as err "entering Rcall_synchronize"
+	if !missing("`debug'") di as err "entering rcall_synchronize"
 	
 	tempfile Rscript
 	tempname knot
@@ -82,6 +82,6 @@ program Rcall_synchronize
 	// -------------------------------------------------------------------------
 	// Create a Source file
 	// =========================================================================
-	quietly copy "`Rscript'" "Rcall_synchronize", replace
+	quietly copy "`Rscript'" "rcall_synchronize", replace
 
 end

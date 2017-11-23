@@ -5,7 +5,7 @@
 
 program qplot
 	version 12
-	Rcall vanilla : library(ggplot2); qplot(data=st.data(), `0')
+	rcall vanilla : library(ggplot2); qplot(data=st.data(), `0')
 end
 
 // Examples

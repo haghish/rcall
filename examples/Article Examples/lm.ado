@@ -4,7 +4,7 @@ program lm, rclass
 
 	syntax varlist [if] [in]
 	
-	// Make sure the user is having Rcall installed and running
+	// Make sure the user is having rcall installed and running
 	// =========================================================================
 	rcall_check
 	
@@ -23,7 +23,7 @@ program lm, rclass
 	
 	// Run R function
 	// =========================================================================
-	Rcall vanilla: 										///
+	rcall vanilla: 										///
 	///attach(read.csv("`RData'")); 					/// load temporary data
 	attach(st.data()); 									/// load temporary data
 	out = summary(lm(`first' ~ `rest')); 				/// fit the model

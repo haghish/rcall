@@ -25,7 +25,7 @@ program qplot
 	if !missing("`shape'") local shape ", shape = `shape'"
 	if missing("`format'") local format pdf
 	
-	Rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
+	rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
 	qplot(data=st.data(), x =`2', y =`1' `colour' `shape')
 
 end
