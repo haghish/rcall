@@ -810,7 +810,7 @@ program define rcall , rclass
 	// -------------------------------------------------------------------------
 	if "`foreign'" == "1" {
 		capture rcall_check readstata13>=0.8.5 
-		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.3 "	///
+		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.5 "	///
 		"is required. Type:" _n "{p}R: install.packages("												///
 		`""readstata13", repos="http://cran.uk.r-project.org")"'
 		
