@@ -412,7 +412,7 @@ program define rcall , rclass
 
 			// for linux and Mac try 2 possible default paths
 			else {
-				local path "/usr/bin/r"
+				local path "/usr/bin/R"
 				capture confirm file "`path'"
 				if _rc != 0 {
 					local path "/usr/local/bin/R"
@@ -429,7 +429,7 @@ program define rcall , rclass
 			local path = "$Rpath"
 			if !missing("`debug'") {
 				di _n "{title:Path to R}" _n								///
-				"The path to R was obtained from {err:Rpath.ado} to be:"  _n
+				"The path to R was obtained from {err:rpath.ado} to be:"  _n
 				display `"{err:`path'}"'
 			}
 		}
@@ -591,7 +591,7 @@ program define rcall , rclass
 			qui copy "`Rpath'" "`c(sysdir_plus)'r/rpath.ado", replace
 			if !missing("`debug'") {
 				di "{title:Memorizing R path}" _n									///
-				`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"'
+				`"the {bf:rpath.ado} was created to memorize the path to `macval(0)'"'
 			}
 			exit
 		}
