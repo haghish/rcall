@@ -1,5 +1,5 @@
 /*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 2.2.0
+Version: 2.2.3
 Title: rcall
 Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with 
@@ -374,8 +374,8 @@ program define rcall , rclass
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
 	// =========================================================================
-	capture prog drop Rpath
-	capture Rpath
+	capture prog drop rpath
+	capture rpath
 	tokenize `"`macval(0)'"'
 	
 	if `"`macval(1)'"' != "setpath" & `"`macval(1)'"' != "setpath:" {
@@ -584,11 +584,11 @@ program define rcall , rclass
 			tempfile Rpath
 			tempname knot
 			qui file open `knot' using "`Rpath'", write text replace
-			file write `knot' "program define Rpath" _n
+			file write `knot' "program define rpath" _n
 			file write `knot' `"	global Rpath `macval(0)'"' _n
 			file write `knot' "end" _n
 			qui file close `knot'
-			qui copy "`Rpath'" "`c(sysdir_plus)'r/Rpath.ado", replace
+			qui copy "`Rpath'" "`c(sysdir_plus)'r/rpath.ado", replace
 			if !missing("`debug'") {
 				di "{title:Memorizing R path}" _n									///
 				`"the {bf:Rpath.ado} was created to memorize the path to `macval(0)'"' 
