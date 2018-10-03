@@ -18,3 +18,5 @@ private/Rcpp/Rcpp.cpp
 private/Rcpp/Rcpp.ado
 
 private/Rcpp/timesTen.ado
+
+private/bug/large variable.do
