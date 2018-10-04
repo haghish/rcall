@@ -25,6 +25,15 @@ The [__`github package`__](https://github.com/haghish/github) can be used to ins
 github install haghish/rcall
 ```
 
+Resources
+---------
+
+<a href="https://github.com/haghish/rcall/tree/master/examples"><img src="https://github.com/haghish/markdoc/raw/master/Resources/images/walk.png" width="30px" height="30px"  align="left">Examples</a>
+
+<a href="https://github.com/haghish/rcall/releases"><img src="https://github.com/haghish/markdoc/raw/master/Resources/images/list.png" width="30px" height="30px"  align="left" >Release notes</a>
+
+<a href="http://www.statalist.org"><img src="https://github.com/haghish/markdoc/raw/master/Resources/images/help2.png" width="30px" height="30px"  align="left">Need help? Ask your questions on statalist.org</a>
+
 Author
 ------
   **E. F. Haghish**  
