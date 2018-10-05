@@ -45,7 +45,3 @@ Author
   
 
 
-Examples
-------------
-
-The [__examples__](https://github.com/haghish/rcall/tree/master/examples) directory includes the torture test file that can serve as a good example. 
