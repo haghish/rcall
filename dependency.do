@@ -10,4 +10,5 @@ R manually.
 
 ***/
 
-rcall: install.packages("readstata13", repos="http://cran.uk.r-project.org")
+rcall_check
+rcall: install.packages("readstata13", repos="http://cran.us.r-project.org")
