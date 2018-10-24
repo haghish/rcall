@@ -1,10 +1,5 @@
 # rcall : seamless R in Stata
 
-> <span style="color:red;">WARNING</span>: `Rcall` command was renamed to `rcall` and `Rcall_check` command was renamed to `rcall_check`.
-
---- 
-
-
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
 
 __`rcall`__ runs [__R__](https://cran.r-project.org/) commands in Stata, allowing the two software automatically communicate _variables_, 
