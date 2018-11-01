@@ -642,8 +642,16 @@ program define rcall , rclass
 	// =========================================================================
 	if trim(`"`0'"') == "" {
 		local mode interactive
+		
+		
 		global rcall_interactive_mode on
-
+		
+		// when rcall interactive is executed for the first time, restart it
+		if missing("$rcall_interactive_first_launch") {
+			quietly rcall clear
+		}
+		global rcall_interactive_first_launch "on"
+	
 		// avoid the sync mode to get repeated in each trial
 		*if "$rcall_synchronize_mode" == "on" {
 		*	rcall_synchronize
@@ -669,6 +677,12 @@ program define rcall , rclass
 	// Create and update the history file
 	// =========================================================================
 	if missing("`vanilla'") {
+	
+		// when rcall interactive is executed for the first time, restart it
+		if missing("$rcall_interactive_first_launch") {
+			quietly rcall clear
+		}
+		global rcall_interactive_first_launch "on"
 
 		capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 		if _rc == 0 {
@@ -691,8 +705,6 @@ program define rcall , rclass
 			quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
 		}
 	}
-
-
 
 	// -------------------------------------------------------------------------
 	// Searching for Matrix
@@ -1058,7 +1070,7 @@ program define rcall , rclass
 		di "{browse stata.output}"
 	}
 
-
+	
 
 	// This has to be an engine for itself
 
@@ -1104,6 +1116,8 @@ program define rcall , rclass
 	if missing("`debug'") {
 		capture qui erase stata.output
 	}
+	
+	
 
 
 end
