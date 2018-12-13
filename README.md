@@ -17,6 +17,12 @@ Installation
 The [__`github package`__](https://github.com/haghish/github) can be used to install __rcall__ from GitHub conveniently. 
 
 ```js
+gitget rcall
+```
+
+_or alternatively_ 
+
+```js
 github install haghish/rcall
 ```
 
