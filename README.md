@@ -11,19 +11,13 @@ Similarly, it allows passing _macro_, _matrix_, _scalar_, and _data frame_ from 
 __`rcall`__ makes it so easy to run [__R__](https://cran.r-project.org/) within Stata interactively, pass data or a matrix to R, 
 and access the results (numeric, matrix, character, lists) automatically within Stata which simply brings the power of [__R__](https://cran.r-project.org/) as well as all other programming languages that can be used interactively in R (e.g. C++ using [Rcpp](http://rcpp.org/) or JavaScript using [V8](https://cran.r-project.org/web/packages/V8/index.html)) in Stata. 
 
-Installation
-------------
+# 1. Installation
 
-The [__`github package`__](https://github.com/haghish/github) can be used to install __rcall__ from GitHub conveniently. 
+
+The [__`github package`__](https://github.com/haghish/github) can be used to install any Stata package from GitHub conveniently. Once [__`github`__](https://github.com/haghish/github) is installed, type the following command to install __`rcall`__ 
 
 ```js
 gitget rcall
-```
-
-_or alternatively_ 
-
-```js
-github install haghish/rcall
 ```
 
 Resources
