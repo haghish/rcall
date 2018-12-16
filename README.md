@@ -11,14 +11,48 @@ Similarly, it allows passing _macro_, _matrix_, _scalar_, and _data frame_ from 
 __`rcall`__ makes it so easy to run [__R__](https://cran.r-project.org/) within Stata interactively, pass data or a matrix to R, 
 and access the results (numeric, matrix, character, lists) automatically within Stata which simply brings the power of [__R__](https://cran.r-project.org/) as well as all other programming languages that can be used interactively in R (e.g. C++ using [Rcpp](http://rcpp.org/) or JavaScript using [V8](https://cran.r-project.org/web/packages/V8/index.html)) in Stata. 
 
+The `rcall` package is **much more than calling R within Stata**! It implements a veriety of procedures for quality check and making sure that the R code can proprly gets executed within Stata and it also provides functions to allow Stata programmers evaluate the satisfactory versions of R and R packages in their programs. Moreover, it **automatically returns the results of the analysis from R into Stata, in an accessible formats such as matrices, scalars, data sets, etc**. Here is a quick and dirty diagram, showing the huge potential of `rcall` to enhance your Stata:
+
+![Summary of the `rcall` modes of data communication](./Documentation/whatfor.png)
+
 # 1. Installation
 
 
-The [__`github package`__](https://github.com/haghish/github) can be used to install any Stata package from GitHub conveniently. Once [__`github`__](https://github.com/haghish/github) is installed, type the following command to install __`rcall`__ 
+The [__`github package`__](https://github.com/haghish/github) is the only recommended way for installing **`rcall`** because `rcall`. Once [__`github`__](https://github.com/haghish/github) is installed, type any of the following commands:
 
 ```js
 gitget rcall
 ```
+_or alternatively, if you'd like to type more!_:
+
+```js
+github install haghish/rcall
+```
+
+# 2. rcall modes of data communication
+
+Language interfacing is done for a veriety of purposes. For example, you may call R within Stata to:
+
+- perform a particular analysis on your data 
+- develop a Stata program that relies on some functionalities provided in R or its add-on packages
+
+Both require data communication back and forth between Stata and R and this is where `rcall` stands out. `rcall` excells in a few modes to facilitates data communication based on your needs. These modes are summarized in the graph below:
+
+![Summary of the `rcall` modes of data communication](./Documentation/rcallmodes.png)
+
+
+In general, it offers 2 modes of data communication which are 
+
+1. **interactive**, often used for data analysis when the user might call R frequently and interactively. This general mode includes a memory that preserves the history of your R session. This mode itself can be used in three ways:
+     1. *interactive*, where the R session can be continued command by command. **this mode allows you call R interactively within Stata do-files**
+     2. *console*, where Stata console is converted to R console. this mode allows you to work with R interactively within Stata, but cannot be called from do-files. However, it provides a much more fun experience, namely to have R console within Stata console!
+     3. *`sync`*, which is an **experimental mode**, where all objects (except data frames because they might be heavy) are synced between Stata and R and changing any object in any of the environment (Stata or R) will alter the other one. In other words, when you are using the `sync` mode, whatever you do in R will automatically get pushed back into Stata! 
+
+2. **non-interactive**, which is the recommended mode for integrating R into Stata programs. This mode does not have a memory and every call will begin a fresh R session
+
+
+
+
 
 Resources
 ---------
