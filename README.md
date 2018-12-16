@@ -50,9 +50,19 @@ In general, it offers 2 modes of data communication which are
 
 2. **non-interactive**, which is the recommended mode for integrating R into Stata programs. This mode does not have a memory and every call will begin a fresh R session
 
+# 3. Examples
 
+`rcall` is very powerful, yeat very easy to work with. In the following examples, I simply use R to define a scalar or print a text, just to show you how easy it is to use `rcall` and to get data back into Stata. But to stand by the traditions, I start with a *Hello World* example with **interactive mode**
 
+_interactive mode: calling R to print a text_
 
+<img src="./Documentation/example-interactive.png" align="center" width="700">
+
+We can also open the R console within Stata to have fun with R without exiting Stata! You notice that working with R interactively in the console mode **is even easier than working with MATA within Stata** because `rcall` automatically returns the data from R to Stata. 
+
+_interactive console mode_
+
+<img src="./Documentation/example-console.png" align="center" width="700">
 
 Resources
 ---------
