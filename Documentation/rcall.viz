@@ -1,0 +1,10 @@
+ graph ethane {
+
+     rcall -- interactive [type=s; color="0.515 0.762 0.762"];
+     rcall -- vanilla [type=s; color="0.515 0.762 0.762"];
+     rcall -- console [type=s; color="0.515 0.762 0.762"];
+     rcall -- sync [type=s; color="0.515 0.762 0.762"];
+     
+     rcall [shape=Mdiamond; color=blue];
+
+ }
