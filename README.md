@@ -60,9 +60,15 @@ _interactive mode: calling R to print a text_
 
 We can also open the R console within Stata to have fun with R without exiting Stata! You notice that working with R interactively in the console mode **is even easier than working with MATA within Stata** because `rcall` automatically returns the data from R to Stata. 
 
-_interactive console mode_
+_interactive console mode: defining object `a = 99` in R and getting it back in Stata_
 
 <img src="./Documentation/example-console.png" align="center" width="700">
+
+Type `return list` to see what objects have ben transfered from R to Stata. This is one of the biggest advantages of `rcall`, namely, the objects you define in R can be automatically accessed within Stata! Of course, you can control what objects to return (especially if you are programming a Stata ado-program that embeds R). Read the manuscript published by Stata Journal for details. 
+
+_interactive sync mode: object `a` is automatically transported into R and you do not need to define it_
+
+<img src="./Documentation/example-sync.png" align="center" width="700">
 
 Resources
 ---------
