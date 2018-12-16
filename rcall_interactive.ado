@@ -1,7 +1,7 @@
 *cap prog drop rcall_interactive
 
 program define rcall_interactive
-	display  as txt "{hline 52} R (type {cmd:end} to exit) {hline}"
+	display as txt "{hline 52} R (type {cmd:end} to exit) {hline}"
 	scalar rcall_counter = 0
 	tempfile Rscript
 	
