@@ -18,7 +18,7 @@ The `rcall` package is **much more than calling R within Stata**! It implements 
 # 1. Installation
 
 
-The [__`github package`__](https://github.com/haghish/github) is the only recommended way for installing **`rcall`** because `rcall`. Once [__`github`__](https://github.com/haghish/github) is installed, type any of the following commands:
+The [__`github package`__](https://github.com/haghish/github) is the only recommended way for installing **`rcall`**. Once [__`github`__](https://github.com/haghish/github) is installed, type any of the following commands:
 
 ```js
 gitget rcall
