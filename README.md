@@ -23,7 +23,7 @@ The [__`github package`__](https://github.com/haghish/github) is the only recomm
 ```js
 gitget rcall
 ```
-_or alternatively, if you'd like to type more!_:
+_or alternatively_:
 
 ```js
 github install haghish/rcall
