@@ -303,8 +303,6 @@ stata.output <- function(plusR, Vanilla="") {
         }
       }
     }
-    
-    
   }
 }
 
