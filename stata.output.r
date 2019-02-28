@@ -287,20 +287,23 @@ stata.output <- function(plusR, Vanilla="") {
     #Get RProfile from global
     file.create(RProfile)
     
-    for (i in 1:length(packageList)) {
-      
-      # Attach packages
-      if (substr(packageList[i], 1, 8) == "package:") {
-        name <- substr(packageList[i], 9, nchar(packageList[i]))
-        write(paste("library(", name, ")", sep = ""), file=RProfile, append=TRUE)
-      }
-      
-      # Attach variables and data
-      else {
-        name <- packageList[i]
-        write(paste("attach(", name, ")", sep = ""), file=RProfile, append=TRUE)
+    if (length(packageList) > 0) {
+      for (i in 1:length(packageList)) {
+        
+        # Attach packages
+        if (substr(packageList[i], 1, 8) == "package:") {
+          name <- substr(packageList[i], 9, nchar(packageList[i]))
+          write(paste("library(", name, ")", sep = ""), file=RProfile, append=TRUE)
+        }
+        
+        # Attach variables and data
+        else {
+          name <- packageList[i]
+          write(paste("attach(", name, ")", sep = ""), file=RProfile, append=TRUE)
+        }
       }
     }
+    
     
   }
 }
