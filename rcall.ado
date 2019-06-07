@@ -1,7 +1,12 @@
-/*** DO NOT EDIT THIS LINE -----------------------------------------------------
+// documentation written for markdoc
+
+/***
 Version: 2.4.1
-Title: rcall
-Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
+
+rcall
+=====
+
+seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with
 _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_
 classes to Stata. It also allows passing Stata variable, dataset,
@@ -9,11 +14,9 @@ macro, scalar, and matrix to R as well as load a dataframe from R
 to Stata automatically,
 which provides an automated reciprocal communication between Stata and R. For
 more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
------------------------------------------------------ DO NOT EDIT THIS LINE ***/
 
-/***
 Syntax
-======
+------
 
 To call R from Stata use the following syntax
 
@@ -136,7 +139,7 @@ execution.
 
 
 Communication from R to Stata
-======================================
+-----------------------------
 
 Stata automatically receives R objects as {help return:rclass} anytime
 the rcall is executed. If R is running interactively
@@ -208,7 +211,7 @@ Regarding communicating R data set to Stata automatically, see the
 __st.load(_dataframe_)__ function below.
 
 Communication from Stata to R
-======================================
+-----------------------------
 
 For an ideal reciprocation between Stata and R, Stata should also easily
 communicate variables to R. Local and global {help macro:macros} can be passed
@@ -262,7 +265,7 @@ simply by passing the variables required for the analysis from Stata to R:
             11267.3       -238.3
 
 The rcall package also allows to pass Stata data to R within
-__st.data(_{help filename}_)__ function. This function relies on the __readstata13__
+__st.data(_filename_)__ function. This function relies on the __readstata13__
 package in R to load Stata data sets, without converting them to CSV or alike.
 The __readstata13__ package
 [is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21)
@@ -302,7 +305,7 @@ the function should work just fine in most occasions:
         {c BLC}{hline 14}{c BRC}
 
 Remarks
-=======
+-------
 
 You should be careful with using Stata symbols in R. For example, the __$__
 sign in Stata is preserved for global macros. To use this sign in R, you
@@ -329,13 +332,13 @@ the more time needed to automatically communicate those objects between
 R and Stata.
 
 Example
-=================
+-------
 
 Visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and
 documentation.
 
 Author
-======
+------
 
 __E. F. Haghish__
 Center for Medical Biometry and Medical Informatics
