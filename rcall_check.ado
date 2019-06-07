@@ -1,3 +1,56 @@
+/***
+_v. 1.0.0_ 
+
+rcall_check
+===========
+
+examines the required version of R and R packages
+
+Syntax
+------ 
+
+> __rcall_check__ [_pkgname>=version_] [[...]] [, _options_]
+
+| _option_                |  _Description_                                 |
+|:------------------------|:-----------------------------------------------|
+| **r**version(_str_)     | specify the minimum required R version         |
+| **rcall**version(_str_) | specify the minimum required __rcall__ version |
+
+Description
+-----------
+
+ __rcall_check__ can be used to check that R is accessible via __rcall__, 
+ check for the required R packages, and specify a minimum acceptable versions for R, 
+ __rcall__ , and all the required R packages. 
+
+ As showed in the syntax, all of the arguments are optional. If __rcall_check__
+is executed without any argument or option, it simply checks whether R is
+accessible via __rcall__ and returns __r(rc)__ and __r(version)__ which is the version of
+the R that is used by the package. If R is not reachable, an error is returned
+accordingly.
+
+Example(s)
+----------
+
+checking that R is accessuble via rcall
+
+        . rcall_check
+
+ check that the minimum rcall version 1.3.3, ggplot2 version 2.1.0, and R version of 3.1.0 are installed
+
+        . rcall_check ggplot2>=2.1.0 , r(3.1.0) rcall(1.3.3)
+
+Stored results
+--------------
+
+### Scalars
+
+> __r(rc)__: indicates whether R was accessible via __rcall__ package
+
+> __r(version)__: returns R version accessed by __rcall__
+
+***/
+
 
 *cap prog drop rcall_check
 program rcall_check
