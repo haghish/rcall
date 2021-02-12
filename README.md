@@ -1,3 +1,5 @@
+> __Cite__: Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.
+
 # rcall : seamless R in Stata
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
