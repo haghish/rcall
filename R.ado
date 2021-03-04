@@ -1,7 +1,12 @@
-/*** DO NOT EDIT THIS LINE -----------------------------------------------------
-Version: 2.3.0
-Title: rcall
-Description: seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
+// documentation written for markdoc
+
+/***
+Version: 3.0.0 BETA
+
+rcall
+=====
+
+seamless interactive __[R](https://cran.r-project.org/)__ in Stata.
 The command automatically returns {help return:rclass} R objects with
 _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, and _NULL_
 classes to Stata. It also allows passing Stata variable, dataset,
@@ -9,11 +14,9 @@ macro, scalar, and matrix to R as well as load a dataframe from R
 to Stata automatically,
 which provides an automated reciprocal communication between Stata and R. For
 more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
------------------------------------------------------ DO NOT EDIT THIS LINE ***/
 
-/***
 Syntax
-======
+------
 
 To call R from Stata use the following syntax
 
@@ -136,7 +139,7 @@ execution.
 
 
 Communication from R to Stata
-======================================
+-----------------------------
 
 Stata automatically receives R objects as {help return:rclass} anytime
 the rcall is executed. If R is running interactively
@@ -208,7 +211,7 @@ Regarding communicating R data set to Stata automatically, see the
 __st.load(_dataframe_)__ function below.
 
 Communication from Stata to R
-======================================
+-----------------------------
 
 For an ideal reciprocation between Stata and R, Stata should also easily
 communicate variables to R. Local and global {help macro:macros} can be passed
@@ -262,7 +265,7 @@ simply by passing the variables required for the analysis from Stata to R:
             11267.3       -238.3
 
 The rcall package also allows to pass Stata data to R within
-__st.data(_{help filename}_)__ function. This function relies on the __readstata13__
+__st.data(_filename_)__ function. This function relies on the __readstata13__
 package in R to load Stata data sets, without converting them to CSV or alike.
 The __readstata13__ package
 [is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21)
@@ -302,7 +305,7 @@ the function should work just fine in most occasions:
         {c BLC}{hline 14}{c BRC}
 
 Remarks
-=======
+-------
 
 You should be careful with using Stata symbols in R. For example, the __$__
 sign in Stata is preserved for global macros. To use this sign in R, you
@@ -329,13 +332,13 @@ the more time needed to automatically communicate those objects between
 R and Stata.
 
 Example
-=================
+-------
 
 Visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) for more examples and
 documentation.
 
 Author
-======
+------
 
 __E. F. Haghish__
 Center for Medical Biometry and Medical Informatics
@@ -642,8 +645,16 @@ program define R , rclass
 	// =========================================================================
 	if trim(`"`0'"') == "" {
 		local mode interactive
+		
+		
 		global rcall_interactive_mode on
-
+		
+		// when rcall interactive is executed for the first time, restart it
+		if missing("$rcall_interactive_first_launch") {
+			quietly rcall clear
+		}
+		global rcall_interactive_first_launch "on"
+	
 		// avoid the sync mode to get repeated in each trial
 		*if "$rcall_synchronize_mode" == "on" {
 		*	rcall_synchronize
@@ -669,6 +680,12 @@ program define R , rclass
 	// Create and update the history file
 	// =========================================================================
 	if missing("`vanilla'") {
+	
+		// when rcall interactive is executed for the first time, restart it
+		if missing("$rcall_interactive_first_launch") {
+			quietly rcall clear
+		}
+		global rcall_interactive_first_launch "on"
 
 		capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
 		if _rc == 0 {
@@ -692,8 +709,6 @@ program define R , rclass
 		}
 	}
 
-
-
 	// -------------------------------------------------------------------------
 	// Searching for Matrix
 	// =========================================================================
@@ -707,16 +722,35 @@ program define R , rclass
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
 		if !missing("`debug'") {
 			di _n "{title:st.matrix() function}" _n								///
-			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  	///
-			"the {bf:matconvert.ado} function, which returns:"
-			matconvert `mat'
+			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will save "  	///
+			"the matrix as a data set named {bf:_send.matrix.`mat'.dta}"
+      *"the {bf:matconvert.ado} function, which returns:"
+			*matconvert `mat'
 		}
-		qui matconvert `mat'
-		local l2 = `"`r(`mat')'"' + "`l2'"
-		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+    ** rcall 2.0 procedure was to convert the matix to R code
+    *qui matconvert `mat'
+		*local l2 = `"`r(`mat')'"' + "`l2'"
+		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    * rcall 3.0: save the matrix as stata data set
+    preserve
+    *clear
+    *quietly svmat2 `mat', names(col) rnames("MATR0WNAMES")
+    *quietly saveold "_send.matrix.`mat'.dta", version(13) replace
+    quietly matexport `mat', rnames("MATR0WNAMES") filename("_send.matrix.`mat'.dta") version(13)
+    restore
+    
+    local l2 = `"{send.matrix.`mat' <- readstata13::read.dta13("_send.matrix.`mat'.dta"); row.names(send.matrix.`mat') <- send.matrix.`mat'[, "MATR0WNAMES"]; send.matrix.`mat'[, "MATR0WNAMES"] <- NULL; send.matrix.`mat' <- as.matrix(send.matrix.`mat');}"' + "`l2'"
+    local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    // create a macro list of the current matrix data files
+    if "`sendmatrixlist'" == "" local sendmatrixlist = "_send.matrix.`mat'.dta"
+    else local sendmatrixlist = "`sendmatrixlist' " + "_send.matrix.`mat'.dta"
+
 	}
 
-	// -------------------------------------------------------------------------
+	// ------------`mat'-------------------------------------------------------------
 	// Searching for Scalar
 	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.scalar(") != 0 {
@@ -949,7 +983,6 @@ program define R , rclass
 	}
 
 
-
 	// if there was an error in R...
 	// -------------------------------------------------------------------------
 	file write `knot' `"if (class(.Last.value) != "try-error" ) {"' _n					/// there was an error
@@ -1058,7 +1091,7 @@ program define R , rclass
 		di "{browse stata.output}"
 	}
 
-
+	
 
 	// This has to be an engine for itself
 
@@ -1097,20 +1130,20 @@ program define R , rclass
 			error 1
 		}
 	}
-
+  
+  
 	macro drop debug
 
 
 	if missing("`debug'") {
 		capture qui erase stata.output
+    
+    // erase the _send.matrix files
+    tokenize "`sendmatrixlist'"
+    while !missing("`1'") {
+      capture qui erase "`1'"
+      macro shift
+		}
 	}
-
-
+	
 end
-
-
-// -------------------------------------------------------------------------
-// CREATE help file
-// =========================================================================
-
-*markdoc rcall.ado, export(sthlp) replace build

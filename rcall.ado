@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-Version: 2.4.1
+Version: 3.0.0 BETA
 
 rcall
 =====
@@ -722,16 +722,35 @@ program define rcall , rclass
 		local l2 = substr(`"`macval(l2)'"',`mt'+1, .)
 		if !missing("`debug'") {
 			di _n "{title:st.matrix() function}" _n								///
-			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will call "  	///
-			"the {bf:matconvert.ado} function, which returns:"
-			matconvert `mat'
+			"You wish to pass Matrix {bf:`mat'} to {bf:R}. This will save "  	///
+			"the matrix as a data set named {bf:_send.matrix.`mat'.dta}"
+      *"the {bf:matconvert.ado} function, which returns:"
+			*matconvert `mat'
 		}
-		qui matconvert `mat'
-		local l2 = `"`r(`mat')'"' + "`l2'"
-		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		
+    ** rcall 2.0 procedure was to convert the matix to R code
+    *qui matconvert `mat'
+		*local l2 = `"`r(`mat')'"' + "`l2'"
+		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    * rcall 3.0: save the matrix as stata data set
+    preserve
+    *clear
+    *quietly svmat2 `mat', names(col) rnames("MATR0WNAMES")
+    *quietly saveold "_send.matrix.`mat'.dta", version(13) replace
+    quietly matexport `mat', rnames("MATR0WNAMES") filename("_send.matrix.`mat'.dta") version(13)
+    restore
+    
+    local l2 = `"{send.matrix.`mat' <- readstata13::read.dta13("_send.matrix.`mat'.dta"); row.names(send.matrix.`mat') <- send.matrix.`mat'[, "MATR0WNAMES"]; send.matrix.`mat'[, "MATR0WNAMES"] <- NULL; send.matrix.`mat' <- as.matrix(send.matrix.`mat');}"' + "`l2'"
+    local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    // create a macro list of the current matrix data files
+    if "`sendmatrixlist'" == "" local sendmatrixlist = "_send.matrix.`mat'.dta"
+    else local sendmatrixlist = "`sendmatrixlist' " + "_send.matrix.`mat'.dta"
+
 	}
 
-	// -------------------------------------------------------------------------
+	// ------------`mat'-------------------------------------------------------------
 	// Searching for Scalar
 	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.scalar(") != 0 {
@@ -964,7 +983,6 @@ program define rcall , rclass
 	}
 
 
-
 	// if there was an error in R...
 	// -------------------------------------------------------------------------
 	file write `knot' `"if (class(.Last.value) != "try-error" ) {"' _n					/// there was an error
@@ -1112,17 +1130,22 @@ program define rcall , rclass
 			error 1
 		}
 	}
-
+  
+  
 	macro drop debug
 
 
 	if missing("`debug'") {
 		capture qui erase stata.output
+    
+    // erase the _send.matrix files
+    tokenize "`sendmatrixlist'"
+    while !missing("`1'") {
+      capture qui erase "`1'"
+      macro shift
+		}
 	}
 	
-	
-
-
 end
 
 

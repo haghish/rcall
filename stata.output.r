@@ -1,3 +1,9 @@
+# --------------------------------------------------------------------------
+# REMOVE TEMPORARY MATRICES (rcall 3.0)
+# ==========================================================================
+rm(list = apropos("send.matrix."))
+
+
 # ------------------------------------------------------------------------------
 # a function to adjust the returned column names, since Stata doesn't accept
 # multi-words names
@@ -215,39 +221,58 @@ stata.output <- function(plusR, Vanilla="") {
       iget <- get(i)
       dims <- dim(iget)
       content <- paste("//MATRIX", i)
-      
-      # adjust the names for Stata
-      colnames = adj.names(colnames(iget))
-      rownames = adj.names(rownames(iget))
-      
-      # GENERATE rownames and column names, if not defined.
-      # this was a bug, while syncing matrices between 
-      # Stata and R... 
-      
-      if (is.null(rownames)) {
-        rownames = paste0("r", 1:dims[1])
-      }
-      
-      if (is.null(colnames)) {
-        colnames = paste0("c", 1:dims[2])
-      }
-      
-      
       write(content, file=stata.output, append=TRUE)
-      write(paste("rownumber:", dims[1]), file=stata.output, append=TRUE)
       
-      if (!is.null(colnames)) {
-        write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
-              file=stata.output, append=TRUE)
-      }    
-      if (!is.null(rownames)) {
-        write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
-              file=stata.output, append=TRUE)
+      
+      
+      # in rcall 3.0 the matrix is exported via a stata data set
+      # check the colnames and rownames and make them like "Stata"
+      if (is.null(colnames(iget))) {
+        colnames(iget) <- paste0("c", 1:ncol(iget))
       }
-      #Add comma
+      if (is.null(rownames(iget))) {
+        rownames(iget) <- paste0("r", 1:nrow(iget))
+      }
       
-      write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE
-            , ncolumns = if(is.character(iget)) 1 else 21)
+      ## adjust the names for Stata
+      colnames(iget) <- adj.names(colnames(iget))
+      rownames(iget) <- adj.names(rownames(iget))
+      
+      # convert the matrix to a data set and save it
+      iget = as.data.frame(iget)
+      readstata13::save.dta13(iget, file=paste0("_load.matrix.", i, ".dta"), add.rownames = TRUE)
+      
+      ## adjust the names for Stata
+      #colnames = adj.names(colnames(iget))
+      #rownames = adj.names(rownames(iget))
+      #
+      ## GENERATE rownames and column names, if not defined.
+      ## this was a bug, while syncing matrices between 
+      ## Stata and R... 
+      #
+      #if (is.null(rownames)) {
+      #  rownames = paste0("r", 1:dims[1])
+      #}
+      #
+      #if (is.null(colnames)) {
+      #  colnames = paste0("c", 1:dims[2])
+      #}
+      #
+      #
+      #write(paste("rownumber:", dims[1]), file=stata.output, append=TRUE)
+      #
+      #if (!is.null(colnames)) {
+      #  write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "), 
+      #        file=stata.output, append=TRUE)
+      #}    
+      #if (!is.null(rownames)) {
+      #  write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "), 
+      #        file=stata.output, append=TRUE)
+      #}
+      ##Add comma
+      #
+      #write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE
+      #      , ncolumns = if(is.character(iget)) 1 else 21)
     }
     
   }
