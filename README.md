@@ -1,5 +1,21 @@
 > __Cite__: Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.
 
+---
+
+#### WARNING
+
+`rcall 3.0.0 BETA` is under development. If you like to help testing the new development, install the development vesion
+
+```js
+github install haghish/rcall, stable
+```
+
+Otherwise, install the latest stable release
+
+```js
+github install haghish/rcall, stable
+```
+
 # rcall : seamless R in Stata
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
