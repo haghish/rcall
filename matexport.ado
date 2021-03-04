@@ -98,7 +98,7 @@ program define matexport
     exit _rc
   }
   
-  if _rc == 900 | _rc == 902 { noroom `type' `nc' _rc }
+  if _rc == 900 | _rc == 902 { noroom2 `type' `nc' _rc }
   if _rc { error _rc }
   drop `varlist'
   parse "`varlist'", parse(" ")
@@ -155,8 +155,8 @@ program define matexport
   restore
 end
 
-*cap prog drop noroom
-program define noroom /* `type' `nc' _rc */
+*cap prog drop noroom2
+program define noroom2 /* `type' `nc' _rc */
   version 4.0
   local type "`1'"
   local nc    `2'
@@ -172,6 +172,12 @@ program define noroom /* `type' `nc' _rc */
   exit `rc'
 end
 
+
+// -------------------------------------------------------------------------
+// CREATE help file
+// =========================================================================
+
+*markdoc matexport.ado, export(sthlp) replace
 
 /*
 clear
