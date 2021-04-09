@@ -56,6 +56,7 @@ program call_return , rclass
 				local line : subinstr local line "." "_", all //avoid "." in name
 				local name : di `"`macval(line)'"'
 				file read `hitch' line
+				local line : subinstr local line "-Inf" "." // Avoid -Inf error, return missing
 				if "`name'" != "rcall_counter" {
 					if "`name'" == "rc" & "`line'" == "1" local Rerror 1
 					if "$rcall_synchronize_mode" == "on" | "$rcall_synchronize_mode3" == "on" {
