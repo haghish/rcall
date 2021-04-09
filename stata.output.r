@@ -134,7 +134,6 @@ stata.output <- function(plusR, Vanilla="") {
 
     # NUMERIC (numeric AND integer)
     # ------------------------------------
-    numeric = numeric[numeric!= "rcall_synchronize_ACTIVE"]  #remove rcall_synchronize_ACTIVE from the list
     for (St.Scalar in numeric) {
       iget <- get(St.Scalar)
 
@@ -224,7 +223,7 @@ stata.output <- function(plusR, Vanilla="") {
       content <- paste("//MATRIX", i)
       write(content, file=stata.output, append=TRUE)
 
-      if (!exists("rcall.synchronize.ACTIVE")) {
+      if (is.null(rcall.synchronize.ACTIVE)) {
         # in rcall 3.0 the matrix is exported via a stata data set
         # check the colnames and rownames and make them like "Stata"
         if (is.null(colnames(iget))) {
