@@ -1,13 +1,12 @@
-
 // -----------------------------------------------------------------------------
 // BUGS: 
-//		* The matrix and character vectors are not returned correctly...
-//		* The string comes with a {break}. limit this to only when it's needed
-//		* Character class is messed up in the list
-//		* PROBLEM WITH CHARACTER VECTORS
+//		* 
+//		* 
+//		* 
+//		* 
 // =============================================================================
-rcall: mylist <- list(a=c(1:10), b=c("hello", "world"), c=matrix(1:6, nrow=2, byrow = TRUE))
-rcall: mylist
+
+
 ********************************************************************************
 
 
@@ -19,7 +18,7 @@ rcall: mylist
 *net install rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
 github install haghish/rcall
 
-// Setup R path permanently
+// Setup R path permanently (change the path on your system)
 rcall setpath "/usr/bin/r"
 
 
@@ -31,24 +30,24 @@ rcall setpath "/usr/bin/r"
 
 // Vanilla (Non-Interactive)
 // -----------------------------------------------------------------------------
-rcall: rm(list=ls()) 
-rcall: unlink(".RData")
-rcall clear //alternatively! a new subcommand
+rcall clear
 rcall vanilla : object <- print("this")
 return list
 
 // if you want to access the "object" you get an error that is not found because 
-// it was defined in vanilla mode
+// it was defined in vanilla mode, i.e. no memory is preserved of the previous 
+// r call
 rcall: object
 
 
 // Interactive mode
 // -----------------------------------------------------------------------------
+rcall clear 
 rcall: a <- print("Hello World")
 rcall: q()						//does not remove the R objects in memory
 rcall: print(ls())
 
-rcall: rm(list=ls()) 			//remove the R objects in memory
+rcall clear           //clear the memory
 rcall: print(ls())
 
 //numeric and string objects
@@ -76,6 +75,8 @@ return list //lm is not a list
 
 // SCALAR
 // -------------------------------
+
+//with synchronization
 rcall clear
 scalar a = 1
 rcall sync: a = 0

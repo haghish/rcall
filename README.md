@@ -31,7 +31,7 @@ and access the results (numeric, matrix, character, lists) automatically within 
 
 The `rcall` package is **much more than calling R within Stata**! It implements a veriety of procedures for quality check and making sure that the R code can proprly gets executed within Stata and it also provides functions to allow Stata programmers evaluate the satisfactory versions of R and R packages in their programs. Moreover, it **automatically returns the results of the analysis from R into Stata, in an accessible formats such as matrices, scalars, data sets, etc**. Here is a quick and dirty diagram, showing the huge potential of `rcall` to enhance your Stata:
 
-![Summary of the `rcall` modes of data communication](./Documentation/whatfor.png)
+![Summary of the `rcall` modes of data communication](./Documentation/whatfor.jpg)
 
 # 1. Installation
 

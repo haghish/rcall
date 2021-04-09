@@ -959,6 +959,7 @@ program define rcall , rclass
 	if "$rcall_interactive_mode" != "on" {
 		if "$rcall_synchronize_mode" == "on" {
 			rcall_synchronize
+      file write `knot' "rcall.synchronize.ACTIVE = 1" _n
 			file write `knot' "source('rcall_synchronize')" _n
 		}
 	}
