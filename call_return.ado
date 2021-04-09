@@ -181,7 +181,7 @@ program call_return , rclass
           *local head = substr("`var'",1,`len'-2)
           *local tail = substr("`var'",`len'-1,`len')
           *}
-          
+           local variablelist
 					while !missing("`1'") {
             local variablelist `variablelist' `1'
 						macro shift
