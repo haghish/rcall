@@ -159,120 +159,121 @@ program call_return , rclass
 				local line : subinstr local line "$" "_", all //avoid "$" in name
 				local name : di `"`macval(line)'"'
 				
-        // make sure that it exists
-        capture confirm file "_load.matrix.`name'.dta"
-        if _rc == 0 {
-          preserve
-          
-          // load the matrix as data frame
-          qui use "_load.matrix.`name'.dta", clear
-          
-          // extract the column names
-          quietly describe, fullname varlist 
-          
-          tokenize "`r(varlist)'"
-          if "`1'" == "rownames" {
-            local rownames "rownames"
-            macro shift
+        if "$rcall_synchronize_mode" != "on" {
+          // make sure that it exists
+          capture confirm file "_load.matrix.`name'.dta"
+          if _rc == 0 {
+            preserve
+            
+            // load the matrix as data frame
+            qui use "_load.matrix.`name'.dta", clear
+            
+            // extract the column names
+            quietly describe, fullname varlist 
+            
+            tokenize "`r(varlist)'"
+            if "`1'" == "rownames" {
+              local rownames "rownames"
+              macro shift
+            }
+            
+            *foreach var of varlist `mylist' {
+            *local len = length("`var'")
+            *local head = substr("`var'",1,`len'-2)
+            *local tail = substr("`var'",`len'-1,`len')
+            *}
+            
+            while !missing("`1'") {
+              local variablelist `variablelist' `1'
+              macro shift
+            }
+            
+            mkmat `variablelist' ,  matrix(`name') rownames("`rownames'") 
+            restore
           }
           
-          *foreach var of varlist `mylist' {
-          *local len = length("`var'")
-          *local head = substr("`var'",1,`len'-2)
-          *local tail = substr("`var'",`len'-1,`len')
-          *}
+          // return an error
+          else {
+            return scalar rc = 1
+            display as err "{bf:`name'} was not transported properly"
+          }
+        }
+        else if "$rcall_synchronize_mode" == "on" {
+          //GET NUMBER OF ROWS
+          file read `hitch' line
+          if substr(`"`macval(line)'"',1,11) == "rownumber: " {
+            local line : subinstr local line "rownumber: " ""
+            local rownumber : di `"`macval(line)'"'
+          }
           
-					while !missing("`1'") {
-            local variablelist `variablelist' `1'
-						macro shift
-					}
-					
-          mkmat `variablelist' ,  matrix(`name') rownames("`rownames'") 
-          restore
+          file read `hitch' line
+          
+          //GET COLUMN NAMES
+          if substr(`"`macval(line)'"',1,9) == "colnames:" {
+            local line : subinstr local line "colnames:" ""
+            local colname : di `"`macval(line)'"'
+            file read `hitch' line
+          }
+          
+          //GET ROW NAMES
+          if substr(`"`macval(line)'"',1,9) == "rownames:" {
+            local line : subinstr local line "rownames:" ""
+            local rowname : di `"`macval(line)'"'
+            file read `hitch' line
+          }
+          
+          // READ THE MATRIX
+          local content
+          while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
+            local content `content' `line' 
+            file read `hitch' line
+            local jump 1
+          }
+          
+          
+          // AVOID STATA LIMITS IN TERMS OF NUMBER OF ARGUMENTS	
+          // ------------------------------------------------------------
+          if wordcount(`"`macval(content)'"') <= 500  {
+            matrix define `name' = (`content')
+          }
+          else {
+            tokenize "`content'"
+            while !missing("`1'") {
+              local n 0      //RESET
+              local content2 //RESET
+              while `n' <= 500 {
+                local n `++n'
+                local content2 `content2' `1'
+                macro shift
+              }
+              
+              // append pieces of the long returned matrix
+              if missing("`name'") {
+                matrix define `name' = (`content2') 
+              }
+              else {
+                matrix `name' = `name' , `content2'
+              }
+              macro shift
+            }
+          }
+          
+          // CREATE THE MATRIX IN MATA
+          *mat list `name'
+          mata: `name' = st_matrix("`name'") 
+          *mata: `name'
+          mata: st_matrix("`name'", rowshape(`name', `rownumber')) 
+          
+          // ADD COLUMN NAME
+          if !missing("`colname'") {
+            matrix colnames `name' = `colname'
+          }
+          
+          // ADD ROW NAME
+          if !missing("`rowname'") {
+            matrix rownames `name' = `rowname'
+          }
         }
-        
-        // return an error
-        else {
-          return scalar rc = 1
-          display as err "{bf:`name'} was not transported properly"
-        }
-        
-        /*
-				//GET NUMBER OF ROWS
-				file read `hitch' line
-				if substr(`"`macval(line)'"',1,11) == "rownumber: " {
-					local line : subinstr local line "rownumber: " ""
-					local rownumber : di `"`macval(line)'"'
-				}
-				
-				file read `hitch' line
-				
-				//GET COLUMN NAMES
-				if substr(`"`macval(line)'"',1,9) == "colnames:" {
-					local line : subinstr local line "colnames:" ""
-					local colname : di `"`macval(line)'"'
-					file read `hitch' line
-				}
-				
-				//GET ROW NAMES
-				if substr(`"`macval(line)'"',1,9) == "rownames:" {
-					local line : subinstr local line "rownames:" ""
-					local rowname : di `"`macval(line)'"'
-					file read `hitch' line
-				}
-				
-				// READ THE MATRIX
-				local content
-				while r(eof) == 0 & substr(`"`macval(line)'"',1,2) != "//" {
-					local content `content' `line' 
-					file read `hitch' line
-					local jump 1
-				}
-				
-				
-				// AVOID STATA LIMITS IN TERMS OF NUMBER OF ARGUMENTS	
-				// ------------------------------------------------------------
-				if wordcount(`"`macval(content)'"') <= 500  {
-					matrix define `name' = (`content')
-				}
-				else {
-					tokenize "`content'"
-					while !missing("`1'") {
-						local n 0      //RESET
-						local content2 //RESET
-						while `n' <= 500 {
-							local n `++n'
-							local content2 `content2' `1'
-							macro shift
-						}
-						
-						// append pieces of the long returned matrix
-						if missing("`name'") {
-							matrix define `name' = (`content2') 
-						}
-						else {
-							matrix `name' = `name' , `content2'
-						}
-						macro shift
-					}
-				}
-				
-				// CREATE THE MATRIX IN MATA
-				*mat list `name'
-				mata: `name' = st_matrix("`name'") 
-				*mata: `name'
-				mata: st_matrix("`name'", rowshape(`name', `rownumber')) 
-				
-				// ADD COLUMN NAME
-				if !missing("`colname'") {
-					matrix colnames `name' = `colname'
-				}
-				
-				// ADD ROW NAME
-				if !missing("`rowname'") {
-					matrix rownames `name' = `rowname'
-				}
-        */
 
 				
 

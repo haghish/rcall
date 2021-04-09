@@ -548,6 +548,12 @@ program define rcall , rclass
 			global rcall_synchronize_mode on
 			local mode sync
 		}
+    
+    if `"`macval(1)'"' != "sync" | `"`macval(1)'"' != "sync:" {
+			macro drop rcall_synchronize_mode
+		}
+    
+    
 
 		// Vanilla mode
 		// ============
@@ -962,6 +968,9 @@ program define rcall , rclass
       file write `knot' "rcall.synchronize.ACTIVE = 1" _n
 			file write `knot' "source('rcall_synchronize')" _n
 		}
+    else {
+      file write `knot' "suppressWarnings(rm(rcall.synchronize.ACTIVE))" _n
+    }
 	}
 
 	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				// erase memory temporarily
