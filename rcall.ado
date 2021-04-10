@@ -551,7 +551,6 @@ program define rcall , rclass
     
     if `"`macval(1)'"' != "sync" & `"`macval(1)'"' != "sync:" {
 			macro drop rcall_synchronize_mode
-      di as err "macro drop rcall_synchronize_mode"
 		}
     
     
@@ -776,6 +775,7 @@ program define rcall , rclass
 		}
 
 		local sca : display `sca'
+    local sca : subinstr local sca "." "NA" 
 
 		//If scalar is string, add double quote
 		capture local test : display int(`sca')
