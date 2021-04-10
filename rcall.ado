@@ -549,8 +549,9 @@ program define rcall , rclass
 			local mode sync
 		}
     
-    if `"`macval(1)'"' != "sync" | `"`macval(1)'"' != "sync:" {
+    if `"`macval(1)'"' != "sync" & `"`macval(1)'"' != "sync:" {
 			macro drop rcall_synchronize_mode
+      di as err "macro drop rcall_synchronize_mode"
 		}
     
     
