@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
 // BUGS: 
-//		* 
+//		should rcall convert NA objected to missing scalars in sync mode? 
 //		* 
 //		* 
 //		* 
@@ -77,6 +77,7 @@ return list //lm is not a list
 // -------------------------------
 
 //with synchronization
+drop _all
 rcall clear
 scalar a = 1
 rcall sync: a = 0
@@ -90,16 +91,24 @@ di a
 
 //DEFENSIVE: missing scalar
 // -------------------------------
+//missing is converted to NA, but in string format
+drop _all
+rcall clear
 scalar a = .
-rcall: a 
+rcall: st.scalar(a) 
 di a
 
+//should NA be converted to . ? this is not implemented yet
+drop _all
+rcall clear
 scalar a = 10
-rcall sync: a 
+rcall sync: st.scalar(a) 
 rcall sync: a <- NA
 di a
+rcall sync: a <- 100
+di a
 
-
+//multipline texts from R to Stata is not supported
 scalar a = .
 rcall sync: a = "this is \n multiline \n text"
 di a
@@ -108,6 +117,7 @@ di a
 
 // matrix
 // -------------------------------
+rcall clear
 mat drop _all
 mat define A = (1,2,3 \ 4,5,6)
 rcall sync: A
@@ -163,7 +173,7 @@ rcall: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
 // -----------------------------------------------------------------------------
 // From Stata to R (Interactive)
 // =============================================================================
-rcall: rm(list=ls()) 			//remove the R objects in memory
+rcall clear			//remove the R objects in memory
 
 // NUMERIC and STRING LOCAL & GLOBAL
 // ---------------------------------------
@@ -179,11 +189,13 @@ display r(b)
 
 // st.matrix() : Passing a NUMERIC matrix from Stata to R
 // ----------------------------------------
+rcall clear
 matrix A = (1,2\3,4) 
+rcall debug: A <- st.matrix(A)
 rcall: A <- st.matrix(A) + st.matrix(A) + st.matrix(A) + st.matrix(A)
 mat list r(A)
 
-rcall: rm(list=ls())
+rcall clear
 matrix A = (1,2\3,4) 
 matrix B = (96,96\96,96) 		
 rcall: C <- st.matrix(A) + st.matrix(B)

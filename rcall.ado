@@ -744,7 +744,7 @@ program define rcall , rclass
     *clear
     *quietly svmat2 `mat', names(col) rnames("MATR0WNAMES")
     *quietly saveold "_send.matrix.`mat'.dta", version(13) replace
-    quietly matexport `mat', rnames("MATR0WNAMES") filename("_send.matrix.`mat'.dta") version(13)
+    quietly matexport `mat', rnames("MATR0WNAMES") filename("_send.matrix.`mat'") version(13)
     restore
     
     local l2 = `"{send.matrix.`mat' <- readstata13::read.dta13("_send.matrix.`mat'.dta"); row.names(send.matrix.`mat') <- send.matrix.`mat'[, "MATR0WNAMES"]; send.matrix.`mat'[, "MATR0WNAMES"] <- NULL; send.matrix.`mat' <- as.matrix(send.matrix.`mat');}"' + "`l2'"

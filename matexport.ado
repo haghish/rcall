@@ -23,6 +23,9 @@ The program is based on a command written by __Nicholas J. Cox__, in a package
 called __dm79__, from which I read and borrowed a command named
 __svmat2__. I have used the version 1.2.2 
 
+Since the package is hosted on SSC and cannot be specified as a dependency, 
+I had to embed it in this package with a different name.
+
 Author
 ------
 
