@@ -102,6 +102,8 @@ table below:
 R on the machine.{p_end}
 {synopt:[clear](http://www.haghish.com/packages/Rcall.php#clear_subcommand)}erases
 the R memory and history in the interactive mode. {p_end}
+{synopt:[warnings](http://www.haghish.com/packages/Rcall.php#warnings_subcommand)}shows
+the warnings returned from R {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns
 the R version and paths to R, RProfile, and Rhistory {p_end}
 {synopt:[history](http://www.haghish.com/packages/Rcall.php#history_subcommand)}opens
@@ -492,6 +494,13 @@ program define rcall , rclass
 				qui file close `knot'
 				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
 			}
+      
+      // clear the rcall global memory that is used for data transfer
+      //forvalues warn = 1(1)50 {
+      //  macro drop rcallglobal`warn'
+      //}
+      macro drop rcallglobal*
+      
 			display as txt "(R memory cleared)"
 			exit
 		}
@@ -540,6 +549,27 @@ program define rcall , rclass
 			di as txt "{hline 79}"
 			exit
 		}
+    
+    // Warnings 
+		// ================
+		if `"`macval(0)'"' == "warnings" | `"`macval(1)'"' == "warnings:" {
+			local firstwarning ""
+      local warningfound ""
+      forvalues warn = 1(1)50 {
+        if  `"`r(warning`warn')'"'  != "" {
+          if "`firstwarning'" == "" {
+            local warningfound = 1
+            di as err _n "Warnings:"
+            local firstwarning = "1"
+          }
+          di as txt r(warning`warn')
+        }
+      }
+      if "`warningfound'" == "" {
+         di as text "(no warning found)"
+      }
+			exit
+		}
 
 		// Synchronize mode
 		// ================
@@ -559,6 +589,7 @@ program define rcall , rclass
 		// ============
 		*if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
 		if `"`macval(1)'"' == "vanilla" | `"`macval(1)'"' == "vanilla:" {
+      
 			local 0 : subinstr local 0 "vanilla" ""
 			local vanilla --vanilla
 			if !missing("`debug'") {
@@ -650,6 +681,7 @@ program define rcall , rclass
 	// Execute interactive mode (including sync)
 	// =========================================================================
 	if trim(`"`0'"') == "" {
+
 		local mode interactive
 		
 		
@@ -970,6 +1002,13 @@ program define rcall , rclass
 			file write `knot' "source('rcall_synchronize')" _n
 		}
     else {
+      
+      file write `knot' `"suppressWarnings(rm(error))"' _n 
+      file write `knot' `"assign("last.warning", NULL, envir = baseenv())"' _n 
+      file write `knot' "suppressWarnings(rm(list=paste0('warning',seq(1,50,1))))" _n
+      *file write `knot' `"suppressWarnings(rm("last.warning"))"' _n 
+      *file write `knot' `"assign("last.warning", NULL)"' _n 
+      file write `knot' `"suppressWarnings(rm(WARNINGS))"' _n 
       file write `knot' "suppressWarnings(rm(rcall.synchronize.ACTIVE))" _n
     }
 	}
@@ -990,6 +1029,7 @@ program define rcall , rclass
 
 	*file write `knot' `"`macval(0)'"' _n
 	if trim(`"`macval(0)'"') != "" {
+    //remove the previous warnings
 		file write `knot' "try({" `"`macval(0)'"' "})" _n
 	}
 
@@ -1131,6 +1171,8 @@ program define rcall , rclass
 	// Erase globals
 	macro drop Rpath
 	macro drop rcall_synchronize_mode
+  
+  
 
 
 	// stop rcall execution if error has occured

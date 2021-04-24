@@ -1,4 +1,4 @@
-//capture program drop call_return
+*capture program drop call_return
 
 program call_return , rclass 
 
@@ -48,7 +48,20 @@ program call_return , rclass
 					return local `name' "NULL"
 				}
 			}
-
+      
+      // GLOBAL variables (and WARNING OBJECT)
+			// =====================================
+			if substr(`"`macval(line)'"',1,9) == "//GLOBAL " {
+				local line : subinstr local line "//GLOBAL " ""
+				local line : subinstr local line "." "_", all //avoid "." in name
+        local line : subinstr local line "-Inf" "."   // Avoid -Inf error, return missing
+				local name : di `"`macval(line)'"'
+				file read `hitch' line
+        global `name' : di `"`macval(line)'"'
+			}
+      
+      
+      
 			// SCALAR OBJECT 
 			// ===========================
 			if substr(`"`macval(line)'"',1,9) == "//SCALAR " {

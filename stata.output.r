@@ -1,3 +1,31 @@
+# ------------------------------------------------------------------------------
+# Prepare the WARNINGS
+# ==============================================================================
+# 1. if WARNINGS matrix (single column) is not specified by the developer, the warnings are 
+#    captured from the 'warnings()' function. Next, the warnings are summarized 
+#    and a matrix with a single column is created. this matrix is called WARNINGS.
+#    the maximum length of this matrix is 50 rows i.e. no more than 50 warnings 
+#    are returned to Stata
+# 2. the WARNINGS matrix is used to generate scalars, named 'warning[1-50]', 
+#    based on the number of rows of WARNINGS matrix
+# 3. rcall automatically returns scalars to Stata. however, a specific command 
+#    is written (rcall warnings) to print the warnings in the Stata results windows
+#    properly
+# 4. If the developer creates a matrix named WARNINGS, the first column is 
+#    returned as warnings instead, providing some flexibility for Stata developers
+
+# ------------------------------------------------------------------------------
+# Prepare the GLOBAL
+# ==============================================================================
+# 1. You can store variables directly to Stata global environment
+# 2. Create a matrix with two columns and name it GLOBAL. 
+# 3. The first column is a single word or number, which will be attached to 
+#    rcallglobal$ (instead of the dollar sign) to create the global variable
+# 4. the value of the second column is the value of the defined global
+# 5. rcall takes care of the rest
+# 6. if you wish to remove the global variables, use 'rcall clear' command
+
+
 # --------------------------------------------------------------------------
 # REMOVE TEMPORARY MATRICES (rcall 3.0)
 # ==========================================================================
@@ -63,7 +91,7 @@ adj.names = function(x) {
 # a function to return values from R to Stata
 # ==============================================================================
 stata.output <- function(plusR, Vanilla="") {
-
+  
   # --------------------------------------------------------------------------
   # CREATE FILE
   # ==========================================================================
@@ -83,6 +111,9 @@ stata.output <- function(plusR, Vanilla="") {
     }
     else {
       lst <- ls(globalenv())              #list global env
+      
+      # exclude "GLOBAL" and "WARNINGS"
+      lst <- lst[lst != "GLOBAL" & lst != "WARNINGS"]
     }
 
     # NUMERIC (numeric AND integer)
@@ -123,6 +154,20 @@ stata.output <- function(plusR, Vanilla="") {
     # ------------------------------------
     LIST <- lst[sapply(lst,function(var) any(class(get(var))=='list'))]
 
+    # Export the warnings as GLOBAL variables and remove the WARNINGS matrix
+    # ----------------------------------------------------------------------
+    if (exists("GLOBAL")) {
+      if (ncol(GLOBAL) == 2) {
+        for (i in 1:nrow(GLOBAL)) {
+          if (i <= 50) {
+            write(paste("//GLOBAL", paste0("rcallglobal", GLOBAL[i,1])), file=stata.output, append=TRUE)
+            write(paste(GLOBAL[i,2]), file=stata.output, append=TRUE)
+          }
+        }
+        suppressWarnings(rm(GLOBAL,  envir = globalenv()))
+      }
+    }
+
 
     # MATRIX
     # ------------------------------------
@@ -131,6 +176,11 @@ stata.output <- function(plusR, Vanilla="") {
     # ----------------------------------------------------------------------
     # PREPARE OUTPUT EXPORTATION
     # ======================================================================
+    
+    
+    
+    
+    
 
     # NUMERIC (numeric AND integer)
     # ------------------------------------
@@ -238,9 +288,10 @@ stata.output <- function(plusR, Vanilla="") {
         colnames(iget) <- adj.names(colnames(iget))
         rownames(iget) <- adj.names(rownames(iget))
 
-        # convert the matrix to a data set and save it
-        iget = as.data.frame(iget)
+        # convert the matrix to a data set and save it, but avoid converting string to factors
+        iget = as.data.frame(iget)  #stringsAsFactors=FALSE but Stata cannot get the string matrices
         readstata13::save.dta13(iget, file=paste0("_load.matrix.", i, ".dta"), add.rownames = TRUE)
+        
       }
       else {
 
@@ -365,4 +416,52 @@ stata.output <- function(plusR, Vanilla="") {
     }
   }
 }
+
+
+
+
+## EXAMPELS
+#cor( c( 1 , 1 ), c( 2 , 3 ) )
+#x <- 1:36; for(n in 1:13) for(m in 1:12) A <- matrix(x, n,m) # There were 105 warnings ...
+#x <- 1:36; for(n in 1:6) for(m in 1:6) A <- matrix(x, n,m) # There were 105 warnings ...
+#x <- 1:36; for(n in 1:13) for(m in 1:12) A <- matrix(x, n,m); rm(x);rm(n);rm(m);rm(A);
+#GLOBAL = matrix(data=c("1","this is a text","2", "another thing"), ncol = 2, byrow = TRUE)
+#class(GLOBAL) <- "GLOBAL"
+#suppressWarnings(rm(list=paste0("warning",seq(1,50,1))))
+
+# If warnings() is not NULL and WARNINGS does not exist, capture the warnings 
+# ------------------------------------------------------------------------------
+if (!is.null(warnings())) {
+  if (!exists("WARNINGS")) {
+    WARNINGS = NULL
+    summaryWarnings <- unlist(summary(warnings()))
+    for (loopItem in 1:length(summaryWarnings)) {
+      WARNINGS[loopItem] <- paste("In", toString(summaryWarnings[loopItem]), ":", names(summaryWarnings[loopItem]))
+    }
+    if (length(WARNINGS) > 0) {
+      if (length(WARNINGS) == 1) {
+        cat(paste("Warning message:\n", WARNINGS[1], "\n"))
+      } else {
+        cat(paste("\nThere were", length(WARNINGS), "unique warnings (type 'rcall warnings' to see them)\n"))
+      }
+    }
+    
+    # clean up
+    suppressWarnings(rm(summaryWarnings))
+    WARNINGS = as.matrix(WARNINGS)
+  }
+  
+  # generate the warnings, but first make sure WARNINGS has a single column!
+  if (exists("WARNINGS")) {
+    if (ncol(WARNINGS) == 1) {
+      for (loopItem in 1:length(WARNINGS)) {
+        assign(paste0("warning",loopItem), value = WARNINGS[loopItem])
+      }
+      rm(loopItem)
+      rm(WARNINGS)
+    }
+  }
+} 
+
+
 

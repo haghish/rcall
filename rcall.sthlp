@@ -107,6 +107,8 @@ table below:
 R on the machine.{p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#clear_subcommand":clear}}erases
 the R memory and history in the interactive mode. {p_end}
+{synopt: {browse "http://www.haghish.com/packages/Rcall.php#warnings_subcommand":warnings}}shows
+the warnings returned from R {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns
 the R version and paths to R, RProfile, and Rhistory {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#history_subcommand":history}}opens
