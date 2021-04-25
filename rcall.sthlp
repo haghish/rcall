@@ -377,17 +377,14 @@ documentation.
 {title:Author}
 
 {p 4 4 2}
-{bf:E. F. Haghish}
-Center for Medical Biometry and Medical Informatics
-University of Freiburg, Germany
-{it:and}
-Department of Mathematics and Computer Science
-University of Southern Denmark
-haghish@imbi.uni-freiburg.de
+{bf:E. F. Haghish}    {break}
+Department of Psychology    {break}
+University of Oslo    {break}
+haghish@uio.no    {break}
 
 {p 4 4 2}
-{browse "www.haghish.com/packages/Rcall.php":rcall Homepage}
-Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}
+{browse "www.haghish.com/packages/Rcall.php":rcall Homepage}    {break}
+Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}    {break}
 
 {space 4}{hline}
 

@@ -342,16 +342,13 @@ documentation.
 Author
 ------
 
-__E. F. Haghish__
-Center for Medical Biometry and Medical Informatics
-University of Freiburg, Germany
-_and_
-Department of Mathematics and Computer Science
-University of Southern Denmark
-haghish@imbi.uni-freiburg.de
+__E. F. Haghish__  
+Department of Psychology  
+University of Oslo  
+haghish@uio.no  
 
-[rcall Homepage](www.haghish.com/packages/Rcall.php)
-Package Updates on [Twitter](http://www.twitter.com/Haghish)
+[rcall Homepage](www.haghish.com/packages/Rcall.php)  
+Package Updates on [Twitter](http://www.twitter.com/Haghish)  
 
 - - -
 
@@ -1206,4 +1203,4 @@ end
 // CREATE help file
 // =========================================================================
 
-*markdoc rcall.ado, export(sthlp) replace build
+*markdoc rcall.ado, export(sthlp) replace 
