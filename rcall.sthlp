@@ -11,8 +11,18 @@ The command automatically returns {help return:rclass} R objects with
 classes to Stata. It also allows passing Stata variable, dataset,
 macro, scalar, and matrix to R as well as load a dataframe from R
 to Stata automatically,
-which provides an automated reciprocal communication between Stata and R. For
-more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage}.
+which provides an automated reciprocal communication between Stata and R. 
+in addition to robust automated data communication between Stata and R, {bf:rcall} also 
+includes several modes for integrating R into Stata, including:
+
+{break}    1. executing R code within Stata do-file editor (allowing reproducible data analysis practice)
+{break}    2. simulating R console within Stata console for interactive exploratory analysis
+{break}    3. embedding R base function and R packages within Stata programs defensively
+
+{p 4 4 2}
+for more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage} and 
+its  {browse "https://github.com/haghish/rcall":GitHub repository}. note that {bf:rcall} is only 
+hosted on GitHub and must be installed using the  {browse "https://github.com/haghish/github":github command}.
 
 
 {title:Syntax}

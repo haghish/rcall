@@ -12,8 +12,17 @@ _integer_, _numeric_, _character_, _logical_, _matrix_, _data.frame_, _list_, an
 classes to Stata. It also allows passing Stata variable, dataset,
 macro, scalar, and matrix to R as well as load a dataframe from R
 to Stata automatically,
-which provides an automated reciprocal communication between Stata and R. For
-more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php).
+which provides an automated reciprocal communication between Stata and R. 
+in addition to robust automated data communication between Stata and R, __rcall__ also 
+includes several modes for integrating R into Stata, including:
+
+1. executing R code within Stata do-file editor (allowing reproducible data analysis practice)
+2. simulating R console within Stata console for interactive exploratory analysis
+3. embedding R base function and R packages within Stata programs defensively
+
+for more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) and 
+its [GitHub repository](https://github.com/haghish/rcall). note that __rcall__ is only 
+hosted on GitHub and must be installed using the [github command](https://github.com/haghish/github).
 
 Syntax
 ------
@@ -549,6 +558,11 @@ program define rcall , rclass
     
     // Warnings 
 		// ================
+    // warnings have to be returned to Stata or stored in a local file, in order 
+    // to be supported by rcall vanilla model, where there is no long-term memory. 
+    // storing a local text file is ugly and thus, i return them as scalars. 
+    // if someday Stata begins supporting text matrices, returning such an object 
+    // would be a better practice
 		if `"`macval(0)'"' == "warnings" | `"`macval(1)'"' == "warnings:" {
 			local firstwarning ""
       local warningfound ""
