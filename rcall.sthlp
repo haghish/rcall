@@ -1,5 +1,8 @@
 {smcl}
-Version: 3.0.0 BETA
+{browse "https://github.com/haghish/rcall/tags":Version: 3.0.0 BETA} 
+
+{p 4 4 2}
+cite:  {browse "https://journals.sagepub.com/doi/full/10.1177/1536867X19830891":Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.}
 
 
 {title:rcall}
@@ -15,9 +18,9 @@ which provides an automated reciprocal communication between Stata and R.
 in addition to robust automated data communication between Stata and R, {bf:rcall} also 
 includes several modes for integrating R into Stata, including:
 
-{break}    1. executing R code within Stata do-file editor (allowing reproducible data analysis practice)
-{break}    2. simulating R console within Stata console for interactive exploratory analysis
-{break}    3. embedding R base function and R packages within Stata programs defensively
+{break}    1. {bf:interactive}: executing R code within Stata do-file editor (allowing reproducible data analysis practice)
+{break}    2. {bf:console}: simulating R console within Stata console for interactive exploratory analysis
+{break}    3. {bf:vanilla}: embedding R base function and R packages within Stata programs defensively
 
 {p 4 4 2}
 for more information and examples visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage} and 
@@ -56,10 +59,10 @@ the following functions can be used to communicate data from Stata to R:
 {p2colreset}{...}
 
 {p 4 4 2}
-programmers can use {bf:rcall_check} to evaluate the required version of R or R packages:
+Programmers can use {bf:rcall_check} command to evaluate the required version of R, R packages, or {bf:rcall} itself:
 
 {p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
 {p_end}
 
 {marker modes}{...}
@@ -68,8 +71,8 @@ programmers can use {bf:rcall_check} to evaluate the required version of R or R 
 
 {p 4 4 2}
 The {it:mode} changes the behavior of the package and it can be {bf:vanilla} or {bf:sync}.
-When the {it:mode} is not specified, R is called interactively which is the default
-mode. Finally, when the [{it:R-command}] is not specified, the console mode
+The default mode is {bf:interactive}, which is used if no other mode is specified.
+Finally, when the [{it:R-command}] is not specified (i.e. only {bf:rcall} is typed), the {bf:console} mode
 will be executed which simulates R console within Stata results window for interactive
 use. In all of these modes, {bf:rcall} returns {it:rclass} objects from R to Stata. These
 modes are summarized below:
@@ -87,11 +90,11 @@ R and Stata. Making a change in any of these objects in either Stata or
 R will change the object in the other environment.
 {p_end}
 
-{synopt: {browse "http://www.haghish.com/packages/Rcall.php#interactive_mode":interactive}}when the mode is not specified, R is called interactively
+{synopt: {bf: {browse "http://www.haghish.com/packages/Rcall.php#interactive_mode":interactive}} }when the mode is not specified, R is called interactively
 which memorizes the actions, objects available in the R memory, the attached
 datasets, and the loaded packages. {p_end}
 
-{synopt: {browse "http://www.haghish.com/packages/Rcall.php#console_mode":console}}when the R command is not specified, R is called interactively
+{synopt: {bf: {browse "http://www.haghish.com/packages/Rcall.php#console_mode":console}} }when the R command is not specified, R is called interactively
 and in addition, R console is simulated within the results windows of Stata.
 In the console mode users can type R commands directly in Stata and get the
 results back interactively. Similarly, the results are returned to Stata
@@ -137,8 +140,8 @@ used for customizing R when is called from Stata. {p_end}
 {bf: {browse "https://cran.r-project.org/":R statistical language}} is a free software
 and programming langage for statistical computing and graphics.
 The rcall package combines the power of R with Stata, allowing the
-Stata users to call R interactively within Stata and communicate
-data and analysis results between R and Stata simultaniously.
+Stata users to call R interactively within Stata, embed it in Stata programs, and 
+communicate data and analysis results between R and Stata simultaniously.
 
 {p 4 4 2}
 In other words, anytime an R code is executed, the R objects are available
@@ -178,13 +181,15 @@ object withing {help rclass} i.e. {bf:r({it:objectname})}.
 {p 4 4 2}
 A {it:numeric} object example:
 
+        . rcall clear             //clear the R interactive session
         . rcall: a <- 100
         . display r(a)
         100
 
 {p 4 4 2}
-Without the {bf:vanilla} subcommand, the defined object remains in the memory of
-R and consequently, returned to Stata anytime R is called.
+Without the {bf:vanilla} subcommand or until {bf:rcall clear} command is used again, 
+the defined object remains in the memory of R and consequently, returned to Stata 
+anytime R is called.
 
         . rcall: a
         [1] 100
@@ -192,6 +197,7 @@ R and consequently, returned to Stata anytime R is called.
 {p 4 4 2}
 A {it:string} object example:
 
+        . rcall clear             //clear the R interactive session
         . rcall: str <- "Hello World"
         . display r(str)
         Hello World

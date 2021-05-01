@@ -1,7 +1,9 @@
 // documentation written for markdoc
 
 /***
-Version: 3.0.0 BETA
+[Version: 3.0.0 BETA](https://github.com/haghish/rcall/tags) 
+
+cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
 rcall
 =====
@@ -16,9 +18,9 @@ which provides an automated reciprocal communication between Stata and R.
 in addition to robust automated data communication between Stata and R, __rcall__ also 
 includes several modes for integrating R into Stata, including:
 
-1. executing R code within Stata do-file editor (allowing reproducible data analysis practice)
-2. simulating R console within Stata console for interactive exploratory analysis
-3. embedding R base function and R packages within Stata programs defensively
+1. __interactive__: executing R code within Stata do-file editor (allowing reproducible data analysis practice)
+2. __console__: simulating R console within Stata console for interactive exploratory analysis
+3. __vanilla__: embedding R base function and R packages within Stata programs defensively
 
 for more information and examples visit [rcall homepage](http://www.haghish.com/packages/Rcall.php) and 
 its [GitHub repository](https://github.com/haghish/rcall). note that __rcall__ is only 
@@ -52,10 +54,10 @@ the following functions can be used to communicate data from Stata to R:
 {synoptline}
 {p2colreset}{...}
 
-programmers can use __rcall_check__ to evaluate the required version of R or R packages:
+Programmers can use __rcall_check__ command to evaluate the required version of R, R packages, or __rcall__ itself:
 
 {p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
 {p_end}
 
 {marker modes}{...}
@@ -63,8 +65,8 @@ Modes
 =====
 
 The _mode_ changes the behavior of the package and it can be __vanilla__ or __sync__.
-When the _mode_ is not specified, R is called interactively which is the default
-mode. Finally, when the [{it:R-command}] is not specified, the console mode
+The default mode is __interactive__, which is used if no other mode is specified.
+Finally, when the [{it:R-command}] is not specified (i.e. only __rcall__ is typed), the __console__ mode
 will be executed which simulates R console within Stata results window for interactive
 use. In all of these modes, __rcall__ returns _rclass_ objects from R to Stata. These
 modes are summarized below:
@@ -82,11 +84,11 @@ R and Stata. Making a change in any of these objects in either Stata or
 R will change the object in the other environment.
 {p_end}
 
-{synopt:[interactive](http://www.haghish.com/packages/Rcall.php#interactive_mode)}when the mode is not specified, R is called interactively
+{synopt: __[interactive](http://www.haghish.com/packages/Rcall.php#interactive_mode)__ }when the mode is not specified, R is called interactively
 which memorizes the actions, objects available in the R memory, the attached
 datasets, and the loaded packages. {p_end}
 
-{synopt:[console](http://www.haghish.com/packages/Rcall.php#console_mode)}when the R command is not specified, R is called interactively
+{synopt: __[console](http://www.haghish.com/packages/Rcall.php#console_mode)__ }when the R command is not specified, R is called interactively
 and in addition, R console is simulated within the results windows of Stata.
 In the console mode users can type R commands directly in Stata and get the
 results back interactively. Similarly, the results are returned to Stata
@@ -130,8 +132,8 @@ Description
 __[R statistical language](https://cran.r-project.org/)__ is a free software
 and programming langage for statistical computing and graphics.
 The rcall package combines the power of R with Stata, allowing the
-Stata users to call R interactively within Stata and communicate
-data and analysis results between R and Stata simultaniously.
+Stata users to call R interactively within Stata, embed it in Stata programs, and 
+communicate data and analysis results between R and Stata simultaniously.
 
 In other words, anytime an R code is executed, the R objects are available
 for further manipulation in Stata.
@@ -165,18 +167,21 @@ object withing {help rclass} i.e. __r(_objectname_)__.
 
 A _numeric_ object example:
 
+        . rcall clear             //clear the R interactive session
         . rcall: a <- 100
         . display r(a)
         100
 
-Without the __vanilla__ subcommand, the defined object remains in the memory of
-R and consequently, returned to Stata anytime R is called.
+Without the __vanilla__ subcommand or until __rcall clear__ command is used again, 
+the defined object remains in the memory of R and consequently, returned to Stata 
+anytime R is called.
 
         . rcall: a
         [1] 100
 
 A _string_ object example:
 
+        . rcall clear             //clear the R interactive session
         . rcall: str <- "Hello World"
         . display r(str)
         Hello World
@@ -379,7 +384,10 @@ program define rcall , rclass
 	//   - Process the rcall inputs
 	//   - If R path not defined, and "setpath" not specified, search R path
 	// =========================================================================
-
+  
+  // drop the macros
+  // -------------------------------------------------------------------------
+  
 	macro drop RcallError
 
 	// -------------------------------------------------------------------------
@@ -464,16 +472,15 @@ program define rcall , rclass
 	}
 
 	else {
-		//check WHY windows version requierd this tokenize here and Mac doesn't!
+
 		tokenize `"`macval(0)'"'
 
 		// debug mode (begining)
 		// ================
-		*if substr(trim(`"`macval(0)'"'),1,5) == "debug" {
 		if `"`macval(1)'"' == "debug" | `"`macval(1)'"' == "debug:" {
 			local 0 : subinstr local 0 "debug" ""
 			di as err `"02: `macval(0)'"'
-			tokenize `"`macval(0)'"'						//reset
+			tokenize `"`macval(0)'"'						                  //reset
 			local debug debug
 			global debug 1
 			if !missing("`debug'") {
@@ -502,9 +509,6 @@ program define rcall , rclass
 			}
       
       // clear the rcall global memory that is used for data transfer
-      //forvalues warn = 1(1)50 {
-      //  macro drop rcallglobal`warn'
-      //}
       macro drop rcallglobal*
       
 			display as txt "(R memory cleared)"
@@ -778,11 +782,13 @@ program define rcall , rclass
 		}
 		
     ** rcall 2.0 procedure was to convert the matix to R code
+    ** ------------------------------------------------------
     *qui matconvert `mat'
 		*local l2 = `"`r(`mat')'"' + "`l2'"
 		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
     * rcall 3.0: save the matrix as stata data set
+    * --------------------------------------------
     preserve
     *clear
     *quietly svmat2 `mat', names(col) rnames("MATR0WNAMES")
@@ -836,7 +842,7 @@ program define rcall , rclass
 	}
 
 	// -------------------------------------------------------------------------
-	// Searching for Data
+	// Searching for Data st.data()
 	// =========================================================================
 	while strpos(`"`macval(0)'"',"st.data(") != 0 {
 		local br = strpos(`"`macval(0)'"',"st.data")
@@ -949,15 +955,41 @@ program define rcall , rclass
 			"the {bf:varconvert.ado} function, which returns:"
 			varconvert `mat'
 		}
-		qui varconvert `mat'
-		if "`r(type)'" == "numeric" {
-			local l2 = "`r(`mat')'" + "`l2'"
-			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		}
-		if "`r(type)'" == "string" {
-			local l2 = `"`r(`mat')'"' + "`l2'"
-			local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
-		}
+    
+    ** rcall 2.0 procedure was to convert the variable to R code
+    ** ---------------------------------------------------------
+		*qui varconvert `mat'
+		*if "`r(type)'" == "numeric" {
+		*	local l2 = "`r(`mat')'" + "`l2'"
+		*	local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		*}
+		*if "`r(type)'" == "string" {
+		*	local l2 = `"`r(`mat')'"' + "`l2'"
+		*	local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+		*}
+
+    * rcall 3.0: save the variable as a data set
+    * --------------------------------------------
+    preserve
+    qui keep `mat' 
+    if "`c(version)'" >= "14" {
+      qui saveold "_send.var.`mat'.dta", version(11) replace
+    }
+    else {
+      qui saveold "_send.var.`mat'.dta", replace
+    }
+    restore
+    
+		local dta : di "read.dta13(" `"""' "_send.var.`mat'.dta" `"""' ")"
+    *local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
+		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    local l2 = `"{send.var.`mat' <- readstata13::read.dta13("_send.var.`mat'.dta");}"' + "`l2'"
+    local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
+    
+    // create a macro list of the current variable data files (to be removed)
+    if "`sendvarlist'" == "" local sendvarlist = "_send.var.`mat'.dta"
+    else local sendvarlist = "`sendvarlist' " + "_send.var.`mat'.dta"
 	}
 
 
@@ -1184,8 +1216,6 @@ program define rcall , rclass
 	macro drop rcall_synchronize_mode
   
   
-
-
 	// stop rcall execution if error has occured
 	// -------------------------------------------------------------------------
 	if "$RcallError" == "1" {
@@ -1204,6 +1234,13 @@ program define rcall , rclass
     
     // erase the _send.matrix files
     tokenize "`sendmatrixlist'"
+    while !missing("`1'") {
+      capture qui erase "`1'"
+      macro shift
+		}
+    
+    // erase the _send.var files
+    tokenize "`sendvarlist'"
     while !missing("`1'") {
       capture qui erase "`1'"
       macro shift
