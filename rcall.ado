@@ -683,9 +683,6 @@ program define rcall , rclass
 
 
 
-
-
-
 		// Check if the command includes Colon in the end
 		if substr(trim(`"`macval(0)'"'),1,1) == ":" {
 			local 0 : subinstr local 0 ":" ""
@@ -1031,8 +1028,6 @@ program define rcall , rclass
 	}
 
 
-
-
 	tempfile Rscript
 	tempfile Rout
 	tempname knot
@@ -1047,21 +1042,20 @@ program define rcall , rclass
     else {
       
       file write `knot' `"suppressWarnings(rm(error))"' _n 
-      file write `knot' `"assign("last.warning", NULL, envir = baseenv())"' _n 
+      file write `knot' `"try(assign("last.warning", NULL, envir = baseenv()), silent = TRUE)"' _n 
       file write `knot' "suppressWarnings(rm(list=paste0('warning',seq(1,50,1))))" _n
       *file write `knot' `"suppressWarnings(rm("last.warning"))"' _n 
-      *file write `knot' `"assign("last.warning", NULL)"' _n 
       file write `knot' `"suppressWarnings(rm(WARNINGS))"' _n 
       file write `knot' "suppressWarnings(rm(rcall.synchronize.ACTIVE))" _n
     }
 	}
 
-	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				// erase memory temporarily
+	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				  // erase memory temporarily
 	if !missing("`foreign'") file write `knot' "library(readstata13)" _n		// load the readstata13 package
-	if !missing("`RSite'") & missing("`vanilla'") 								///
+	if !missing("`RSite'") & missing("`vanilla'") 					///
 			file write `knot' "source('`RSite'')" _n
-	if !missing("`rprofile'") & missing("`vanilla'") 							///
-			file write `knot' "source('`rprofile'')" _n							// load the libraries
+	if !missing("`rprofile'") & missing("`vanilla'") 				///
+			file write `knot' "source('`rprofile'')" _n							            // load the libraries
 
 	// -------------------------------------------------------------------------
 	// Handling Errors

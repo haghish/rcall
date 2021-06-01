@@ -95,7 +95,7 @@ di a
 drop _all
 rcall clear
 scalar a = .
-rcall: st.scalar(a) 
+rcall debug: b = st.scalar(a) 
 di a
 
 //should NA be converted to . ? this is not implemented yet
@@ -200,6 +200,11 @@ matrix A = (1,2\3,4)
 matrix B = (96,96\96,96) 		
 rcall: C <- st.matrix(A) + st.matrix(B)
 rcall: C
+
+// Adding missing data to a matrix
+rcall: C[1,1] <- NA
+rcall: C
+mat list r(C)
 
 // st.scalar() : Passing a NUMERIC & STRING SCALAR to R
 // ----------------------------------------
