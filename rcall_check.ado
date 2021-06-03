@@ -109,24 +109,24 @@ program rcall_check
 	// Check that R is executable
 	// -------------------------------------------------------------------------
 	rcall vanilla:                                                           	///
-	major = R.Version()\$major; minor = R.Version()\$minor; 				 	///
+	major = R.Version()\$major; minor = R.Version()\$minor; 				 	        ///
 	version = paste(major,minor, sep=".");                                   	///
 	if ("`anything'" != "") {                                                	///
-		pkglist = unlist(strsplit("`anything'", " +"));                      	///
-		for (i in 1:length(pkglist)) {                                       	///
-			pkg = unlist(strsplit(pkglist[i], ">="));                        	///      
-			if (try(require(pkg[1], character.only = TRUE)) == FALSE) {      	///
-				error = paste("R package", pkg[1], "is required");           	///
-				break;                                                       	///
-			};                                                               	///
-			if (packageVersion(pkg[1]) < pkg[2]) {                           	///
-				error = paste("R package", pkg[1], pkg[2], 						///
-				"or newer is required"); 										///
-				break;                                                       	///
-			};                                                               	///
-		};                                                                   	///
-    };																		 	///
-	rm(i, pkg, pkglist, major, minor);                                   
+		pkglist = unlist(strsplit("`anything'", " +"));                      	  ///
+		for (i in 1:length(pkglist)) {                                       	  ///
+			pkg = unlist(strsplit(pkglist[i], ">="));                        	    ///      
+			if (try(require(pkg[1], character.only = TRUE)) == FALSE) {      	    ///
+				error = paste("R package", pkg[1], "is required");           	      ///
+				break;                                                       	      ///
+			};                                                               	    ///
+			if (packageVersion(pkg[1]) < pkg[2]) {                           	    ///
+				error = paste("R package", pkg[1], pkg[2], 						              ///
+				"or newer is required"); 										                        ///
+				break;                                                       	      ///
+			};                                                               	    ///
+		};                                                                   	  ///
+    };																		 	                                ///
+	suppressWarnings(rm(i, pkg, pkglist, major, minor));                                   
 	
 	// Return propper error
 	// -------------------------------------------------------------------------

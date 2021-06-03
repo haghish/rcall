@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-[Version: 3.0.0 BETA](https://github.com/haghish/rcall/tags) 
+[Version: 3.0.0](https://github.com/haghish/rcall/tags) 
 
 cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
@@ -510,6 +510,7 @@ program define rcall , rclass
       
       // clear the rcall global memory that is used for data transfer
       macro drop rcallglobal*
+      macro drop rcall_synchronize_mode 
       
 			display as txt "(R memory cleared)"
 			exit
@@ -590,6 +591,7 @@ program define rcall , rclass
 		// ================
 		if `"`macval(1)'"' == "sync" | `"`macval(1)'"' == "sync:" {
 			local 0 : subinstr local 0 "sync" ""
+      di as txt "({bf:sync} mode is discontinued in rcall 3.0)" _n
 			global rcall_synchronize_mode on
 			local mode sync
 		}
@@ -597,8 +599,7 @@ program define rcall , rclass
     if `"`macval(1)'"' != "sync" & `"`macval(1)'"' != "sync:" {
 			macro drop rcall_synchronize_mode
 		}
-    
-    
+
 
 		// Vanilla mode
 		// ============
@@ -893,16 +894,22 @@ program define rcall , rclass
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 	}
 
-	// make sure readstata13 is installed and updated regularly
+	// make sure readstata13 is installed and updated regularly 
 	// -------------------------------------------------------------------------
-	if "`foreign'" == "1" {
+	if "$Rcall_check" != "1" {
+    di as txt "(loading rcall)" _n
 		capture rcall_check readstata13>=0.8.5
-		if _rc != 0 display as err "R package {bf:readstata13} version 0.8.5 "	///
-		"is required. Type:" _n "{p}R: install.packages("												///
-		`""readstata13", repos="http://cran.uk.r-project.org")"'
-
-		// avoid slowing down rcall
-		global Rcall_check 1
+		if _rc != 0 {
+      display as err "R package {bf:readstata13} version 0.8.5 or above "	      ///
+      "is required."_n(2)                                                       ///
+      "to install it, type:" _n "{p}rcall: install.packages("							      ///
+      `""readstata13", repos="http://cran.uk.r-project.org")"' _n
+    }
+    
+    // avoid slowing down rcall by running it once per launch
+    else {
+      global Rcall_check 1
+    }
 	}
 
 	// -------------------------------------------------------------------------
@@ -1073,8 +1080,8 @@ program define rcall , rclass
 
 	// if there was an error in R...
 	// -------------------------------------------------------------------------
-	file write `knot' `"if (class(.Last.value) != "try-error" ) {"' _n					/// there was an error
-	///"    print(.Last.value)" _n																	///
+	file write `knot' `"if (class(.Last.value)[1] != "try-error" ) {"' _n					/// there was an error
+	///"    print(class(.Last.value))" _n																	///
 	"    rc = 0" _n
 
 	if missing("`vanilla'") file write `knot' "save.image()" _n  				// save if mode is not vanilla
@@ -1191,7 +1198,6 @@ program define rcall , rclass
 	call_return using "stata.output" , `debug'
 	return add
 
-
 	// If data was loaded automatically, remove the temporary data file
 	if !missing("`forceload'") {
 		capture confirm file _load.data.dta
@@ -1209,7 +1215,6 @@ program define rcall , rclass
 	macro drop Rpath
 	macro drop rcall_synchronize_mode
   
-  
 	// stop rcall execution if error has occured
 	// -------------------------------------------------------------------------
 	if "$RcallError" == "1" {
@@ -1219,9 +1224,7 @@ program define rcall , rclass
 		}
 	}
   
-  
 	macro drop debug
-
 
 	if missing("`debug'") {
 		capture qui erase stata.output

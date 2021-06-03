@@ -7,21 +7,26 @@
 // =============================================================================
 
 
-********************************************************************************
-
-
 // -----------------------------------------------------------------------------
 // General Setup
 // =============================================================================
 
-// Install the package from GitHub
-*net install rcall, force  from("https://raw.githubusercontent.com/haghish/Rcall/master/")
-github install haghish/rcall
+// Install the rcall package using the github command
+github install haghish/rcall, stable
 
-// Setup R path permanently (change the path on your system)
+// =============================================================================
+// RCALL SUBCOMMANDS 
+// =============================================================================
+rcall describe
+rcall site
+rcall history
+rcall clear
+
+rcall_check
+rcall_check readstata13>=0.8.5
+
+// Setup R path permanently (change the path on your system) YOU DO NOT NEED TO RUN THIS!
 rcall setpath "/usr/bin/r"
-
-
 
 // =============================================================================
 // RCALL MODES 
@@ -56,6 +61,7 @@ rcall: b <- " or it can be string"
 display "The object value is can be numetic such as " r(a) r(b)
 
 //define a matrix
+rcall clear
 rcall: A = matrix(1:6, nrow=2, byrow = TRUE) 
 mat list r(A)
 
@@ -70,6 +76,10 @@ rcall: LM <- lm(cars\$dist~cars\$speed)
 rcall: LM
 return list //lm is not a list
 
+// Consol mode
+// -----------------------------------------------------------------------------
+rcall
+
 // Synchronizing mode
 // -----------------------------------------------------------------------------
 
@@ -78,6 +88,7 @@ return list //lm is not a list
 
 //with synchronization
 drop _all
+macro drop _all
 rcall clear
 scalar a = 1
 rcall sync: a = 0
@@ -95,11 +106,13 @@ di a
 drop _all
 rcall clear
 scalar a = .
-rcall debug: b = st.scalar(a) 
+rcall: b = st.scalar(a) 
 di a
+return list    //r(b) = "NA"
 
 //should NA be converted to . ? this is not implemented yet
 drop _all
+matrix drop _all
 rcall clear
 scalar a = 10
 rcall sync: st.scalar(a) 
@@ -163,7 +176,10 @@ rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript f
 // THIS WILL NOT WORK
 rcall: setEPS()
 rcall: postscript("postscriot.eps")
-rcall: plot(rnorm(100), main="PostScript file"); //CREATES A PDF INSTEAD
+rcall: plot(rnorm(100), main="PostScript file"); 
+
+// this will work
+rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
 *******************************************************************
 
 
@@ -191,9 +207,10 @@ display r(b)
 // ----------------------------------------
 rcall clear
 matrix A = (1,2\3,4) 
-rcall debug: A <- st.matrix(A)
+rcall : B <- st.matrix(A)
 rcall: A <- st.matrix(A) + st.matrix(A) + st.matrix(A) + st.matrix(A)
 mat list r(A)
+//??? why "mat list A" fails here?
 
 rcall clear
 matrix A = (1,2\3,4) 
@@ -239,24 +256,14 @@ rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta)
 // ----------------------------------------
 clear 
 rcall: mydata <- data.frame(cars) 
-rcall: load.data(mydata) 
+rcall: st.load(mydata) 
 list in 1/2
 
 
-// -----------------------------------------------------------------------------
-// Source an R script file and get all of the objects back to Stata
-// =============================================================================
-rcall: rm(list=ls())
-rcall: source('https://raw.githubusercontent.com/haghish/Rcall/master/examples/get.R')
-mat list r(matrixObject)
-display r(mystr)
 
-
-rcall: unlink(".RData") //This deletes the workspace file
-rcall: rm(list=ls())
 
 // -----------------------------------------------------------------------------
-// Trying Rcpp package
+// Trying Rcpp package (DO NOT RUN)
 // =============================================================================
 
 /*
@@ -311,7 +318,7 @@ rcall: search()
 
 
 rcall:  timesTen <- function(x) { 												///
-			return(x*10)														///
+			return(x*10)														            ///
 		}
 
 rcall: timesTen(10)		
