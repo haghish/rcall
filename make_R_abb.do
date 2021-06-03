@@ -21,9 +21,3 @@ qui file close `knot'
 copy "`edited'" R.ado, replace
 cap prog drop R
 
-
-// -------------------------------------------------------------------------
-// CREATE help file
-// =========================================================================
-
-markdoc rcall.ado, export(sthlp) replace // build

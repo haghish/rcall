@@ -64,7 +64,7 @@ Programmers can use __rcall_check__ command to evaluate the required version of 
 Modes
 =====
 
-The _mode_ changes the behavior of the package and it can be __vanilla__ or __sync__.
+The _mode_ changes the behavior of the package and it can be __vanilla__ or __interactive__.
 The default mode is __interactive__, which is used if no other mode is specified.
 Finally, when the [{it:R-command}] is not specified (i.e. only __rcall__ is typed), the __console__ mode
 will be executed which simulates R console within Stata results window for interactive
@@ -77,12 +77,6 @@ modes are summarized below:
 {synoptline}
 {synopt: __[vanilla](http://www.haghish.com/packages/Rcall.php#vanilla_mode)__ }Calls R non-interactively. This mode is advised for programmers
 who wish to embed R in Stata packages{p_end}
-
-{synopt: __[sync](http://www.haghish.com/packages/Rcall.php#sync_mode)__ }executes R interactively and
-synchronizes _matrices_ and _scalars_ between
-R and Stata. Making a change in any of these objects in either Stata or
-R will change the object in the other environment.
-{p_end}
 
 {synopt: __[interactive](http://www.haghish.com/packages/Rcall.php#interactive_mode)__ }when the mode is not specified, R is called interactively
 which memorizes the actions, objects available in the R memory, the attached
@@ -1252,3 +1246,8 @@ end
 // =========================================================================
 
 *markdoc rcall.ado, export(sthlp) replace 
+
+// -------------------------------------------------------------------------
+// CREATE the R: abbreviation command
+// =========================================================================
+*do make_R_abb.do

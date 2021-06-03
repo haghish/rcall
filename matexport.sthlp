@@ -25,6 +25,10 @@ The program is based on a command written by {bf:Nicholas J. Cox}, in a package
 called {bf:dm79}, from which I read and borrowed a command named
 {bf:svmat2}. I have used the version 1.2.2 
 
+{p 4 4 2}
+Since the package is hosted on SSC and cannot be specified as a dependency, 
+I had to embed it in this package with a different name.
+
 
 {title:Author}
 

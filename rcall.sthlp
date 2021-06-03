@@ -1,5 +1,5 @@
 {smcl}
-{browse "https://github.com/haghish/rcall/tags":Version: 3.0.0 BETA} 
+{browse "https://github.com/haghish/rcall/tags":Version: 3.0.0} 
 
 {p 4 4 2}
 cite:  {browse "https://journals.sagepub.com/doi/full/10.1177/1536867X19830891":Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.}
@@ -70,7 +70,7 @@ Programmers can use {bf:rcall_check} command to evaluate the required version of
 {title:Modes}
 
 {p 4 4 2}
-The {it:mode} changes the behavior of the package and it can be {bf:vanilla} or {bf:sync}.
+The {it:mode} changes the behavior of the package and it can be {bf:vanilla} or {bf:interactive}.
 The default mode is {bf:interactive}, which is used if no other mode is specified.
 Finally, when the [{it:R-command}] is not specified (i.e. only {bf:rcall} is typed), the {bf:console} mode
 will be executed which simulates R console within Stata results window for interactive
@@ -83,12 +83,6 @@ modes are summarized below:
 {synoptline}
 {synopt: {bf: {browse "http://www.haghish.com/packages/Rcall.php#vanilla_mode":vanilla}} }Calls R non-interactively. This mode is advised for programmers
 who wish to embed R in Stata packages{p_end}
-
-{synopt: {bf: {browse "http://www.haghish.com/packages/Rcall.php#sync_mode":sync}} }executes R interactively and
-synchronizes {it:matrices} and {it:scalars} between
-R and Stata. Making a change in any of these objects in either Stata or
-R will change the object in the other environment.
-{p_end}
 
 {synopt: {bf: {browse "http://www.haghish.com/packages/Rcall.php#interactive_mode":interactive}} }when the mode is not specified, R is called interactively
 which memorizes the actions, objects available in the R memory, the attached

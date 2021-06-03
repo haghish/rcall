@@ -3,11 +3,13 @@ d 'RCALL': seamless R in Stata
 d 
 d call R in Stata and enable automated data communication
 d 
-d Distribution-Date:   20210304
+d Distribution-Date:   20210603
 d License: MIT
 d 
 F R.ado
 F call_return.ado
+F matconvert.ado
+F matconvert.sthlp
 F matexport.ado
 F matexport.sthlp
 F rcall.ado

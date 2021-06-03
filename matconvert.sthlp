@@ -1,9 +1,14 @@
 {smcl}
-{title:Title}
- 
-{phang}
-{cmd:matconvert} {hline 2} {bf:matconvert} belongs to {help rcall} package. It takes the name of a Stata matrix and returns a code for constructing the same matrix in R. for more information visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage}.
+Version:
+Title: matconvert
+Description: {bf:matconvert} belongs to {help rcall} package. It takes the 
+name of a Stata matrix and returns a code for constructing the same matrix in R.
 
+{title:for more information visit  {browse "http://www.haghish.com/packages/Rcall.php":rcall homepage}.}
+
+
+{p 4 4 2}
+/{ul:*
 
 {title:Example(s)}
 
@@ -29,8 +34,9 @@ haghish@imbi.uni-freiburg.de       {break}
 {browse "http://www.haghish.com/packages/Rcall.php":http://www.haghish.com/packages/Rcall.php}           {break}
 Package Updates on  {browse "http://www.twitter.com/Haghish":Twitter}      {break}
 
-    {hline}
+{space 4}{hline}
 
 {p 4 4 2}
 This help file was dynamically produced by {help markdoc:MarkDoc Literate Programming package}
+
 
