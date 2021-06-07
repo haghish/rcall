@@ -35,7 +35,18 @@ To call R from Stata use the following syntax
 rcall [{help rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
-the package also includes a few subcommands to facilitate integrating R in Stata
+rcall can also source an R script file: 
+
+        rcall script "{it:filename.R}" [, args() vanilla ]
+
+the __args()__ option can be used to give instructions or define objects in R before sourcing 
+the script file. thus, all of the functions mentioned below can 
+be included in the __args__ to pass dataset, matrices, variables, scalars, and macros to R prior to 
+sourcing. programmers are recommended to add the __vanilla__ option to source the 
+script file in vanilla mode (see below):
+in addition to __script__ subcommand, the package also includes 
+a few other subcommands to facilitate integrating R in Stata. the general syntax is 
+as follows:
 
 {p 8 16 2}
 rcall [{help rcall##subcommand:{it:subcommand}}]
@@ -53,12 +64,6 @@ the following functions can be used to communicate data from Stata to R:
 {synopt:{opt st.load(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
 {p2colreset}{...}
-
-Programmers can use __rcall_check__ command to evaluate the required version of R, R packages, or __rcall__ itself:
-
-{p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
-{p_end}
 
 {marker modes}{...}
 Modes
@@ -107,6 +112,7 @@ table below:
 R on the machine.{p_end}
 {synopt:[clear](http://www.haghish.com/packages/Rcall.php#clear_subcommand)}erases
 the R memory and history in the interactive mode. {p_end}
+{synopt:script}executes an R script file and returns the results to Stata (se below) {p_end}
 {synopt:[warnings](http://www.haghish.com/packages/Rcall.php#warnings_subcommand)}shows
 the warnings returned from R {p_end}
 {synopt:[describe](http://www.haghish.com/packages/Rcall.php#describe_subcommand)}returns
@@ -119,6 +125,35 @@ __rprofile.site__ in do-file editor which is
 used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
+
+Programmers' commands
+=====================
+
+Using __R__ and its add-on packages inside Stata programs requires careful consideration 
+of dependencies. Programmers who use rcall for developping Stata packages would be 
+concerned with questions such as:
+
+1. what version of rcall is installed on the users' machine?
+2. what is the minimum R version required for running this program within Stata?
+3. what R packages are required to be installed and what versions of these packages are required?
+
+Programmers can use __rcall_check__ command to evaluate the required versions of R, R packages, or __rcall__ itself:
+
+{p 8 16 2}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
+{p_end}
+
+Programmers are also encouraged to avoid writing R code within Ado programs. 
+instead, to keep things cleaner, write the R part of your programs in an R script 
+and source it using the __rcall source__ command. then, use the __args__ argument 
+along __vanilla__ options to define the objects required by the R script. 
+
+For example, if you write __correlation = cor(df\$price, df\$mpg)__ on a file 
+named __rscript.R__, then you can source this file in a clean R environment 
+while defining the object __df__ which is mentioned in the script:
+
+        sysuse auto, clear
+        rcall source "rscript.R", args(df <- st.data();) vanilla
 
 Description
 ===========
@@ -521,16 +556,28 @@ program define rcall , rclass
 			di _col(10) "{bf:R path}:" _col(20) _c
 			di as txt `"{browse "`dpath'"}"'
 
-			rcall vanilla: version = R.Version()\$version.string;				///
-				lst <- ls(globalenv());
+			quietly rcall vanilla: version = R.Version()\$version.string;				///
+				arch <- R.Version()\$arch; lst <- ls(globalenv());                
+        
 
 			di _col(7) "{bf:R version}:" _col(20) _c
-			if !missing("`r(version)'") di as txt "`r(version)'"
+			if !missing("`r(version)'") {
+        di as txt "`r(version)', architecture `r(arch)'" 
+        
+        di _col(6) "{bf:Dependency}:" _col(20) _c
+        capture quietly rcall vanilla: readstata13version <- as.character(packageVersion("readstata13"));
+        
+        if !missing("`r(readstata13version)'") {
+          di as txt "readstata13 version `r(readstata13version)'"
+        }
+        else di as err "{bf:readstata13} R package is not installed"
+      }
 			else di as err "R was not accessed!"
+   
 
 			capture findfile rprofile.site, path("`c(sysdir_plus)'r")
 			if _rc == 0 {
-				di _col(7) "{bf:R profile}:" _col(20) _c
+				di as txt _col(7) "{bf:R profile}:" _col(20) _c
 				di as txt `"{browse "`r(fn)'"}"'
 			}
 
@@ -596,8 +643,8 @@ program define rcall , rclass
 
 
 		// Vanilla mode
-		// ============
-		*if substr(trim(`"`macval(0)'"'),1,7) == "vanilla" {
+		// =========================================================================
+    
 		if `"`macval(1)'"' == "vanilla" | `"`macval(1)'"' == "vanilla:" {
       
 			local 0 : subinstr local 0 "vanilla" ""
@@ -607,6 +654,40 @@ program define rcall , rclass
 				"Running R in non-interactive batch mode"
 			}
 			local mode vanilla
+		}
+    
+    // Script vanilla mode
+		if `"`macval(1)'"' == "script" | `"`macval(1)'"' == "script:" {
+      
+			local 0 : subinstr local 0 `"`macval(1)'"' ""
+      
+      
+      local version = int(`c(stata_version)')
+      if `version' <= 13 {
+          local trim trim
+          local version 11
+      }
+      if `version' > 13 {
+          local trim ustrltrim
+          local version 14
+      }
+
+      if substr(trim(`"`macval(0)'"'),1,1) == ":" {
+        local 0 : subinstr local 0 ":" ""
+        local scriptfile `macval(3)'
+      }
+      else local scriptfile `macval(2)'
+      
+      
+			if !missing("`debug'") {
+				di _n "{title:Script}" _n										///
+				"Running R Script in non-interactive batch mode"
+			}
+			
+
+      rcallscript using  `macval(0)'
+      return add
+      exit
 		}
 
 		// debug mode AGAIN (ending)
@@ -888,23 +969,7 @@ program define rcall , rclass
 		local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
 	}
 
-	// make sure readstata13 is installed and updated regularly 
-	// -------------------------------------------------------------------------
-	if "$Rcall_check" != "1" {
-    di as txt "(loading rcall)" _n
-		capture rcall_check readstata13>=0.8.5
-		if _rc != 0 {
-      display as err "R package {bf:readstata13} version 0.8.5 or above "	      ///
-      "is required."_n(2)                                                       ///
-      "to install it, type:" _n "{p}rcall: install.packages("							      ///
-      `""readstata13", repos="http://cran.uk.r-project.org")"' _n
-    }
-    
-    // avoid slowing down rcall by running it once per launch
-    else {
-      global Rcall_check 1
-    }
-	}
+	
 
 	// -------------------------------------------------------------------------
 	// Searching for Load Data

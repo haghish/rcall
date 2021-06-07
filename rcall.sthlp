@@ -38,7 +38,21 @@ rcall [{help rcall##modes:{it:mode}}] [{cmd::}] [{it:R-command}]
 {p_end}
 
 {p 4 4 2}
-the package also includes a few subcommands to facilitate integrating R in Stata
+rcall can also source an R script file: 
+
+        rcall script "{it:filename.R}" [, args() vanilla ]
+
+{p 4 4 2}
+the {bf:args()} option can be used to give instructions or define objects in R before sourcing 
+the script file. thus, all of the functions mentioned below can 
+be included in the {bf:args} to pass dataset, matrices, variables, scalars, and macros to R prior to 
+sourcing. programmers are recommended to add the {bf:vanilla} option to source the 
+script file in vanilla mode (see below):
+
+{p 4 4 2}
+in addition to {bf:script} subcommand mentioned above, the package also includes 
+a few other subcommands to facilitate integrating R in Stata. the general syntax is 
+as follows:
 
 {p 8 16 2}
 rcall [{help rcall##subcommand:{it:subcommand}}]
@@ -58,12 +72,6 @@ the following functions can be used to communicate data from Stata to R:
 {synoptline}
 {p2colreset}{...}
 
-{p 4 4 2}
-Programmers can use {bf:rcall_check} command to evaluate the required version of R, R packages, or {bf:rcall} itself:
-
-{p 8 16 2}
-{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
-{p_end}
 
 {marker modes}{...}
 
@@ -114,6 +122,7 @@ table below:
 R on the machine.{p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#clear_subcommand":clear}}erases
 the R memory and history in the interactive mode. {p_end}
+{synopt:script}executes an R script file and returns the results to Stata (se below) {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#warnings_subcommand":warnings}}shows
 the warnings returned from R {p_end}
 {synopt: {browse "http://www.haghish.com/packages/Rcall.php#describe_subcommand":describe}}returns
@@ -126,6 +135,39 @@ interactive R session. {p_end}
 used for customizing R when is called from Stata. {p_end}
 {synoptline}
 {p2colreset}{...}
+
+
+{title:Programmers{c 39} commands}
+
+{p 4 4 2}
+Using {bf:R} and its add-on packages inside Stata programs requires careful consideration 
+of dependencies. Programmers who use rcall for developping Stata packages would be 
+concerned with questions such as:
+
+{break}    1. what version of rcall is installed on the users{c 39} machine?
+{break}    2. what is the minimum R version required for running this program within Stata?
+{break}    3. what R packages are required to be installed and what versions of these packages are required?
+
+{p 4 4 2}
+Programmers can use {bf:rcall_check} command to evaluate the required versions of R, R packages, or {bf:rcall} itself:
+
+{p 8 16 2}
+{browse "http://www.haghish.com/packages/Rcall.php#check":{bf:rcall_check}} [{it:pkgname>=ver}] [{it:pkgname>=ver}] [...] , {opt r:version(ver)} {opt rcall:version(str)}
+{p_end}
+
+{p 4 4 2}
+Programmers are also encouraged to avoid writing R code within Ado programs. 
+instead, to keep things cleaner, write the R part of your programs in an R script 
+and source it using the {bf:rcall source} command. then, use the {bf:args} argument 
+along {bf:vanilla} options to define the objects required by the R script. 
+
+{p 4 4 2}
+For example, if you write {bf:correlation = cor(df$price, df$mpg)} on a file 
+named {bf:rscript.R}, then you can source this file in a clean R environment 
+while defining the object {bf:df} which is mentioned in the script:
+
+        sysuse auto, clear
+        rcall source "rscript.R", args(df <- st.data();) vanilla
 
 
 {title:Description}
