@@ -14,6 +14,12 @@ Otherwise, install the latest stable release
 github install haghish/rcall, stable
 ```
 
+---
+
+> __NOTE__: The __`R:`__ command is a synonym of __`rcall:`__ command. However, Stata recommends avoiding one-letter program names and thus, it is not mentioned in journal publications and official documentation. 
+
+---
+
 # rcall : seamless R in Stata
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
@@ -57,7 +63,6 @@ In general, it offers 2 modes of data communication which are
 1. **interactive**, often used for data analysis when the user might call R frequently and interactively. This general mode includes a memory that preserves the history of your R session. This mode itself can be used in three ways:
      1. *interactive*, where the R session can be continued command by command. **this mode allows you call R interactively within Stata do-files**
      2. *console*, where Stata console is converted to R console. this mode allows you to work with R interactively within Stata, but cannot be called from do-files. However, it provides a much more fun experience, namely to have R console within Stata console!
-     3. *`sync`*, which is an **experimental mode**, where all objects (except data frames because they might be heavy) are synced between Stata and R and changing any object in any of the environment (Stata or R) will alter the other one. In other words, when you are using the `sync` mode, whatever you do in R will automatically get pushed back into Stata! 
 
 2. **non-interactive**, which is the recommended mode for integrating R into Stata programs. This mode does not have a memory and every call will begin a fresh R session
 
@@ -77,9 +82,6 @@ _interactive console mode: defining object `a = 99` in R and getting it back in 
 
 Type `return list` to see what objects have ben transfered from R to Stata. This is one of the biggest advantages of `rcall`, namely, the objects you define in R can be automatically accessed within Stata! Of course, you can control what objects to return (especially if you are programming a Stata ado-program that embeds R). Read the manuscript published by Stata Journal for details. 
 
-_interactive sync mode: object `a` is automatically transported into R and you do not need to define it_
-
-<img src="./Documentation/example-sync.png" align="center" width="700">
 
 Resources
 ---------
