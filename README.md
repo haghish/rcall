@@ -2,9 +2,7 @@
 
 ---
 
-#### WARNING
-
-`rcall 3.0.0 BETA` is under development. If you like to help testing the new development, install the development vesion
+If you like to help testing the new development, install the development vesion
 
 ```js
 github install haghish/rcall
