@@ -2,19 +2,6 @@
 
 ---
 
-If you like to help testing the new development, install the development vesion
-
-```js
-github install haghish/rcall
-```
-
-Otherwise, install the latest stable release
-
-```js
-github install haghish/rcall, stable
-```
-
----
 
 > __NOTE__: The __`R:`__ command is a synonym of __`rcall:`__ command. However, Stata recommends avoiding one-letter program names and thus, it is not mentioned in journal publications and official documentation. 
 
@@ -40,7 +27,15 @@ The `rcall` package is **much more than calling R within Stata**! It implements 
 # 1. Installation
 
 
-The [__`github package`__](https://github.com/haghish/github) is the only recommended way for installing **`rcall`**. Once [__`github`__](https://github.com/haghish/github) is installed, type:
+The [__`github package`__](https://github.com/haghish/github) is the only recommended way for installing **`rcall`**. Once [__`github`__](https://github.com/haghish/github) is installed, you can install either the development version or the stable version of the package. 
+
+if you like to help testing the newst development, install the development vesion:
+
+```js
+github install haghish/rcall
+```
+
+Otherwise, install the latest stable release (recommended for general users)
 
 ```js
 github install haghish/rcall, stable
