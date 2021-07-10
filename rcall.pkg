@@ -1,9 +1,9 @@
-v 3.0.0
+v 3.0.5
 d 'RCALL': seamless R in Stata
 d 
 d call R in Stata and enable automated data communication
 d 
-d Distribution-Date:   20210603
+d Distribution-Date:   20210710
 d License: MIT
 d 
 F R.ado

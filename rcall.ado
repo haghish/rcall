@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-[Version: 3.0.0](https://github.com/haghish/rcall/tags) 
+[Version: 3.0.5](https://github.com/haghish/rcall/tags) 
 
 cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
@@ -1047,7 +1047,8 @@ program define rcall , rclass
     *local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
 		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
-    local l2 = `"{send.var.`mat' <- readstata13::read.dta13("_send.var.`mat'.dta");}"' + "`l2'"
+    // make sure you convert it to a vector with "[,1]"
+    local l2 = `"{send.var.`mat' <- readstata13::read.dta13("_send.var.`mat'.dta")[,1];}"' + "`l2'"
     local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
     // create a macro list of the current variable data files (to be removed)

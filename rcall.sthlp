@@ -1,5 +1,5 @@
 {smcl}
-{browse "https://github.com/haghish/rcall/tags":Version: 3.0.0} 
+{browse "https://github.com/haghish/rcall/tags":Version: 3.0.5} 
 
 {p 4 4 2}
 cite:  {browse "https://journals.sagepub.com/doi/full/10.1177/1536867X19830891":Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.}
@@ -48,9 +48,7 @@ the script file. thus, all of the functions mentioned below can
 be included in the {bf:args} to pass dataset, matrices, variables, scalars, and macros to R prior to 
 sourcing. programmers are recommended to add the {bf:vanilla} option to source the 
 script file in vanilla mode (see below):
-
-{p 4 4 2}
-in addition to {bf:script} subcommand mentioned above, the package also includes 
+in addition to {bf:script} subcommand, the package also includes 
 a few other subcommands to facilitate integrating R in Stata. the general syntax is 
 as follows:
 
@@ -71,7 +69,6 @@ the following functions can be used to communicate data from Stata to R:
 {synopt:{opt st.load(dataframe)}}loads data from R dataframe to Stata{p_end}
 {synoptline}
 {p2colreset}{...}
-
 
 {marker modes}{...}
 
