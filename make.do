@@ -10,7 +10,7 @@ make rcall, replace toc pkg  version(3.0.5)                                 ///
      url("http://github.com/haghish")                                       ///
      title("seamless R in Stata")                                           ///
      description("call R in Stata and enable automated data communication") ///
-     install("call_return.ado;"                                             ///
+     install("call_return.ado;rcallscript.ado;"                             ///
              "matconvert.ado;matconvert.sthlp;"                             /// 
              "matexport.ado;matexport.sthlp;"                               ///
              "R.ado;rcall_check.ado;rcall_check.sthlp;rcall_counter.ado;"   ///

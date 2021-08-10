@@ -1,4 +1,4 @@
-v 3.0.5
+v 3.0.6
 d Materials by E. F. Haghish
 d haghish@med.uni-goettingen.de
 d http://github.com/haghish
