@@ -1118,7 +1118,7 @@ program define rcall , rclass
 	}
 
 	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				  // erase memory temporarily
-	if !missing("`foreign'") file write `knot' "library(readstata13)" _n		// load the readstata13 package
+	if !missing("`foreign'") file write `knot' "suppressWarnings(library(readstata13))" _n		// load the readstata13 package
 	if !missing("`RSite'") & missing("`vanilla'") 					///
 			file write `knot' "source('`RSite'')" _n
 	if !missing("`rprofile'") & missing("`vanilla'") 				///
