@@ -422,12 +422,16 @@ To debug errors you can include the {cmd:debug} option.
 
 {p 4 4 2}
 This will output details of the execution process, including saving to the current 
-directory the constructed R file run, as well as the capture output. Note that to 
+directory the constructed R file run (_temporary_R_script.R), as well as the 
+capture output (_temporary_R_output.txt). Note that to 
 re-run the constructed R file, if you had used {cmd:st.data()} to load data into R,
 then you will have to manually complete this step as this is normally done prior to
 running the R script.
 
         . save "_st.data.dta", replace
+
+{p 4 4 2}
+You will also have to add {cmd:library(readstata13)} in R.
 
 {title:Example}
 
