@@ -90,12 +90,12 @@ adj.names = function(x) {
 # ------------------------------------------------------------------------------
 # a function to return values from R to Stata
 # ==============================================================================
-stata.output <- function(plusR, Vanilla="", fname="stata.output", load_mat_prefix="") {
+stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_mat_prefix="") {
   
   # --------------------------------------------------------------------------
   # CREATE FILE
   # ==========================================================================
-  stata.output <- file.path(getwd(), fname)
+  if(stata.output=="stata.output") stata.output <- file.path(getwd(), stata.output)
   file.create(stata.output)
 
   # --------------------------------------------------------------------------
