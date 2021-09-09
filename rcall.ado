@@ -518,6 +518,14 @@ program define rcall , rclass
 			}
 		}
 
+		//shell command override
+		// ================
+		if regexm(`"`macval(1)'"', "shell\((.*)\)") {
+			local 0 : subinstr local 0 "shell(`=regexs(1)')" ""
+			tokenize `"`macval(0)'"'						                  //reset
+			local shell = regexs(1)
+		}
+
 		// clear R memory
 		// ================
 		if `"`macval(0)'"' == "clear" | `"`macval(0)'"' == "clear:" {
@@ -1229,17 +1237,19 @@ program define rcall , rclass
 
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 
+	if "`shell'"=="" local shell shell
+	
 	if !missing("`debug'") {
 		di _n "{title:[3/5] Running R in batch mode}" _n								///
 		"The following command is executed in Stata:"  _n
-		display `"{p}{err:shell `Rcommand'}"'
+		display `"{p}{err:`shell' `Rcommand'}"'
 	}
 
-	quietly shell `Rcommand'
+	quietly `shell' `Rcommand'
 
 	capture confirm file `stata_output'
 	if _rc != 0 {
-		shell `Rcommand'
+		`shell' `Rcommand'
 		exit
 	}
 
