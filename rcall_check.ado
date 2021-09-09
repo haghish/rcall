@@ -56,36 +56,25 @@ Stored results
 program rcall_check
 
 	syntax [anything] [, Rversion(str) RCALLversion(str)]
-	
-	// Check rcall version from the rcall.ado
-	// -------------------------------------------------------------------------
-	qui local location "`c(pwd)'"
-	qui cd "`c(sysdir_plus)'"
-	qui cd r
-	tempname hitch
-	file open `hitch' using "rcall.ado", read
-	file read `hitch' line
-	while r(eof)==0 & substr(`"`macval(line)'"',1,8) != "Version:" {
-		file read `hitch' line
-	}
-	if substr(trim(`"`macval(line)'"'),1,8) == "Version:" {
-		local line = substr(`"`macval(line)'"',9,.)
-		local line : subinstr local line "." " ", all
-		tokenize "`line'"		
-		local CURRENTRCALLVERSION `1'	
-		macro shift
-		while !missing("`1'") {
-			local sub `sub'`1'
-			macro shift
-		}
-		local CURRENTRCALLVERSION `CURRENTRCALLVERSION'.`sub'
-	}
-	cap qui cd "`location'"
-				
 
 	// Prepare the required rcall version
 	// -------------------------------------------------------------------------
 	if !missing("`rcallversion'") {
+    
+    // Check rcall version from the github version
+    qui github version rcall
+    local current `r(version)'
+    local current : subinstr local current "." " ", all
+    tokenize `current'
+    local ver `1'
+    macro shift
+    while !missing("`1'") {
+      local next `next'`1'
+      macro shift
+    }
+    local CURRENTRCALLVERSION `ver'.`next'
+    
+    // check the required rcall version
 		local requiredversion `rcallversion'
 		local requiredversion : subinstr local requiredversion "." " ", all
 		tokenize `requiredversion'

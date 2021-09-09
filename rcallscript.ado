@@ -9,9 +9,8 @@ program define rcallscript, rclass
   } 
   
   confirm file `"`using'"'
-  
-  *rcall vanilla debug: `args' source("`macval(using)'")
-  rcall: `args' source("`macval(using)'")
+
+  rcall `vanilla': `args' source("`macval(using)'")
   return add
 end
 
