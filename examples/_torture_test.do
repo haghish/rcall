@@ -286,7 +286,6 @@ rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 display r(a)
 
 rcall: detach("package:Rcpp")
-
 // -----------------------------------------------------------------------------
 // RProfile : Detach packages, data, variables, etc..
 // =============================================================================
@@ -301,8 +300,8 @@ if you don't need a data set, package, etc, remove them from the R Workspace and
 detach the packages. 
 */
 
+rcall: library(foreign)
 rcall: search()
-rcall: detach("package:Rcpp", unload=TRUE)
 rcall: detach("package:foreign", unload=TRUE)
 rcall: search()
 
