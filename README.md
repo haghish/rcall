@@ -76,7 +76,7 @@ Type `return list` to see what objects have ben transfered from R to Stata. This
 
 # 4. Development
 
-Requirements: The [-GitHub-](https://github.com/haghish/github) package is required for testing and the [-GitHub-](https://github.com/haghish/markdoc) is required for building the documentation.
+Requirements: The [-GitHub-](https://github.com/haghish/github) package is required for testing and the [-markdoc-](https://github.com/haghish/markdoc) is required for building the documentation.
 
 Building: To update `R.ado` from a modified `rcall.ado`, run `make_R_abb.do`. To build the installation files and documentation, run `make.do`.
 
