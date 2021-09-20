@@ -168,18 +168,18 @@ rcall: plot(1,1)
 rcall: png("mypng.png");plot(rnorm(100), main="This is my PNG file");
 
 // Creating a postscript file named whatever.eps
-rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
-//rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); dev.off();
+rcall: setEPS();postscript("postscript.eps");plot(rnorm(100), main="PostScript file"); 
+//rcall: setEPS();postscript("postscript.eps");plot(rnorm(100), main="PostScript file"); dev.off();
 
 
 *******************************************************************
 // THIS WILL NOT WORK
 rcall: setEPS()
-rcall: postscript("postscriot.eps")
+rcall: postscript("postscript.eps")
 rcall: plot(rnorm(100), main="PostScript file"); 
 
 // this will work
-rcall: setEPS();postscript("postscriot.eps");plot(rnorm(100), main="PostScript file"); 
+rcall: setEPS();postscript("postscript.eps");plot(rnorm(100), main="PostScript file"); 
 *******************************************************************
 
 
