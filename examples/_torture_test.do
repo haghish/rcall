@@ -21,7 +21,7 @@ local run_interactive 0
 // =============================================================================
 
 // Install the rcall package using the github command
-cap ado uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
+cap github uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
 github install haghish/rcall, stable
 
 // =============================================================================
