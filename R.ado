@@ -523,6 +523,15 @@ program define R , rclass
 			}
 		}
 
+		//shell command override
+		// ================
+		if regexm(`"`macval(1)'"', "shell\((.*)\)") {
+			local 0 : subinstr local 0 "shell(`=regexs(1)')" ""
+			tokenize `"`macval(0)'"'						                  //reset
+			local shell = regexs(1)
+		}
+
+
 		// clear R memory
 		// ================
 		if `"`macval(0)'"' == "clear" | `"`macval(0)'"' == "clear:" {
@@ -842,6 +851,24 @@ program define R , rclass
 		}
 	}
 
+	if !missing("`debug'") {
+		loc stata_output "stata.output"
+		loc load_data "_load.data.dta"
+		loc st_data "_st.data.dta"
+	}
+	else {
+		tempfile stata_output load_data st_data 
+		if "`c(os)'" == "Windows" {
+			local stata_output : subinstr local stata_output "\" "/", all
+			local load_data : subinstr local load_data "\" "/", all
+			local st_data : subinstr local st_data "\" "/", all
+		}
+		//These below could be anything unique to this stata instance
+		loc load_mat_prefix "`load_data'" 
+		loc send_mat_prefix "`load_data'"
+		loc send_var_prefix "`load_data'"
+	}
+
 	// -------------------------------------------------------------------------
 	// Searching for Matrix
 	// =========================================================================
@@ -872,16 +899,16 @@ program define R , rclass
     preserve
     *clear
     *quietly svmat2 `mat', names(col) rnames("MATR0WNAMES")
-    *quietly saveold "_send.matrix.`mat'.dta", version(13) replace
-    quietly matexport `mat', rnames("MATR0WNAMES") filename("_send.matrix.`mat'") version(13)
+    *quietly saveold "`send_mat_prefix'_send.matrix.`mat'.dta", version(13) replace
+    quietly matexport `mat', rnames("MATR0WNAMES") filename("`send_mat_prefix'_send.matrix.`mat'") version(13)
     restore
     
-    local l2 = `"{send.matrix.`mat' <- readstata13::read.dta13("_send.matrix.`mat'.dta"); row.names(send.matrix.`mat') <- send.matrix.`mat'[, "MATR0WNAMES"]; send.matrix.`mat'[, "MATR0WNAMES"] <- NULL; send.matrix.`mat' <- as.matrix(send.matrix.`mat');}"' + "`l2'"
+    local l2 = `"{send.matrix.`mat' <- readstata13::read.dta13("`send_mat_prefix'_send.matrix.`mat'.dta"); row.names(send.matrix.`mat') <- send.matrix.`mat'[, "MATR0WNAMES"]; send.matrix.`mat'[, "MATR0WNAMES"] <- NULL; send.matrix.`mat' <- as.matrix(send.matrix.`mat');}"' + "`l2'"
     local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
     // create a macro list of the current matrix data files
-    if "`sendmatrixlist'" == "" local sendmatrixlist = "_send.matrix.`mat'.dta"
-    else local sendmatrixlist = "`sendmatrixlist' " + "_send.matrix.`mat'.dta"
+    if "`sendmatrixlist'" == "" local sendmatrixlist = "`send_mat_prefix'_send.matrix.`mat'.dta"
+    else local sendmatrixlist = "`sendmatrixlist' " + "`send_mat_prefix'_send.matrix.`mat'.dta"
 
 	}
 
@@ -954,21 +981,21 @@ program define R , rclass
 		//IF FILENAME IS MISSING
 		if missing("`filename'") {
 			if "`c(version)'" >= "14" {
-				qui saveold _st.data.dta, version(11) replace
+				qui saveold "`st_data'", version(11) replace
 			}
 			else {
-				qui saveold _st.data.dta, replace
+				qui saveold "`st_data'", replace
 			}
 
-			local dta : di "read.dta13(" `"""' "_st.data.dta" `"""' ")"
+			local dta : di "read.dta13(" `"""' "`st_data'" `"""' ")"
 		}
 		else {
 			confirm file "`filename'"
 			preserve
 			qui use "`filename'", clear
-			if "`c(version)'" >= "14" qui saveold _st.data.dta, version(11) replace
-			else qui saveold _st.data.dta, replace
-			local dta : di "read.dta13(" `"""' "_st.data.dta" `"""' ")"
+			if "`c(version)'" >= "14" qui saveold "`st_data'", version(11) replace
+			else qui saveold "`st_data'", replace
+			local dta : di "read.dta13(" `"""' "`st_data'" `"""' ")"
 			restore
 		}
 
@@ -1043,24 +1070,24 @@ program define R , rclass
     preserve
     qui keep `mat' 
     if "`c(version)'" >= "14" {
-      qui saveold "_send.var.`mat'.dta", version(11) replace
+      qui saveold "`send_var_prefix'_send.var.`mat'.dta", version(11) replace
     }
     else {
-      qui saveold "_send.var.`mat'.dta", replace
+      qui saveold "`send_var_prefix'_send.var.`mat'.dta", replace
     }
     restore
     
-		local dta : di "read.dta13(" `"""' "_send.var.`mat'.dta" `"""' ")"
+		local dta : di "read.dta13(" `"""' "`send_var_prefix'_send.var.`mat'.dta" `"""' ")"
     *local l2 = `"`macval(dta)'"' + `"`macval(l2)'"'
 		*local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
     // make sure you convert it to a vector with "[,1]"
-    local l2 = `"{send.var.`mat' <- readstata13::read.dta13("_send.var.`mat'.dta")[,1];}"' + "`l2'"
+    local l2 = `"{send.var.`mat' <- readstata13::read.dta13("`send_var_prefix'_send.var.`mat'.dta")[,1];}"' + "`l2'"
     local 0 = `"`macval(l1)'"' + `"`macval(l2)'"'
     
     // create a macro list of the current variable data files (to be removed)
-    if "`sendvarlist'" == "" local sendvarlist = "_send.var.`mat'.dta"
-    else local sendvarlist = "`sendvarlist' " + "_send.var.`mat'.dta"
+    if "`sendvarlist'" == "" local sendvarlist = "`send_var_prefix'_send.var.`mat'.dta"
+    else local sendvarlist = "`sendvarlist' " + "`send_var_prefix'_send.var.`mat'.dta"
 	}
 
 
@@ -1166,7 +1193,7 @@ program define R , rclass
 	file write `knot' "source('`source'')" _n
 
 	*file write `knot' `"plusR <- "`plusR'""' _n		//source stata.output() before exit
-	file write `knot' `"stata.output("`plusR'", "`vanilla'")"' _n
+	file write `knot' `"stata.output("`plusR'", "`vanilla'", "`stata_output'", "`load_mat_prefix'")"' _n
 	//file write `knot' "rm(stata.output)" _n
 	//file write `knot' `"try(rm(stata.output, rprofile), silent=TRUE)"' _n
 
@@ -1174,7 +1201,7 @@ program define R , rclass
 
 	if !missing("`forceload'") {
 		file write `knot' `"save.dta13(`loaddata', "'							///
-		`"file = "_load.data.dta", version = 11) "' _n
+		`"file = "`load_data'", version = 11) "' _n
 	}
 
 	qui file close `knot'
@@ -1217,17 +1244,19 @@ program define R , rclass
 
 	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 
+	if "`shell'"=="" local shell shell
+
 	if !missing("`debug'") {
 		di _n "{title:[3/5] Running R in batch mode}" _n								///
 		"The following command is executed in Stata:"  _n
-		display `"{p}{err:shell `Rcommand'}"'
+		display `"{p}{err:`shell' `Rcommand'}"'
 	}
 
-	quietly shell `Rcommand'
+	quietly `shell' `Rcommand'
 
-	capture confirm file stata.output
+	capture confirm file `stata_output'
 	if _rc != 0 {
-		shell `Rcommand'
+		`shell' `Rcommand'
 		exit
 	}
 
@@ -1241,7 +1270,7 @@ program define R , rclass
 	}
 
 	// If data was loaded automatically, remove the temporary data file
-	if !missing("`foreign'") capture qui erase _st.data.dta
+	if !missing("`foreign'") capture qui erase "`st_data'"
 
 
 	type "`Rout'"
@@ -1262,19 +1291,19 @@ program define R , rclass
 	// Returning objects to Stata
 	// =========================================================================
 	// ???: AVOID returning in console mode
-	call_return using "stata.output" , `debug'
+	call_return using "`stata_output'" , `debug' load_mat_prefix("`load_mat_prefix'")
 	return add
 
 	// If data was loaded automatically, remove the temporary data file
 	if !missing("`forceload'") {
-		capture confirm file _load.data.dta
+		capture confirm file "`load_data'
 		if _rc != 0 {
 			di as err "{bf:R} failed to export Stata data set"
 			exit
 		}
 		else {
-			quietly use _load.data.dta, clear
-			capture qui erase _load.data.dta
+			quietly use "`load_data', clear
+			capture qui erase "`load_data'
 		}
 	}
 
@@ -1294,7 +1323,6 @@ program define R , rclass
 	macro drop debug
 
 	if missing("`debug'") {
-		capture qui erase stata.output
     
     // erase the _send.matrix files
     tokenize "`sendmatrixlist'"

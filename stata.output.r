@@ -90,12 +90,12 @@ adj.names = function(x) {
 # ------------------------------------------------------------------------------
 # a function to return values from R to Stata
 # ==============================================================================
-stata.output <- function(plusR, Vanilla="") {
+stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_mat_prefix="") {
   
   # --------------------------------------------------------------------------
   # CREATE FILE
   # ==========================================================================
-  stata.output <- file.path(getwd(), "stata.output")
+  if(stata.output=="stata.output") stata.output <- file.path(getwd(), stata.output)
   file.create(stata.output)
 
   # --------------------------------------------------------------------------
@@ -290,7 +290,7 @@ stata.output <- function(plusR, Vanilla="") {
 
         # convert the matrix to a data set and save it, but avoid converting string to factors
         iget = as.data.frame(iget)  #stringsAsFactors=FALSE but Stata cannot get the string matrices
-        readstata13::save.dta13(iget, file=paste0("_load.matrix.", i, ".dta"), add.rownames = TRUE)
+        readstata13::save.dta13(iget, file=paste0(load_mat_prefix, "_load.matrix.", i, ".dta"), add.rownames = TRUE)
         
       }
       else {
