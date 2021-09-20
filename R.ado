@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-[Version: 3.0.5](https://github.com/haghish/rcall/tags) 
+[Version: 3.1.0](https://github.com/haghish/rcall/tags) 
 
 cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
@@ -416,8 +416,13 @@ program define R , rclass
   
   // drop the macros
   // -------------------------------------------------------------------------
-  
 	macro drop RcallError
+  
+  // check the working directory permission
+  // --------------------------------------
+  if missing("$wdpermissions") {
+    wdpermissions
+  }
 
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
@@ -540,6 +545,7 @@ program define R , rclass
       // clear the rcall global memory that is used for data transfer
       macro drop rcallglobal*
       macro drop rcall_synchronize_mode 
+      macro drop wdpermissions
       
 			display as txt "(R memory cleared)"
 			exit
@@ -764,6 +770,7 @@ program define R , rclass
 			local 0 : subinstr local 0 ":" ""
 		}
 	}
+  
 
 	// -------------------------------------------------------------------------
 	// Execute interactive mode (including sync)
@@ -1118,7 +1125,7 @@ program define R , rclass
 	}
 
 	if !missing("`vanilla'") file write `knot' "rm(list=ls())" _n 				  // erase memory temporarily
-	if !missing("`foreign'") file write `knot' "library(readstata13)" _n		// load the readstata13 package
+	if !missing("`foreign'") file write `knot' "suppressWarnings(library(readstata13))" _n		// load the readstata13 package
 	if !missing("`RSite'") & missing("`vanilla'") 					///
 			file write `knot' "source('`RSite'')" _n
 	if !missing("`rprofile'") & missing("`vanilla'") 				///
