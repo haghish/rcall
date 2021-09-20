@@ -1,4 +1,11 @@
 // -----------------------------------------------------------------------------
+// NOTES: 
+//		* locals at the top allow running this completely unattendedly
+//		* If your R path is different from default unix, comment out -rcall setpath- below
+//		* The -github- install creates an 'rcall-X.X.X' folder that should be deleted meanually
+// =============================================================================
+
+// -----------------------------------------------------------------------------
 // BUGS: 
 //		should rcall convert NA objected to missing scalars in sync mode? 
 //		* 
@@ -6,6 +13,8 @@
 //		* 
 // =============================================================================
 
+local run_errors 0 //0= No, 1=Yes
+local run_interactive 0
 
 // -----------------------------------------------------------------------------
 // General Setup
@@ -43,8 +52,9 @@ return list
 // if you want to access the "object" you get an error that is not found because 
 // it was defined in vanilla mode, i.e. no memory is preserved of the previous 
 // r call
+if(`run_errors'){
 rcall: object
-
+}
 
 // Interactive mode
 // -----------------------------------------------------------------------------
@@ -79,7 +89,9 @@ return list //lm is not a list
 
 // Consol mode
 // -----------------------------------------------------------------------------
+if(`run_interactive'){
 rcall
+}
 
 // Synchronizing mode
 // -----------------------------------------------------------------------------
@@ -89,7 +101,7 @@ rcall
 
 //with synchronization
 drop _all
-macro drop _all
+macro drop a b rcall_interactive_first_launch //remove all but the test file config macros
 rcall clear
 scalar a = 1
 rcall sync: a = 0
@@ -266,7 +278,7 @@ list in 1/2
 // -----------------------------------------------------------------------------
 // Trying Rcpp package (DO NOT RUN)
 // =============================================================================
-
+if(0){
 /*
 To compile the C++ code, use sourceCpp("path/to/file.cpp"). This will create 
 the matching R functions and add them to your current session. Note that these 
@@ -287,6 +299,7 @@ rcall: Rcpp::sourceCpp('examples/Rcpp.cpp'); a <- timesTwo(10003)
 display r(a)
 
 rcall: detach("package:Rcpp")
+}
 // -----------------------------------------------------------------------------
 // RProfile : Detach packages, data, variables, etc..
 // =============================================================================
@@ -358,7 +371,9 @@ I SHOULD SPEED UP THIS PROCESS
 // =============================================================================
 rcall vanilla library(foreign)
 rcall library(foreign)
+if(`run_errors') {
 rcall vanilla: detach("package:foreign", unload=TRUE) //GET ERROR
+}
 rcall: detach("package:foreign", unload=TRUE)
 rcall: search()
 
@@ -373,6 +388,15 @@ rcall: print(st.var(make))
 
 
 
+// -----------------------------------------------------------------------------
+// Cleanup
+// =============================================================================
+erase _load.matrix.D.dta 
+erase _temporary_R_output.txt 
+erase _temporary_R_script.R 
+erase mypng.png 
+erase postscript.eps 
+erase Rplots.pdf
 
 
 
