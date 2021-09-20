@@ -12,6 +12,7 @@
 // =============================================================================
 
 // Install the rcall package using the github command
+cap ado uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
 github install haghish/rcall, stable
 
 // =============================================================================
@@ -249,7 +250,7 @@ rcall: dim(data)
 
 clear
 rcall: rm(list=ls())
-rcall: data <- st.data(/Applications/Stata/ado/base/a/auto.dta)
+rcall: data <- st.data(`c(sysdir_base)'/a/auto.dta)
 
 
 // load.data() : Passing Data from R to Stata 
