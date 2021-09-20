@@ -1,17 +1,14 @@
 
-// summary program
-// ===============
-//
-// carring the "summary" function in R to summarize data in Stata
+// Using the qplot R function in Stata
+// ===================================
 
-*cap prog drop rplot
 program rplot
-	version 12
-	syntax varlist [, colour(name) shape(name) format(name)]
+	version 14
+	syntax varlist [, filename(name) colour(name) shape(name) format(name)]
 	
 	// check for the required packages and versions
 	// -------------------------------------------------------------------------
-	rcall_check ggplot2>=2.1.0 , r(3.1.0) rcall(1.3.3)
+	rcall_check ggplot2>=2.1.0 , r(3.1.0) rcall(2.5.0)
 	
 	// Checking the variables
 	// -------------------------------------------------------------------------
@@ -37,12 +34,13 @@ program rplot
 		local colour ", colour = `colour'"
 	}	
 	if !missing("`shape'") local shape ", shape = `shape'"
+  if missing("`filename'") local filename Rplot
 	if missing("`format'") local format pdf
 	
-	rcall vanilla : `format'("Rplot.`format'"); library(ggplot2); 				///
-	qplot(data=st.data(), x =`2', y =`1' `colour' `shape')
+	rcall vanilla : `format'("`filename'.`format'"); library(ggplot2); 				///
+	      qplot(data=st.data(), x =`2', y =`1' `colour' `shape')
 	
 	di as txt "({browse Rplot.`format'} was produced)" 
 end
 
-*qplot price mpg , colour(foreign) shape(foreign) format(pdf)
+*rplot price mpg , filename(graph) colour(foreign) shape(foreign) format(png)

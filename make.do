@@ -3,7 +3,7 @@
 // DO NOT FORGET to update the version of the package, if changed!
 // for more information visit http://github.com/haghish/github
 
-make rcall, replace toc pkg  version(3.0.5)                                 ///
+make rcall, replace toc pkg  version(3.1.0)                                 ///
      license("MIT")                                                         ///
      author("E. F. Haghish")                                                ///
      email("haghish@med.uni-goettingen.de")                                 ///

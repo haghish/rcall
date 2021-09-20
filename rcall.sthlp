@@ -1,5 +1,5 @@
 {smcl}
-{browse "https://github.com/haghish/rcall/tags":Version: 3.0.6} 
+{browse "https://github.com/haghish/rcall/tags":Version: 3.1.0} 
 
 {p 4 4 2}
 cite:  {browse "https://journals.sagepub.com/doi/full/10.1177/1536867X19830891":Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.}

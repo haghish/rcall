@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-[Version: 3.0.6](https://github.com/haghish/rcall/tags) 
+[Version: 3.1.0](https://github.com/haghish/rcall/tags) 
 
 cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
@@ -416,8 +416,13 @@ program define rcall , rclass
   
   // drop the macros
   // -------------------------------------------------------------------------
-  
 	macro drop RcallError
+  
+  // check the working directory permission
+  // --------------------------------------
+  if missing("$wdpermissions") {
+    wdpermissions
+  }
 
 	// -------------------------------------------------------------------------
 	// Search R path, if not specified
@@ -540,6 +545,7 @@ program define rcall , rclass
       // clear the rcall global memory that is used for data transfer
       macro drop rcallglobal*
       macro drop rcall_synchronize_mode 
+      macro drop wdpermissions
       
 			display as txt "(R memory cleared)"
 			exit
@@ -764,6 +770,7 @@ program define rcall , rclass
 			local 0 : subinstr local 0 ":" ""
 		}
 	}
+  
 
 	// -------------------------------------------------------------------------
 	// Execute interactive mode (including sync)
