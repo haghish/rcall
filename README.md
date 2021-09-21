@@ -4,7 +4,7 @@
 
 ---
 
-# rcall : seamless R in Stata
+# rcall : Seamless interactive language interfacing between R and Stata
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
 
