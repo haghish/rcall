@@ -158,8 +158,7 @@ while defining the object __df__ which is mentioned in the script:
 Normally Rcall uses __shell__ to execute __R__, but Stata on Windows in batch mode disables __shell__.
 For these situations, you can override the default with your own launcher via the __shell(...)__ option.
 A useful launcher that works is __bshell__ from the __parallel__ package
-(we have it first invoke __cmd__ as we need to process pipe redirects). Note, due to some unknown reason
-on Windows, one can't have spaces in their TMPDIR (quoting the tmpfile breaks redirecting output).
+(we have it first invoke __cmd__ as we need to process pipe redirects).
 
 		rcall shell(bshell cmd /c) vanilla: ....
 
@@ -1256,8 +1255,8 @@ program define rcall , rclass
 		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'" "'
 		*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 	}
-	else { //for some reason (weird quotation parsing rules or cmd?) if quotes are around Rout then it isn't created
-		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > `Rout' "'
+	else { //if cmd sees a double quote at start and end, then it will strip both
+		local Rcommand `"""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'"""'
 	}
 
 

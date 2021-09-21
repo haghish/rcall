@@ -170,8 +170,7 @@ while defining the object {bf:df} which is mentioned in the script:
 Normally Rcall uses {bf:shell} to execute {bf:R}, but Stata on Windows in batch mode disables {bf:shell}.
 For these situations, you can override the default with your own launcher via the {bf:shell(...)} option.
 A useful launcher that works is {bf:bshell} from the {bf:parallel} package
-(we have it first invoke {bf:cmd} as we need to process pipe redirects). Note, due to some unknown reason
-on Windows, one can{c 39}t have spaces in their TMPDIR (quoting the tmpfile breaks redirecting output).
+(we have it first invoke {bf:cmd} as we need to process pipe redirects).
 
 {p 4 4 2}
 		rcall shell(bshell cmd /c) vanilla: ....
