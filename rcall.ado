@@ -155,6 +155,16 @@ while defining the object __df__ which is mentioned in the script:
         sysuse auto, clear
         rcall source "rscript.R", args(df <- st.data();) vanilla
 
+Normally Rcall uses __shell__ to execute __R__, but Stata on Windows in batch mode disables __shell__.
+For these situations, you can override the default with your own launcher via the __shell(...)__ option.
+A useful launcher that works is __bshell__ from the __parallel__ package
+(we have it first invoke __cmd__ as we need to process pipe redirects). Note, due to some unknown reason
+on Windows, one can't have spaces in their TMPDIR (quoting the tmpfile breaks redirecting output).
+
+		rcall shell(bshell cmd /c) vanilla: ....
+
+Multiple instances of Rcall can be run simultaneously using the vanilla mode.
+
 Description
 ===========
 
@@ -525,7 +535,7 @@ program define rcall , rclass
 
 		//shell command override
 		// ================
-		if regexm(`"`macval(1)'"', "shell\((.*)\)") {
+		if regexm(`"`macval(0)'"', "shell\(([^\)]*)\)") {
 			local 0 : subinstr local 0 "shell(`=regexs(1)')" ""
 			tokenize `"`macval(0)'"'						                  //reset
 			local shell = regexs(1)
@@ -1239,17 +1249,22 @@ program define rcall , rclass
 
 	if missing("`vanilla'") local save "--save"
 	else local save "--no-save"
-
-	local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'" "'
-
-	*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
-
+	
 	if "`shell'"=="" local shell shell
+	
+	if "`shell'"!="bshell cmd /c"{	
+		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'" "'
+		*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
+	}
+	else { //for some reason (weird quotation parsing rules or cmd?) if quotes are around Rout then it isn't created
+		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > `Rout' "'
+	}
+
 
 	if !missing("`debug'") {
 		di _n "{title:[3/5] Running R in batch mode}" _n								///
 		"The following command is executed in Stata:"  _n
-		display `"{p}{err:`shell' `Rcommand'}"'
+		display `"{p}{err:`shell' `Rcommand'}"'  _n
 	}
 
 	quietly `shell' `Rcommand'
@@ -1261,7 +1276,7 @@ program define rcall , rclass
 	}
 
 	if !missing("`debug'") {
-		di _n "{title:[4/5] R Output}" _n								///
+		di "{title:[4/5] R Output}" _n								///
 		"R output was generated. A copy is made in the debug mode..." _n
 
 		capture erase _temporary_R_output.txt
@@ -1302,8 +1317,8 @@ program define rcall , rclass
 			exit
 		}
 		else {
-			quietly use "`load_data', clear
-			capture qui erase "`load_data'
+			quietly use "`load_data'", clear
+			capture qui erase "`load_data'"
 		}
 	}
 
