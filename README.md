@@ -4,7 +4,7 @@
 
 ---
 
-# rcall : seamless R in Stata
+# rcall : Seamless interactive language interfacing between R and Stata
 
 <a href="http://haghish.com/markdoc"><img src="./Documentation/Rcall.png" align="left" width="140" hspace="10" vspace="6"></a>
 
@@ -76,7 +76,7 @@ Type `return list` to see what objects have ben transfered from R to Stata. This
 
 # 4. Development
 
-Requirements: The [-GitHub-](https://github.com/haghish/github) package is required for testing and the [-GitHub-](https://github.com/haghish/markdoc) is required for building the documentation.
+Requirements: The [-GitHub-](https://github.com/haghish/github) package is required for testing and the [-markdoc-](https://github.com/haghish/markdoc) is required for building the documentation.
 
 Building: To update `R.ado` from a modified `rcall.ado`, run `make_R_abb.do`. To build the installation files and documentation, run `make.do`.
 
@@ -93,9 +93,9 @@ Resources
 Author
 ------
   **E. F. Haghish**  
-  Center for Medical Biometry and Medical Informatics    
-  University of Freiburg, Germany        
-  _haghish@imbi.uni-freiburg.de_       
+  Department of Psychology,  
+  University of Oslo, Norway        
+  _haghish@uio.no_       
   _http://www.haghish.com/packages/Rcall.php_      
   _[@Haghish](https://twitter.com/Haghish)_      
   

@@ -23,7 +23,7 @@ local test_install_github 1
 
 // Install the rcall package using the github command
 if(`test_install_github'){
-cap ado uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
+cap github uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
 github install haghish/rcall, stable
 }
 
