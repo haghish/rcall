@@ -16,6 +16,7 @@
 local run_errors 0 //0= No, 1=Yes
 local run_interactive 0
 local test_install_github 1
+local run_setpath 1 
 
 // -----------------------------------------------------------------------------
 // General Setup
@@ -39,7 +40,9 @@ rcall_check
 rcall_check readstata13>=0.8.5
 
 // Setup R path permanently (change the path on your system) YOU DO NOT NEED TO RUN THIS!
+if(`run_setpath'){
 rcall setpath "/usr/bin/r"
+}
 
 // =============================================================================
 // RCALL MODES 
