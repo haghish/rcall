@@ -93,9 +93,9 @@ Resources
 Author
 ------
   **E. F. Haghish**  
-  Center for Medical Biometry and Medical Informatics    
-  University of Freiburg, Germany        
-  _haghish@imbi.uni-freiburg.de_       
+  Department of Psychology,  
+  University of Oslo, Norway        
+  _haghish@uio.no_       
   _http://www.haghish.com/packages/Rcall.php_      
   _[@Haghish](https://twitter.com/Haghish)_      
   
