@@ -15,14 +15,17 @@
 
 local run_errors 0 //0= No, 1=Yes
 local run_interactive 0
+local test_install_github 1
 
 // -----------------------------------------------------------------------------
 // General Setup
 // =============================================================================
 
 // Install the rcall package using the github command
+if(`test_install_github'){
 cap ado uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
 github install haghish/rcall, stable
+}
 
 // =============================================================================
 // RCALL SUBCOMMANDS 
@@ -391,13 +394,13 @@ rcall: print(st.var(make))
 // -----------------------------------------------------------------------------
 // Cleanup
 // =============================================================================
-erase _load.matrix.D.dta 
 erase _temporary_R_output.txt 
 erase _temporary_R_script.R 
 erase mypng.png 
 erase postscript.eps 
 erase Rplots.pdf
-
+cap erase _load.matrix.D.dta 
+cap erase _load.matrix.C.dta 
 
 
 
