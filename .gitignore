@@ -20,3 +20,5 @@ private/Rcpp/Rcpp.ado
 private/Rcpp/timesTen.ado
 
 private/bug/large variable.do
+
+parallel_test.log

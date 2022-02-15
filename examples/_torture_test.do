@@ -15,14 +15,18 @@
 
 local run_errors 0 //0= No, 1=Yes
 local run_interactive 0
+local test_install_github 1
+local run_setpath 1 
 
 // -----------------------------------------------------------------------------
 // General Setup
 // =============================================================================
 
 // Install the rcall package using the github command
+if(`test_install_github'){
 cap github uninstall rcall //Ensure we don't have 2 different entries in stata.trk from different sources.
 github install haghish/rcall, stable
+}
 
 // =============================================================================
 // RCALL SUBCOMMANDS 
@@ -36,7 +40,9 @@ rcall_check
 rcall_check readstata13>=0.8.5
 
 // Setup R path permanently (change the path on your system) YOU DO NOT NEED TO RUN THIS!
+if(`run_setpath'){
 rcall setpath "/usr/bin/r"
+}
 
 // =============================================================================
 // RCALL MODES 
@@ -391,13 +397,13 @@ rcall: print(st.var(make))
 // -----------------------------------------------------------------------------
 // Cleanup
 // =============================================================================
-erase _load.matrix.D.dta 
 erase _temporary_R_output.txt 
 erase _temporary_R_script.R 
 erase mypng.png 
 erase postscript.eps 
 erase Rplots.pdf
-
+cap erase _load.matrix.D.dta 
+cap erase _load.matrix.C.dta 
 
 
 

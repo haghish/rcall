@@ -166,6 +166,18 @@ while defining the object {bf:df} which is mentioned in the script:
         sysuse auto, clear
         rcall source "rscript.R", args(df <- st.data();) vanilla
 
+{p 4 4 2}
+Normally Rcall uses {bf:shell} to execute {bf:R}, but Stata on Windows in batch mode disables {bf:shell}.
+For these situations, you can override the default with your own launcher via the {bf:shell(...)} option.
+A useful launcher that works is {bf:bshell} from the {bf:parallel} package
+(we have it first invoke {bf:cmd} as we need to process pipe redirects).
+
+{p 4 4 2}
+		rcall shell(bshell cmd /c) vanilla: ....
+
+{p 4 4 2}
+Multiple instances of Rcall can be run simultaneously using the vanilla mode.
+
 
 {title:Description}
 
