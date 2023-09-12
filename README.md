@@ -52,7 +52,7 @@ Both require data communication back and forth between Stata and R and this is w
 
 In general, it offers 2 modes of data communication which are 
 
-1. **interactive**, often used for data analysis when the user might call R frequently and interactively. This general mode includes a memory that preserves the history of your R session. This mode itself can be used in three ways:
+1. **interactive**, often used for data analysis when the user might call R frequently and interactively. This general mode includes a memory that preserves the history of your R session. This mode itself can be used in two ways:
      1. *interactive*, where the R session can be continued command by command. **this mode allows you call R interactively within Stata do-files**
      2. *console*, where Stata console is converted to R console. this mode allows you to work with R interactively within Stata, but cannot be called from do-files. However, it provides a much more fun experience, namely to have R console within Stata console!
 
