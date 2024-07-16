@@ -25,12 +25,10 @@
 # 5. rcall takes care of the rest
 # 6. if you wish to remove the global variables, use 'rcall clear' command
 
-
 # --------------------------------------------------------------------------
 # REMOVE TEMPORARY MATRICES (rcall 3.0)
 # ==========================================================================
 rm(list = apropos("send.matrix."))
-
 
 # ------------------------------------------------------------------------------
 # a function to adjust the returned column names, since Stata doesn't accept
@@ -128,9 +126,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
     logical <- lst[sapply(lst,function(var) any(class(get(var))=='logical'))]
     complex <- lst[sapply(lst,function(var) any(class(get(var))=='complex'))]
     RAW <- lst[sapply(lst,function(var) any(class(get(var))=='raw'))]
-    #string <- c(string, logical, complex, RAW)
-
-
 
     # LOGICAL
     # ------------------------------------
@@ -141,10 +136,7 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
       St.NA[is.na(St.NA)] <- "."
     }
 
-
     string <- c(string, logical)
-
-    #string <- c(string, logical, complex, RAW)
 
     # NULL
     # ------------------------------------
@@ -168,7 +160,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
       }
     }
 
-
     # MATRIX
     # ------------------------------------
     matrix <- lst[sapply(lst,function(var) any(class(get(var))=='matrix'))]
@@ -177,11 +168,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
     # PREPARE OUTPUT EXPORTATION
     # ======================================================================
     
-    
-    
-    
-    
-
     # NUMERIC (numeric AND integer)
     # ------------------------------------
     numeric = numeric[numeric!= "rcall_synchronize_ACTIVE"]  #remove rcall_synchronize_ACTIVE from the list
@@ -205,7 +191,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
     # ------------------------------------
     for (i in null) {
       write(paste("//NULL", i), file=stata.output, append=TRUE)
-      #write(iget, file=stata.output, append=TRUE)
     }
 
 
@@ -235,8 +220,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
       inames <- names(iget)
 
       #Create an object for the list name
-      #write(paste("//LIST", i), file=stata.output, append=TRUE)
-      #write(inames, file=stata.output, append=TRUE)
 
       for (j in inames) {
         name <- paste(i,"$",j, sep = "")
@@ -259,7 +242,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
           content <- paste("//LIST", name)
           write(content, file=stata.output, append=TRUE)
 
-          #print(class(iget[[j]]))
           write(iget[[j]], file=stata.output, append=TRUE
                 , ncolumns = if(is.character(iget[[j]])) 1 else 21)
         }
@@ -311,7 +293,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
           colnames = paste0("c", 1:dims[2])
         }
 
-        #write(content, file=stata.output, append=TRUE)
         write(paste("rownumber:", dims[1]), file=stata.output, append=TRUE)
 
         if (!is.null(colnames)) {
@@ -327,38 +308,6 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
         write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE
               , ncolumns = if(is.character(iget)) 1 else 21)
       }
-
-      ## adjust the names for Stata
-      #colnames = adj.names(colnames(iget))
-      #rownames = adj.names(rownames(iget))
-      #
-      ## GENERATE rownames and column names, if not defined.
-      ## this was a bug, while syncing matrices between
-      ## Stata and R...
-      #
-      #if (is.null(rownames)) {
-      #  rownames = paste0("r", 1:dims[1])
-      #}
-      #
-      #if (is.null(colnames)) {
-      #  colnames = paste0("c", 1:dims[2])
-      #}
-      #
-      #
-      #write(paste("rownumber:", dims[1]), file=stata.output, append=TRUE)
-      #
-      #if (!is.null(colnames)) {
-      #  write(paste("colnames:", paste(as.vector(t(colnames)), collapse=" "), collapse=" "),
-      #        file=stata.output, append=TRUE)
-      #}
-      #if (!is.null(rownames)) {
-      #  write(paste("rownames:", paste(as.vector(t(rownames)), collapse=" "), collapse=" "),
-      #        file=stata.output, append=TRUE)
-      #}
-      ##Add comma
-      #
-      #write(paste(as.vector(t(iget)), collapse=", "), file=stata.output, append=TRUE
-      #      , ncolumns = if(is.character(iget)) 1 else 21)
     }
 
   }
@@ -417,21 +366,10 @@ stata.output <- function(plusR, Vanilla="", stata.output="stata.output", load_ma
   }
 }
 
-
-
-
-## EXAMPELS
-#cor( c( 1 , 1 ), c( 2 , 3 ) )
-#x <- 1:36; for(n in 1:13) for(m in 1:12) A <- matrix(x, n,m) # There were 105 warnings ...
-#x <- 1:36; for(n in 1:6) for(m in 1:6) A <- matrix(x, n,m) # There were 105 warnings ...
-#x <- 1:36; for(n in 1:13) for(m in 1:12) A <- matrix(x, n,m); rm(x);rm(n);rm(m);rm(A);
-#GLOBAL = matrix(data=c("1","this is a text","2", "another thing"), ncol = 2, byrow = TRUE)
-#class(GLOBAL) <- "GLOBAL"
-#suppressWarnings(rm(list=paste0("warning",seq(1,50,1))))
-
-# If warnings() is not NULL and WARNINGS does not exist, capture the warnings 
+# If warnings() is not NULL (R version prior to 4.4.0) and it's length is more than zero
+# then if WARNINGS does not exist, capture the warnings 
 # ------------------------------------------------------------------------------
-if (!is.null(warnings())) {
+if (!is.null(warnings()) & length(warnings()) > 0) {
   if (!exists("WARNINGS")) {
     WARNINGS = NULL
     summaryWarnings <- unlist(summary(warnings()))
@@ -463,7 +401,6 @@ if (!is.null(warnings())) {
         }
       }
     }
-    if (is.null(WARNINGS)) suppressWarnings(rm(WARNINGS))
   }
 } 
 
