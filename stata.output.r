@@ -463,6 +463,7 @@ if (!is.null(warnings())) {
         }
       }
     }
+    if (is.null(WARNINGS)) suppressWarnings(rm(WARNINGS))
   }
 } 
 
