@@ -435,30 +435,33 @@ if (!is.null(warnings())) {
   if (!exists("WARNINGS")) {
     WARNINGS = NULL
     summaryWarnings <- unlist(summary(warnings()))
-    for (loopItem in 1:length(summaryWarnings)) {
-      WARNINGS[loopItem] <- paste("In", toString(summaryWarnings[loopItem]), ":", names(summaryWarnings[loopItem]))
-    }
-    if (length(WARNINGS) > 0) {
-      if (length(WARNINGS) == 1) {
-        cat(paste("Warning message:\n", WARNINGS[1], "\n"))
-      } else {
-        cat(paste("\nThere were", length(WARNINGS), "unique warnings (type 'rcall warnings' to see them)\n"))
+    if (length(summaryWarnings) > 0) {
+      for (loopItem in 1:length(summaryWarnings)) {
+        WARNINGS[loopItem] <- paste("In", toString(summaryWarnings[loopItem]), ":", names(summaryWarnings[loopItem]))
       }
-    }
-    
-    # clean up
-    suppressWarnings(rm(summaryWarnings))
-    WARNINGS = as.matrix(WARNINGS)
-  }
-  
-  # generate the warnings, but first make sure WARNINGS has a single column!
-  if (exists("WARNINGS")) {
-    if (ncol(WARNINGS) == 1) {
-      for (loopItem in 1:length(WARNINGS)) {
-        assign(paste0("warning",loopItem), value = WARNINGS[loopItem])
+      
+      if (length(WARNINGS) > 0) {
+        if (length(WARNINGS) == 1) {
+          cat(paste("Warning message:\n", WARNINGS[1], "\n"))
+        } else {
+          cat(paste("\nThere were", length(WARNINGS), "unique warnings (type 'rcall warnings' to see them)\n"))
+        }
       }
-      rm(loopItem)
-      rm(WARNINGS)
+      
+      # clean up
+      suppressWarnings(rm(summaryWarnings))
+      WARNINGS = as.matrix(WARNINGS)
+      
+      # generate the warnings, but first make sure WARNINGS has a single column!
+      if (exists("WARNINGS")) {
+        if (ncol(WARNINGS) == 1) {
+          for (loopItem in 1:length(WARNINGS)) {
+            assign(paste0("warning",loopItem), value = WARNINGS[loopItem])
+          }
+          rm(loopItem)
+          rm(WARNINGS)
+        }
+      }
     }
   }
 } 
