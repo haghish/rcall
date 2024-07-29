@@ -1,6 +1,5 @@
-> __Cite__: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891).
-
-> __NOTE__: The __`R:`__ command is a synonym of __`rcall:`__ command
+> __Cite__: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891).  
+> __NOTE__: The __`R:`__ command is a synonym of __`rcall:`__ and can be used exchangably. 
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/haghish/rcall?label=last%20version)
 
