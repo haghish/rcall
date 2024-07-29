@@ -2,6 +2,8 @@
 
 > __NOTE__: The __`R:`__ command is a synonym of __`rcall:`__ command
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/haghish/rcall?label=last%20version)
+
 ---
 
 # rcall : Seamless interactive language interfacing between R and Stata
