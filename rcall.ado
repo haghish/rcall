@@ -507,6 +507,9 @@ program define rcall , rclass
 	// -------------------------------------------------------------------------
 	// Input processing
 	// =========================================================================
+	// First get folder we're storing files in
+	qui findfile rcall.ado
+	loc sysdir_base = substr("`r(fn)'", 1, strlen("`r(fn)'")-11)
 
 	// Check if the command includes Colon in the beginning or not
 	// -----------------------------------------------------------
@@ -545,11 +548,11 @@ program define rcall , rclass
 		// ================
 		if `"`macval(0)'"' == "clear" | `"`macval(0)'"' == "clear:" {
 			capture erase .RData
-			capture findfile rprofile.R, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.R, path("`sysdir_base'r")
 			if _rc == 0 {
 				capture erase "`r(fn)'"
 			}
-			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			capture findfile Rhistory.do, path("`sysdir_base'r")
 			if _rc == 0 {
 				capture erase "`r(fn)'"
 				tempfile history
@@ -557,7 +560,7 @@ program define rcall , rclass
 				qui file open `knot' using "`history'", write text append
 				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 				qui file close `knot'
-				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+				quietly copy "`history'" "`sysdir_base'r/Rhistory.do"
 			}
       
       // clear the rcall global memory that is used for data transfer
@@ -599,13 +602,13 @@ program define rcall , rclass
 			else di as err "R was not accessed!"
    
 
-			capture findfile rprofile.site, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.site, path("`sysdir_base'r")
 			if _rc == 0 {
 				di as txt _col(7) "{bf:R profile}:" _col(20) _c
 				di as txt `"{browse "`r(fn)'"}"'
 			}
 
-			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			capture findfile Rhistory.do, path("`sysdir_base'r")
 			if _rc == 0 {
 				di _col(7) "{bf:R history}:" _col(20) _c
 				di as txt `"{browse "`r(fn)'"}"'
@@ -616,10 +619,10 @@ program define rcall , rclass
 				qui file open `knot' using "`history'", write text append
 				file write `knot' "// Rhistory initiated on `c(current_date)'  `c(current_time)'" _n
 				qui file close `knot'
-				quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+				quietly copy "`history'" "`sysdir_base'r/Rhistory.do"
 
 				di _col(7) "{bf:R History}:" _col(20) _c
-				di as txt "{browse `c(sysdir_plus)'r/Rhistory.do}"
+				di as txt "{browse `sysdir_base'r/Rhistory.do}"
 			}
 
 			di as txt "{hline 79}"
@@ -743,7 +746,7 @@ program define rcall , rclass
 			file write `knot' `"	global Rpath `macval(0)'"' _n
 			file write `knot' "end" _n
 			qui file close `knot'
-			qui copy "`Rpath'" "`c(sysdir_plus)'r/rpath.ado", replace
+			qui copy "`Rpath'" "`sysdir_base'r/rpath.ado", replace
 			if !missing("`debug'") {
 				di "{title:Memorizing R path}" _n									///
 				`"the {bf:rpath.ado} was created to memorize the path to `macval(0)'"'
@@ -755,7 +758,7 @@ program define rcall , rclass
 		// =======
 		if `"`macval(1)'"' == "history" {
 			local 0 : subinstr local 0 "history" ""
-			capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+			capture findfile Rhistory.do, path("`sysdir_base'r")
 			if _rc == 0 {
 				*copy "`r(fn)'" Rhistory.do, replace
 				*display as txt `"(Rhistory coppied to {browse "./Rhistory.do"})"'
@@ -771,7 +774,7 @@ program define rcall , rclass
 		// =======
 		if `"`macval(1)'"' == "site" {
 			local 0 : subinstr local 0 "site" ""
-			capture findfile rprofile.site, path("`c(sysdir_plus)'r")
+			capture findfile rprofile.site, path("`sysdir_base'r")
 			if _rc == 0 {
 				doedit "`r(fn)'"
 			}
@@ -838,7 +841,7 @@ program define rcall , rclass
 		}
 		global rcall_interactive_first_launch "on"
 
-		capture findfile Rhistory.do, path("`c(sysdir_plus)'r")
+		capture findfile Rhistory.do, path("`sysdir_base'r")
 		if _rc == 0 {
 			tempname knot
 			qui file open `knot' using "`r(fn)'", write text append
@@ -856,7 +859,7 @@ program define rcall , rclass
 				file write `knot' `"rcall `mode': `macval(0)'"' _n
 			}
 			qui file close `knot'
-			quietly copy "`history'" "`c(sysdir_plus)'r/Rhistory.do"
+			quietly copy "`history'" "`sysdir_base'r/Rhistory.do"
 		}
 	}
 
@@ -1104,7 +1107,7 @@ program define rcall , rclass
 	// -------------------------------------------------------------------------
 	// Create temporary Rscript file
 	// =========================================================================
-	capture findfile stata.output.r, path("`c(sysdir_plus)'s")
+	capture findfile stata.output.r, path("`sysdir_base's")
 	if _rc != 0 {
 		di as err "stata.output.r script file not found. reinstall the package"
 		err 198
@@ -1117,18 +1120,18 @@ program define rcall , rclass
 	}
 
 
-	capture findfile rprofile.site, path("`c(sysdir_plus)'r")
+	capture findfile rprofile.site, path("`sysdir_base'r")
 	if _rc == 0 {
 		local RSite `r(fn)'
 	}
 
-	capture findfile rprofile.R, path("`c(sysdir_plus)'r")
+	capture findfile rprofile.R, path("`sysdir_base'r")
 	if _rc == 0 {
 		local rprofile `r(fn)'
 	}
 
 	// get the path to PLUS/r
-	local plusR "`c(sysdir_plus)'r"
+	local plusR "`sysdir_base'r"
 
 	//Change the stata.output.r path in Windows
 	if "`c(os)'" == "Windows" {
