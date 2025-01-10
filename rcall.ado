@@ -1280,7 +1280,7 @@ program define rcall , rclass
 
 		capture erase _temporary_R_output.txt
 		copy "`Rout'" _temporary_R_output.txt, replace
-		di "{browse _temporary_R_output.txt}"
+		di `"{browse "`c(pwd)'/_temporary_R_output.txt"}"'
 	}
 
 	// If data was loaded automatically, remove the temporary data file
