@@ -1252,7 +1252,7 @@ program define rcall , rclass
 	if "`shell'"=="" local shell shell
 	
 	if "`shell'"!="bshell cmd /c"{	
-		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'" "'
+		local Rcommand `""`path'" `vanilla' --slave `save' < "`Rscript'" > "`Rout'"  2>&1"'
 		*local Rcommand `""`path'" `vanilla' --save  < "`Rscript'" > "`Rout'" "'
 	}
 	else { //if cmd sees a double quote at start and end, then it will strip both
