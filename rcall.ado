@@ -1,7 +1,7 @@
 // documentation written for markdoc
 
 /***
-[Version: 3.1.0](https://github.com/haghish/rcall/tags) 
+[Version: 3.2.0](https://github.com/haghish/rcall/tags) 
 
 cite: [Haghish, E. F. (2019). Seamless interactive language interfacing between R and Stata. The Stata Journal, 19(1), 61-82.](https://journals.sagepub.com/doi/full/10.1177/1536867X19830891)
 
@@ -667,12 +667,18 @@ program define rcall , rclass
 
 
 		// Vanilla mode
+		//
+		// Note: rcall --vanilla, as implemented by R, disables 5 flags, namely:
+		// no-save, no-restore, no-site-file, no-init-file, and -no-environ. 
+		// these flags may disrupt Java and some packages that work in parallel to R.
+		// The new implementation only disables saving and restoring.
 		// =========================================================================
     
 		if `"`macval(1)'"' == "vanilla" | `"`macval(1)'"' == "vanilla:" {
       
 			local 0 : subinstr local 0 "vanilla" ""
-			local vanilla --vanilla
+			//local vanilla --vanilla
+			local vanilla --no-save --no-restore
 			if !missing("`debug'") {
 				di _n "{title:Vanilla}" _n										///
 				"Running R in non-interactive batch mode"
