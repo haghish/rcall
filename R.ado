@@ -325,7 +325,7 @@ The __readstata13__ package
 [is faster and more acurate then __foreign__ and __haven__ packages](http://www.haghish.com/stata-blog/?p=21)
 and read Stata 13 and 14 datasets. This R package can be installed within Stata as follows:
 
-        . rcall: install.packages("readstata13", repos="http://cran.uk.r-project.org")
+        . rcall: install.packages("readstata13", repos="https://cloud.r-project.org/")
 
 Specify the relative or absolute path to the data set to transporting data
 from Stata to R. For example:

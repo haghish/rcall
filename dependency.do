@@ -16,4 +16,4 @@ if "`r(version)'" < "2.2.0" {
 }
 
 rcall_check
-rcall: install.packages("readstata13", repos="http://cran.us.r-project.org")
+rcall: install.packages("readstata13", repos="https://cloud.r-project.org/")
